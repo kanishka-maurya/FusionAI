@@ -4,4 +4,6 @@ version = "0.1.0"
 description = "An All-in-One AI Tutor for Learning, Practice, and Guidance"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "path>=17.1.1",
+]
