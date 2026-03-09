@@ -14,7 +14,9 @@ def test_function():
 
     except Exception as e:
         logging.error("An error occurred")
-        raise CustomException(e, sys)
+        error = CustomException(e, sys)
+        logging.error(error)
+        raise error
 
 
 if __name__ == "__main__":

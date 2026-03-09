@@ -2,6 +2,7 @@ import os
 from pathlib import Path 
 
 list_of_filepaths = [
+    "config.py",
     "frontend/",
     "backend/",
     "backend/core/",
@@ -50,7 +51,7 @@ for filepath in list_of_filepaths:
     if filepath.suffix == "":
         os.makedirs(filepath, exist_ok=True)
     else:
-        os.makedirs(filedir, exist_ok=True)
+        os.makedirs(filepath.parent, exist_ok=True)
         if (not os.path.exists(filepath)) or (os.path.getsize(filepath)==0):
             with open(filepath, "w") as f:
                 pass
