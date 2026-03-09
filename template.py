@@ -4,6 +4,9 @@ from pathlib import Path
 list_of_filepaths = [
     "frontend/",
     "backend/",
+    "backend/core/",
+    "backend/core/logging.py",
+    "backend/core/exceptions.py",
     "services/",
     "services/__init__.py",
 
