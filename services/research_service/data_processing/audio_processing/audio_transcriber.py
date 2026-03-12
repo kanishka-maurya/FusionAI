@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import assemblyai as aai
+import time
 
 load_dotenv()
 
@@ -109,13 +110,14 @@ class AudioTranscriber:
         }
     
 if __name__ == "__main__":
+    start = time.time()
     #sample audio file with clear chapters and speaker labels for testing
     audio_url = "https://storage.googleapis.com/aai-web-samples/5_common_sports_injuries.mp3"
 
     pipeline = AudioTranscriber()
 
     result = pipeline.run_notebook_pipeline(audio_url)
-
+    end = time.time()
     print("\nFULL TRANSCRIPT\n")
     print(result["full_text"])
 
@@ -124,3 +126,6 @@ if __name__ == "__main__":
         print(f"\n{chapter['headline']}")
         print(f"Time: {chapter['time_range']}")
         print(chapter["content"])
+    print(f"Time taken in generating response: {(end-start)/60} minutes.")
+
+    

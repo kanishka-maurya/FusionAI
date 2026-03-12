@@ -50,6 +50,10 @@ class DocumentChunk:
         return citation
     
 class DocumentProcessor:
+    """Processes documents such as PDF, TXT, and MD files 
+       by extracting text and splitting it into overlapping 
+       chunks suitable for tasks like search or RAG pipelines.
+    """
     def __init__(self, chunk_size:int=config.CHUNK_SIZE, chunk_overlap:int=config.CHUNK_OVERLAP):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
