@@ -1,107 +1,119 @@
-import os
-import tempfile
-from pathlib import Path
 from dotenv import load_dotenv
-import assemblyai as aai
-from posthog import api_key
-from pydot import List, Optional
-import yt_dlp
+import sys
+from typing import List, Optional, Dict, Any
+from dataclasses import dataclass
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentChunk
+from youtube_transcript_api import YouTubeTranscriptApi
+from backend.core.exceptions import CustomException
+from backend.core.logging import logging
+import config
+
 load_dotenv()
 
-aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
-
-transcriber=aai.Transcriber()
+@dataclass
+class TranscriptData:
+    """Represents a processed youtube transcript data chunk with metadata for citations"""
+    content: str
+    metadata: Dict[str, Any]
 
 class YoutubeTranscriber:
-    def __init__(self):
-        self.transcriber=aai.Transcriber()
-        self.temp_dir = Path(tempfile.gettempdir()) / "youtube_transcriber"
-        self.temp_dir.mkdir(exist_ok=True)
+    def __init__(self, chunk_size: int = config.CHUNK_SIZE, chunk_overlap: int = config.CHUNK_OVERLAP):
+        self.api=YouTubeTranscriptApi()
+        self.chunk_size=chunk_size
+        self.chunk_overlap=chunk_overlap
+        logging.info("YoutubeTranscriber initialized.")
     
-    def extract_video_id(self, url: str) -> Optional[str]:
-        if "v=" in url:
-            video_id = url.split("v=")[1].split("&")[0]
-        elif "youtu.be/" in url:
-            video_id = url.split("youtu.be/")[1].split("?")[0]
-        else:
-            video_id = None
-        return video_id
+
+    def _extract_video_id(self, url: str) -> Optional[str]:
+        try:
+            if "v=" in url:
+                video_id = url.split("v=")[1].split("&")[0]
+            elif "youtu.be/" in url:
+                video_id = url.split("youtu.be/")[1].split("?")[0]
+            else:
+                video_id = None
+            return video_id
+        except Exception as e:
+            error = CustomException(e, sys)
+            logging.error(error)  
     
-    def download_audio(self, url: str) -> str:
-        video_id = self.extract_video_id(url)
+
+    def _download_transcript(self, url: str) -> str:
+        video_id = self._extract_video_id(url)
         if not video_id:
             raise ValueError("Could not extract video ID from URL")
-        
-        expected_path = self.temp_dir / f"{video_id}.m4a"
-        if expected_path.exists():
-            print(f"Audio already exists: {expected_path}")
-            return str(expected_path)
-        
-        ydl_opts = {
-            'format': 'm4a/bestaudio/best',
-            'outtmpl': str(self.temp_dir / '%(id)s.%(ext)s'),
-            'quiet': True,
-            'no_warnings': True,
-        }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            error_code = ydl.download([url])
-            
-            if error_code != 0:
-                raise Exception(f"yt-dlp download failed with error code: {error_code}")
-        
-        if not expected_path.exists():
-            raise FileNotFoundError(f"Expected audio file not found: {expected_path}")
-        
 
-        return str(expected_path)
+        transcript = self.api.fetch(video_id)
 
-    def transcribe_youtube_video(
+        text = " ".join([snippet.text for snippet in transcript.snippets])
+
+        return text
+
+
+    def _chunk_processed_scraped_data(
         self,
-        url: str,
-        cleanup_audio: bool = True
-    ) -> List[DocumentChunk]:
-        try:
-            audio_path = self.download_audio(url)
-            
-            config = aai.TranscriptionConfig(
-                speech_models=[aai.SpeechModel.universal],
-                speaker_labels=True,
-                punctuate=True
-            )
-            transcriber = aai.Transcriber(config=config)
-            transcript = transcriber.transcribe(audio_path)
-            
-            if transcript.status == aai.TranscriptStatus.error:
-                raise Exception(f"Transcription failed: {transcript.error}")
-            
-            chunks = []
-            video_id = self.extract_video_id(url)
-            for i, utterance in enumerate(transcript.utterances):
-                chunk = DocumentChunk(
-                    content=f"Speaker {utterance.speaker}: {utterance.text}",
-                    source_file=f"YouTube Video {video_id}",
-                    source_type="youtube",
+        content: TranscriptData,
+        video_id: str)-> List[DocumentChunk]:
+
+        
+        if not content.strip():
+            return []
+        
+        chunks = []
+        text = content
+        start = 0
+        chunk_index = 0
+
+        while start < len(text):
+            end = min(start + self.chunk_size, len(text))
+            if end < len(text):
+                last_period = text.rfind('.', start, end)
+                last_newline = text.rfind('\n', start, end)
+                boundary = max(last_period, last_newline)
+                if boundary > start + self.chunk_size * 0.5:
+                    end = boundary + 1
+
+            chunk_text = text[start:end].strip()
+
+            chunk_metadata = {
+                "video_id": video_id
+            }
+
+
+            chunk = DocumentChunk(
+                    content=chunk_text,
+                    source_file=None,
+                    source_type=None,
                     page_number=None,
-                    chunk_index=i,
-                    start_char=utterance.start,
-                    end_char=utterance.end,
-                    metadata={
-                        'speaker': utterance.speaker,
-                        'start_time': utterance.start,
-                        'end_time': utterance.end,
-                        'confidence': getattr(utterance, 'confidence', None),
-                        'video_url': url,
-                        'video_id': video_id
-                    }
+                    chunk_index=chunk_index,
+                    start_char=start,
+                    end_char=end-1,
+                    metadata=chunk_metadata
                 )
-                chunks.append(chunk)
-            
-            
+
+            chunks.append(chunk)
+            chunk_index += 1
+
+            start = max(start + self.chunk_size - self.chunk_overlap, end)
+
+            if start >= len(text):
+                break
+        
+        return chunks
+    
+    def process_transcript(self, url: str, video_id: str) -> List[DocumentChunk]:
+        try:
+            transcript = self._download_transcript(url)
+            logging.info("Transcript downloaded.")
+
+            chunks = self._chunk_processed_scraped_data(transcript, video_id)
+            logging.info("Chunks created.")
+
             return chunks
         except Exception as e:
-            print(f"Error processing Youtube Videos:{e}")
-            raise e
+            error = CustomException(e, sys)
+            logging.error(error)
+            raise error
 
 if __name__ == "__main__":
     
@@ -109,11 +121,13 @@ if __name__ == "__main__":
     
     try:
         test_url = "https://www.youtube.com/watch?v=D26sUZ6DHNQ"
-        chunks = transcriber.transcribe_youtube_video(test_url)
+        video_id = transcriber._extract_video_id(test_url)
+        chunks = transcriber.process_transcript(url=test_url, video_id=video_id)
         
-        print(f"Transcribed {len(chunks)} utterances:")
+        """ print(f"Transcribed {len(chunks)} utterances:")
         for chunk in chunks[:5]:
-            print(f"  {chunk.content}")
+            print(f"  {chunk.content}")"""
+        print(chunks)
         
     except Exception as e:
         print(f"Error: {e}")
