@@ -84,13 +84,14 @@ class AudioTranscriber:
         }
     
 if __name__ == "__main__":
+    start = time.time()
     #sample audio file with clear chapters and speaker labels for testing
     audio_url = "https://storage.googleapis.com/aai-web-samples/5_common_sports_injuries.mp3"
 
     pipeline = AudioTranscriber()
 
     result = pipeline.run_notebook_pipeline(audio_url)
-
+    end = time.time()
     print("\nFULL TRANSCRIPT\n")
     print(result["full_text"])
 
