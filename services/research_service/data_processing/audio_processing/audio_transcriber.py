@@ -81,7 +81,7 @@ class AudioTranscriber:
         return {
           "chunks": structured_chunks,
           "full_text": transcript.text
-        }
+    }
     
 if __name__ == "__main__":
     start = time.time()

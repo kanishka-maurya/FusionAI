@@ -44,7 +44,7 @@ class EmbeddingGenerator:
             logging.info("Initializing embedding model.")
             self.model = GoogleGenerativeAIEmbeddings(model=self.model_name)
 
-            sample_embedding = [self.model.embed_query(["test"])][0]
+            sample_embedding = self.model.embed_query("test")
             self.embedding_dim = len(sample_embedding)
 
             logging.info(f"Model initialized successfully. Embedding dimension: {self.embedding_dim}")
@@ -63,7 +63,7 @@ class EmbeddingGenerator:
         try:
             texts = [chunk.content for chunk in chunks]
             
-            embeddings = list(self.model.embed_query(texts))
+            embeddings = list(self.model.embed_documents(texts))
             embedded_chunks = []
             for chunk, embedding in zip(chunks, embeddings):
                 embedded_chunk = EmbeddedChunk(
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     embedding_generator = EmbeddingGenerator()
     
     try:
-        chunks = doc_processor.process_document(r"C:\Users\kanis\FusionAI\services\research_service\embeddings\CRAG Paper.pdf")
+        chunks = doc_processor.process_document(r"C:\Users\kanis\FusionAI\services\research_service\embeddings\hydrogen_2.pdf")
         embedded_chunks = embedding_generator.generate_embeddings(chunks)
         
         if embedded_chunks:
