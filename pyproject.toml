@@ -11,6 +11,7 @@ dependencies = [
     "langchain-google-genai>=4.2.1",
     "numpy>=2.4.3",
     "path>=17.1.1",
+    "pymilvus>=2.6.10",
     "posthog>=7.9.12",
     "pydot>=4.0.1",
     "pymilvus[milvus-lite]>=2.6.10",
@@ -19,4 +20,7 @@ dependencies = [
     "requests>=2.32.5",
     "youtube-transcript-api>=1.2.4",
     "yt-dlp>=2026.3.3",
+    "chromadb>=1.5.5",
+    "fastapi>=0.135.1",
+    "python-multipart>=0.0.22",
 ]
