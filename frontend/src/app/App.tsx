@@ -69,36 +69,61 @@ function App() {
     return responses[Math.floor(Math.random() * responses.length)];
   };
 
-  const handleSendMessage = (content: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
+  const handleSendMessage = async (content: string) => {
+  // ✅ Add user message first
+  const userMessage: Message = {
+    id: Date.now().toString(),
+    role: "user",
+    content,
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+
+  setMessages((prev) => [...prev, userMessage]);
+
+  try {
+    const res = await fetch(
+      `http://localhost:8000/api/documents/query?q=${encodeURIComponent(content)}`
+    );
+
+    if (!res.ok) throw new Error("Query failed");
+
+    const data = await res.json();
+    const formattedResults =
+      data.results?.map((r: any, i: number) => {
+        return `(${i + 1}) ${r.content || "No content"} ${
+          r.page_number ? `(Page ${r.page_number})` : ""
+        }`;
+      }).join("\n\n") || "No results found.";
+    const botMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: formattedResults,
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsTyping(true);
+    setMessages((prev) => [...prev, botMessage]);
+  } catch (err) {
+    console.error(err);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: generateResponse(content),
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1500);
-  };
+    const errorMessage: Message = {
+      id: (Date.now() + 2).toString(),
+      role: "assistant",
+      content: "⚠️ Failed to fetch results. Please try again.",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
 
+    setMessages((prev) => [...prev, errorMessage]);
+  }
+};
   return (
     <div className="flex h-screen bg-gray-100">
       <SourcesSidebar

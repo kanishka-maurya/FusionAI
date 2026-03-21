@@ -32,12 +32,12 @@ export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalP
   try {
     const formData = new FormData();
     formData.append("file", file);
-
+    console.log(formData)
     const res = await fetch("http://localhost:8000/api/documents/upload", {
       method: "POST",
       body: formData,
     });
-
+   
     if (!res.ok) {
       throw new Error("Upload failed");
     }

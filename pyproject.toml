@@ -19,4 +19,6 @@ dependencies = [
     "youtube-transcript-api>=1.2.4",
     "yt-dlp>=2026.3.3",
     "chromadb>=1.5.5",
+    "fastapi>=0.135.1",
+    "python-multipart>=0.0.22",
 ]
