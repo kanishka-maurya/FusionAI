@@ -98,6 +98,7 @@ class EmbeddingGenerator:
             error = CustomException(e, sys)
             logging.error(error)
             raise error
+        
     def _embed_with_retry(self, texts: List[str]) -> List[List[float]]:
         for attempt in range(self.retry_attempts):
             try:
@@ -119,6 +120,7 @@ class EmbeddingGenerator:
 
                 if attempt == self.retry_attempts - 1:
                     raise
+                
     def _extract_retry_delay(self, error_msg: str) -> int:
         match = re.search(r"retry in (\d+\.?\d*)s", error_msg.lower())
         if match:

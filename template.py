@@ -38,6 +38,10 @@ list_of_filepaths = [
     "services/research_service/vector_database/__init__.py",
     "services/research_service/vector_database/vector_database.py",
 
+    "services/research_service/generation/",
+    "services/research_service/generation/__init__.py",
+    "services/research_service/generation/generation.py",
+
     "services/research_service/podcast/",
     "services/research_service/podcast/__init__.py",
     "services/research_service/podcast/script_generator.py",
