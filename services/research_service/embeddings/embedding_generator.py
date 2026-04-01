@@ -139,7 +139,9 @@ class EmbeddingGenerator:
         try:
             self._throttle_requests()
             embedding = self.model.embed_query(query_text)
+            logging.info("Query embedding is generated....")
             return np.array(embedding, dtype=np.float32)
+            
 
         except Exception as e:
             error = CustomException(e, sys)

@@ -3,6 +3,9 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 
 from crewai import LLM 
+from backend.core.exceptions import CustomException
+import sys
+import os
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
 
@@ -48,6 +51,7 @@ class RAGGenerator:
             max_tokens=max_tokens,
             api_key=api_key
         )
+        logging.info("RAG Generator initialized....")
         logging.info(f"RAG Generator initialized with {model_name}")
         
     def generate_results(self,
@@ -58,23 +62,27 @@ class RAGGenerator:
             ) -> RAGResult:
         
         if not query.strip():
+            logging.info("Empty query is recieved....")
             return RAGResult(
                 query=query,
                 response="Please provide a valid question.",
                 sources_used=[],
                 retrieval_count=0
             )
+       
         
         try:
             logging.info(f"Generating response for: '{query[:50]}...'")
             
             query_vector = self.embedding_generator.generate_query_embedding(query)
-            search_results = self.ChromaDB.search(
+            logging.info(f"query vector:{query_vector}")
+            search_results =self.ChromaDB.search(
                 query_vector=query_vector.tolist(),
                 limit=top_k
             )
-
+            print("search results",search_results)
             if not search_results:
+                logging.info("Nothing retrieved from the vector DB....")
                 return RAGResult(
                     query=query,
                     response="I couldn't find any relevant information in the available documents to answer your question.",
@@ -82,21 +90,30 @@ class RAGGenerator:
                     retrieval_count=0
                 )
             
+            logging.info("Retrieval results from vector DB are non-empty....")
             context, sources_info = self._format_context_with_citations(
                 search_results, max_chunks, max_context_chars
             )
 
             prompt = self._create_rag_prompt(query, context)
+            
+            try:
+                response = self.llm.call(prompt)
+                logging.info("Results obtained from LLM....")
+                logging.info(response[:20])
+            except Exception as e:
+                error = CustomException(e, sys)
+                logging.error(error)
+                raise error
 
-            response = self.llm.call(prompt)
-
+           
             rag_result = RAGResult(
                 query=query,
                 response=response,
                 sources_used=sources_info,
                 retrieval_count=len(search_results)
             )
-            
+
             logging.info(f"Response generated successfully using {len(sources_info)} sources")
             return rag_result
             

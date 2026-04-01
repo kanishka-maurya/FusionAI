@@ -3,6 +3,8 @@ from typing import List, Dict, Any, Optional
 import json
 import chromadb
 from chromadb.config import Settings
+import sys
+from backend.core.exceptions import CustomException
 
 from services.research_service.embeddings.embedding_generator import EmbeddedChunk
 
@@ -18,9 +20,7 @@ class ChromaVectorDatabase:
         self.db_path = db_path
         self.collection_name = collection_name
 
-        self.client = chromadb.Client(
-            Settings(persist_directory=self.db_path)
-        )
+        self.client = chromadb.PersistentClient(path=self.db_path)
 
         self.collection = self.client.get_or_create_collection(
             name=self.collection_name
@@ -78,12 +78,14 @@ class ChromaVectorDatabase:
                 metadatas=metadatas
             )
 
-            logger.info(f"Inserted {len(ids)} embeddings")
+            logging.info(f"Inserted {len(ids)} embeddings")
             return ids
 
         except Exception as e:
-            logger.error(f"Insert error: {str(e)}")
-            raise
+                error = CustomException(e, sys)
+                logging.error(error)
+                raise error
+
     def search(
         self,
         query_vector: List[float],
@@ -95,7 +97,7 @@ class ChromaVectorDatabase:
                 query_embeddings=[query_vector],
                 n_results=limit
             )
-
+            logging.info("Vector search concluded....")
             formatted_results = []
 
             for i in range(len(results["ids"][0])):
@@ -116,13 +118,13 @@ class ChromaVectorDatabase:
                     "metadata": metadata,
                     "embedding_model": metadata.get("embedding_model")
                 })
-
-            logger.info(f"Search returned {len(formatted_results)} results")
+            logging.info(f"Search returned {len(formatted_results)} results")
             return formatted_results
 
         except Exception as e:
-            logger.error(f"Search error: {str(e)}")
-            raise
+                error = CustomException(e, sys)
+                logging.error(error)
+                raise error
 
 
     def get_chunk_by_id(self, chunk_id: str) -> Optional[Dict[str, Any]]:

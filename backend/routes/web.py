@@ -6,6 +6,7 @@ import os
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
 from services.research_service.data_processing.web_scraping.web_scraper import WebScraper
+from services.research_service.generation.generation import RAGGenerator, RAGResult
 
 router = APIRouter()
 embedding_generator = EmbeddingGenerator()
@@ -15,6 +16,9 @@ web_scraper = WebScraper()
 UPLOAD_DIR = Path("web_upload")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise RuntimeError("GROQ_API_KEY environment variable not set")
 
 @router.post("/web_upload")
 async def upload_url(url: str):
@@ -66,11 +70,27 @@ async def upload_url(url: str):
 @router.get("/query")
 async def query_documents(q: str):
     try:
+        # Validate input
         print(q)
-        query_vector = embedding_generator.generate_query_embedding(q)
-        results = vector_db.search(query_vector.tolist(), limit=5)
-        print(results)
-        return {"results": results}
+        if not q or not q.strip():
+            raise HTTPException(status_code=400, detail="Query cannot be empty")
+        # Generate response (ensure your RAGGenerator supports this signature)
+        rag_generator = RAGGenerator(
+         embedding_generator=embedding_generator,
+         vector_db=vector_db,
+         api_key=api_key,
+         temperature=0.1
+        )
+        result = rag_generator.generate_results(
+            query=q
+        )
+        print("results to be sent",result.response)
+        return {
+            
+            "results": result.response
+        }
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

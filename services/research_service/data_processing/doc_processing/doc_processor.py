@@ -86,7 +86,6 @@ class DocumentProcessor:
                     end = boundary + 1
 
             chunk_text = text[start:end].strip()
-
             if chunk_text:
                 chunk_metadata = additional_metadata.copy() if additional_metadata else {}
 
@@ -108,7 +107,7 @@ class DocumentProcessor:
 
             if start >= len(text):
                 break
-        
+        print("returning these chunks",chunks)
         return chunks
     
 
@@ -117,11 +116,10 @@ class DocumentProcessor:
         try:
             doc = pymupdf.open(file_path)
             total_pages = len(doc)
-            
+            print(total_pages)
             for page_num in range(total_pages):
                 page = doc.load_page(page_num)
                 text = page.get_text()
-                
                 if not text.strip():
                     continue
                 
@@ -132,24 +130,27 @@ class DocumentProcessor:
                     'page_height': page.rect.height,
                     'processed_at': datetime.now().isoformat()
                 }
-                
-                page_chunks = self._create_chunks_from_text(
+                try: 
+                  page_chunks = self._create_chunks_from_text(
                     text, 
                     file_path.name, 
                     source_type='pdf', 
                     page_number=page_num+1,
                     additional_metadata=page_metadata
-                )
-            
+                  )
+                except Exception as e:
+                    print(e)
+                print("all good till now")
                 chunks.extend(page_chunks)
             doc.close()
+
             logging.info(f"Processed PDF {file_path.name}: {len(chunks)} chunks from {total_pages} pages.")
             
         except Exception as e:
             error = CustomException(e, sys)
             logging.error(error)
             raise error
-
+        print("all good here")
         return chunks
 
 
@@ -192,7 +193,7 @@ class DocumentProcessor:
             raise ValueError(f"Unsupported file format: {file_path.suffix}")
         
         logging.info(f"Processing document: {file_path.name}")
-
+        print("processing document")
         try:
             if file_path.suffix.lower() == '.pdf':
                 return self._process_pdf(file_path)
