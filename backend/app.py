@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.document import router as document_router
 from backend.routes.youtube_video import router as youtube_router
+from backend.routes.web import router as web_router
 app=FastAPI()
 
 app.add_middleware(
@@ -10,3 +11,4 @@ app.add_middleware(
 )
 app.include_router(document_router, prefix="/api/documents", tags=["Documents"])
 app.include_router(youtube_router, prefix="/api/youtube", tags=["Youtube Videos"])
+app.include_router(web_router,prefix="/api/web",tags=["Web Pages"])

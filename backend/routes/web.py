@@ -11,7 +11,6 @@ from services.research_service.generation.generation import RAGGenerator, RAGRes
 router = APIRouter()
 embedding_generator = EmbeddingGenerator()
 vector_db = ChromaVectorDatabase()
-web_scraper = WebScraper()
 
 UPLOAD_DIR = Path("web_upload")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -19,12 +18,13 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
     raise RuntimeError("GROQ_API_KEY environment variable not set")
-
 @router.post("/web_upload")
 async def upload_url(url: str):
     try:
         # Validate API key (like a guard, not exit)
+        print(url)
         api_key = os.getenv("FIRECRAWL_API_KEY")
+        web_scraper = WebScraper(api_key=api_key)
         if not api_key:
             raise HTTPException(
                 status_code=500,
@@ -32,10 +32,12 @@ async def upload_url(url: str):
             )
 
         # Validate URL format
-        parsed_url = urlparse(url)
-        if not parsed_url.scheme or not parsed_url.netloc:
+        try:
+          parsed_url = urlparse(url)
+          if not parsed_url.scheme or not parsed_url.netloc:
             raise HTTPException(status_code=400, detail="Invalid URL")
-
+        except Exception as e:
+            print(e)
         # Scrape content
         chunks = web_scraper.scrape_url(url)
 

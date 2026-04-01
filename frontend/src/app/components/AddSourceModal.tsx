@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { X, FileText, Youtube, Mic, ClipboardType } from "lucide-react";
+import {
+  X,
+  FileText,
+  Youtube,
+  Mic,
+  ClipboardType,
+  WebhookIcon,
+} from "lucide-react";
 
 interface AddSourceModalProps {
   isOpen: boolean;
@@ -12,7 +19,13 @@ interface AddSourceModalProps {
   }) => void;
 }
 
-type SourceType = "document" | "youtube" | "audio" | "text" | null;
+type SourceType =
+  | "document"
+  | "youtube"
+  | "audio"
+  | "text"
+  | "web"
+  | null;
 
 export function AddSourceModal({
   isOpen,
@@ -21,10 +34,12 @@ export function AddSourceModal({
 }: AddSourceModalProps) {
   const [selectedType, setSelectedType] = useState<SourceType>(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [webUrl, setWebUrl] = useState("");
   const [copiedText, setCopiedText] = useState("");
   const [fileName, setFileName] = useState("");
 
   if (!isOpen) return null;
+
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -36,24 +51,25 @@ export function AddSourceModal({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      console.log(formData);
-      const res = await fetch("http://localhost:8000/api/documents/upload", {
-        method: "POST",
-        body: formData,
-      });
 
-      if (!res.ok) {
-        throw new Error("Upload failed");
-      }
+      const res = await fetch(
+        "http://localhost:8000/api/documents/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (!res.ok) throw new Error("Upload failed");
 
       const data = await res.json();
+
       onAddSource({
         name: file.name,
         type: type === "document" ? "PDF Document" : "Audio File",
       });
 
       console.log("Processed:", data);
-
       handleClose();
     } catch (err) {
       console.error(err);
@@ -62,44 +78,78 @@ export function AddSourceModal({
   };
 
   const handleYoutubeSubmit = async () => {
-    if (youtubeUrl.trim()) {
+    if (!youtubeUrl.trim()) return;
+
+    try {
       const res = await fetch(
-        `http://localhost:8000/api/youtube/process_video_link?video_link=${encodeURIComponent(youtubeUrl)}`,
+        `http://localhost:8000/api/youtube/process_video_link?video_link=${encodeURIComponent(
+          youtubeUrl,
+        )}`,
+        { method: "POST" },
+      );
+
+      if (!res.ok) throw new Error("Failed to process Youtube Link");
+
+      onAddSource({
+        name: youtubeUrl,
+        type: "YouTube",
+      });
+
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      alert("YouTube processing failed");
+    }
+  };
+
+  const handleWebSubmit = async () => {
+    if (!webUrl.trim()) return;
+    console.log(webUrl)
+    try {
+      const res = await fetch(
+        `http://localhost:8000/api/web/web_upload?url=${encodeURIComponent(
+          webUrl,
+        )}`,
         {
           method: "POST",
         },
       );
-      console.log(res);
-      if (!res.ok) {
-        throw new Error("Failed to process Youtube Link !");
-      }
+      
+      if (!res.ok) throw new Error("Failed to process Web URL");
+
+      onAddSource({
+        name: webUrl,
+        type: "Web URL",
+      });
+
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      alert("Web URL processing failed");
     }
   };
 
+
   const handleTextSubmit = () => {
-    if (copiedText.trim()) {
-      const preview = copiedText.substring(0, 30);
-      onAddSource({
-        name: fileName || `Text: ${preview}...`,
-        type: "Copied Text",
-      });
-      handleClose();
-    }
+    if (!copiedText.trim()) return;
+
+    const preview = copiedText.substring(0, 30);
+
+    onAddSource({
+      name: fileName || `Text: ${preview}...`,
+      type: "Copied Text",
+    });
+
+    handleClose();
   };
 
   const handleClose = () => {
     setSelectedType(null);
     setYoutubeUrl("");
+    setWebUrl("");
     setCopiedText("");
     setFileName("");
     onClose();
-  };
-
-  const extractYoutubeId = (url: string): string | null => {
-    const regExp =
-      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[7].length === 11 ? match[7] : null;
   };
 
   return (
@@ -111,33 +161,35 @@ export function AddSourceModal({
         className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* HEADER */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Add Source</h2>
           <button
             onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className="p-1 hover:bg-gray-100 rounded"
           >
             <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
+        {/* BODY */}
         <div className="p-6">
           {!selectedType ? (
             <div className="space-y-3">
+              {/* DOCUMENT */}
               <button
                 onClick={() =>
                   document.getElementById("document-upload")?.click()
                 }
-                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50"
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-medium">Upload Document</h3>
-                  <p className="text-sm text-gray-600">PDF, DOCX, TXT files</p>
+                <FileText className="w-6 h-6 text-blue-600" />
+                <div>
+                  <h3>Upload Document</h3>
+      
                 </div>
               </button>
+
               <input
                 id="document-upload"
                 type="file"
@@ -146,143 +198,137 @@ export function AddSourceModal({
                 className="hidden"
               />
 
+              {/* YOUTUBE */}
               <button
                 onClick={() => setSelectedType("youtube")}
-                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-red-500 hover:bg-red-50 transition-all group"
+                className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-red-500 hover:bg-red-50"
               >
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200">
-                  <Youtube className="w-6 h-6 text-red-600" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-medium">YouTube Link</h3>
-                  <p className="text-sm text-gray-600">
-                    Add a YouTube video URL
-                  </p>
+                <Youtube className="w-6 h-6 text-red-600" />
+                <div>
+                  <h3>YouTube Link</h3>
                 </div>
               </button>
 
+              {/* AUDIO */}
               <button
-                onClick={() => document.getElementById("audio-upload")?.click()}
-                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all group"
+                onClick={() =>
+                  document.getElementById("audio-upload")?.click()
+                }
+                className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-purple-500 hover:bg-purple-50"
               >
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200">
-                  <Mic className="w-6 h-6 text-purple-600" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-medium">Audio File</h3>
-                  <p className="text-sm text-gray-600">MP3, WAV, M4A files</p>
+                <Mic className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h3>Audio File</h3>
                 </div>
               </button>
+
               <input
                 id="audio-upload"
                 type="file"
-                accept=".mp3,.wav,.m4a,.aac"
+                accept=".mp3,.wav,.m4a"
                 onChange={(e) => handleFileUpload(e, "audio")}
                 className="hidden"
               />
 
+              {/* TEXT */}
               <button
                 onClick={() => setSelectedType("text")}
-                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all group"
+                className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-green-500 hover:bg-green-50"
               >
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200">
-                  <ClipboardType className="w-6 h-6 text-green-600" />
+                <ClipboardType className="w-6 h-6 text-green-600" />
+                <div>
+                  <h3>Copied Text</h3>
                 </div>
-                <div className="text-left">
-                  <h3 className="font-medium">Copied Text</h3>
-                  <p className="text-sm text-gray-600">Paste text directly</p>
+              </button>
+
+              {/* WEB URL */}
+              <button
+                onClick={() => setSelectedType("web")}
+                className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-yellow-500 hover:bg-yellow-50"
+              >
+                <WebhookIcon className="w-6 h-6 text-yellow-600" />
+                <div>
+                  <h3>Web URL</h3>
                 </div>
               </button>
             </div>
           ) : selectedType === "youtube" ? (
-            <div className="space-y-4">
-              <button
-                onClick={() => setSelectedType(null)}
-                className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
-              >
-                ← Back
-              </button>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  YouTube URL
-                </label>
-                <input
-                  type="url"
-                  value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  autoFocus
-                />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => setSelectedType(null)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleYoutubeSubmit}
-                  disabled={!youtubeUrl.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
+            <InputUI
+              label="YouTube URL"
+              value={youtubeUrl}
+              setValue={setYoutubeUrl}
+              onSubmit={handleYoutubeSubmit}
+              onBack={() => setSelectedType(null)}
+            />
+          ) : selectedType === "web" ? (
+            <InputUI
+              label="Website URL"
+              value={webUrl}
+              setValue={setWebUrl}
+              onSubmit={handleWebSubmit}
+              onBack={() => setSelectedType(null)}
+            />
           ) : selectedType === "text" ? (
             <div className="space-y-4">
+              <button onClick={() => setSelectedType(null)}>← Back</button>
+
+              <input
+                placeholder="Name"
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                className="w-full border p-2 rounded"
+              />
+
+              <textarea
+                value={copiedText}
+                onChange={(e) => setCopiedText(e.target.value)}
+                rows={5}
+                className="w-full border p-2 rounded"
+              />
+
               <button
-                onClick={() => setSelectedType(null)}
-                className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                onClick={handleTextSubmit}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
               >
-                ← Back
+                Add
               </button>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Name (optional)
-                </label>
-                <input
-                  type="text"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder="My notes"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Text Content
-                </label>
-                <textarea
-                  value={copiedText}
-                  onChange={(e) => setCopiedText(e.target.value)}
-                  placeholder="Paste your text here..."
-                  rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  autoFocus
-                />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => setSelectedType(null)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleTextSubmit}
-                  disabled={!copiedText.trim()}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add
-                </button>
-              </div>
             </div>
           ) : null}
         </div>
       </div>
+    </div>
+  );
+}
+
+// 🔥 Reusable input component
+function InputUI({
+  label,
+  value,
+  setValue,
+  onSubmit,
+  onBack,
+}: any) {
+  return (
+    <div className="space-y-4">
+      <button onClick={onBack}>← Back</button>
+
+      <div>
+        <label className="block text-sm mb-2">{label}</label>
+        <input
+          type="url"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+
+      <button
+        onClick={onSubmit}
+        disabled={!value.trim()}
+        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+      >
+        Add
+      </button>
     </div>
   );
 }

@@ -21,18 +21,7 @@ interface Message {
 
 function App() {
   const [sources, setSources] = useState<Source[]>([
-    {
-      id: "1",
-      name: "Introduction to Machine Learning.pdf",
-      type: "PDF Document",
-      pages: 45,
-    },
-    {
-      id: "2",
-      name: "Research Paper - Neural Networks.pdf",
-      type: "PDF Document",
-      pages: 28,
-    },
+    
   ]);
 
   const [messages, setMessages] = useState<Message[]>([]);
