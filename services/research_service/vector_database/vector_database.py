@@ -37,7 +37,7 @@ class ChromaVectorDatabase:
             documents = []
             embeddings = []
             metadatas = []
-
+            print(embedded_chunks[0])
             for chunk in embedded_chunks:
                 data = chunk.to_vector_db_format()
 
@@ -59,7 +59,17 @@ class ChromaVectorDatabase:
                 if isinstance(data.get("metadata"), dict):
                     metadata.update(data["metadata"])
 
-                metadatas.append(metadata)
+                clean_metadata = {}
+
+                for key, value in metadata.items():
+                  if value is None:
+                    continue
+                  elif isinstance(value, (str, int, float, bool)):
+                    clean_metadata[key] = value
+                  else:
+                    clean_metadata[key] = str(value)
+
+                metadatas.append(clean_metadata)
 
             self.collection.add(
                 ids=ids,

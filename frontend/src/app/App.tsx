@@ -70,7 +70,6 @@ function App() {
   };
 
   const handleSendMessage = async (content: string) => {
-  // ✅ Add user message first
   const userMessage: Message = {
     id: Date.now().toString(),
     role: "user",
@@ -114,7 +113,7 @@ function App() {
     const errorMessage: Message = {
       id: (Date.now() + 2).toString(),
       role: "assistant",
-      content: "⚠️ Failed to fetch results. Please try again.",
+      content: "Failed to fetch results. Please try again.",
       timestamp: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",

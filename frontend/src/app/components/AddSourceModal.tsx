@@ -14,7 +14,11 @@ interface AddSourceModalProps {
 
 type SourceType = "document" | "youtube" | "audio" | "text" | null;
 
-export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalProps) {
+export function AddSourceModal({
+  isOpen,
+  onClose,
+  onAddSource,
+}: AddSourceModalProps) {
   const [selectedType, setSelectedType] = useState<SourceType>(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [copiedText, setCopiedText] = useState("");
@@ -23,49 +27,52 @@ export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalP
   if (!isOpen) return null;
 
   const handleFileUpload = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  type: "document" | "audio"
-) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "document" | "audio",
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    console.log(formData)
-    const res = await fetch("http://localhost:8000/api/documents/upload", {
-      method: "POST",
-      body: formData,
-    });
-   
-    if (!res.ok) {
-      throw new Error("Upload failed");
-    }
-
-    const data = await res.json();
-    onAddSource({
-      name: file.name,
-      type: type === "document" ? "PDF Document" : "Audio File",
-    });
-
-    console.log("Processed:", data);
-
-    handleClose();
-  } catch (err) {
-    console.error(err);
-    alert("File upload failed");
-  }
-};
-
-  const handleYoutubeSubmit = () => {
-    if (youtubeUrl.trim()) {
-      const videoId = extractYoutubeId(youtubeUrl);
-      onAddSource({
-        name: `YouTube: ${videoId || youtubeUrl.substring(0, 30)}...`,
-        type: "YouTube Video",
-        url: youtubeUrl,
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      console.log(formData);
+      const res = await fetch("http://localhost:8000/api/documents/upload", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await res.json();
+      onAddSource({
+        name: file.name,
+        type: type === "document" ? "PDF Document" : "Audio File",
+      });
+
+      console.log("Processed:", data);
+
       handleClose();
+    } catch (err) {
+      console.error(err);
+      alert("File upload failed");
+    }
+  };
+
+  const handleYoutubeSubmit = async () => {
+    if (youtubeUrl.trim()) {
+      const res = await fetch(
+        `http://localhost:8000/api/youtube/process_video_link?video_link=${encodeURIComponent(youtubeUrl)}`,
+        {
+          method: "POST",
+        },
+      );
+      console.log(res);
+      if (!res.ok) {
+        throw new Error("Failed to process Youtube Link !");
+      }
     }
   };
 
@@ -89,14 +96,21 @@ export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalP
   };
 
   const extractYoutubeId = (url: string): string | null => {
-    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const regExp =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[7].length === 11 ? match[7] : null;
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleClose}>
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={handleClose}
+    >
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Add Source</h2>
           <button
@@ -111,7 +125,9 @@ export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalP
           {!selectedType ? (
             <div className="space-y-3">
               <button
-                onClick={() => document.getElementById("document-upload")?.click()}
+                onClick={() =>
+                  document.getElementById("document-upload")?.click()
+                }
                 className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group"
               >
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200">
@@ -139,7 +155,9 @@ export function AddSourceModal({ isOpen, onClose, onAddSource }: AddSourceModalP
                 </div>
                 <div className="text-left">
                   <h3 className="font-medium">YouTube Link</h3>
-                  <p className="text-sm text-gray-600">Add a YouTube video URL</p>
+                  <p className="text-sm text-gray-600">
+                    Add a YouTube video URL
+                  </p>
                 </div>
               </button>
 
