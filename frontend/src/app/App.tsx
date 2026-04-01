@@ -90,12 +90,9 @@ function App() {
     if (!res.ok) throw new Error("Query failed");
 
     const data = await res.json();
+    console.log(data)
     const formattedResults =
-      data.results?.map((r: any, i: number) => {
-        return `(${i + 1}) ${r.content || "No content"} ${
-          r.page_number ? `(Page ${r.page_number})` : ""
-        }`;
-      }).join("\n\n") || "No results found.";
+      data.results
     const botMessage: Message = {
       id: (Date.now() + 1).toString(),
       role: "assistant",

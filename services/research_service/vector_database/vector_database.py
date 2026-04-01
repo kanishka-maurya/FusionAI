@@ -174,7 +174,7 @@ if __name__ == "__main__":
     vector_db = ChromaVectorDatabase()
     
     try:
-        chunks = doc_processor.process_document("services\\research_service\\vector_database\\sem_6_fees.pdf")
+        chunks = doc_processor.process_document(r"C:\Users\kanis\FusionAI\services\research_service\vector_database\CRAG Paper.pdf")
         print(chunks)
         embedded_chunks = embedding_generator.generate_embeddings(chunks)
         print(len(embedded_chunks))

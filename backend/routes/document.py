@@ -12,8 +12,8 @@ from services.research_service.embeddings.embedding_generator import EmbeddingGe
 router = APIRouter()
 processor = DocumentProcessor()
 embedding_generator = EmbeddingGenerator()
-    
 vector_db = ChromaVectorDatabase()
+
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
