@@ -950,6 +950,9 @@ dependencies = [
     { name = "speechrecognition" },
     { name = "youtube-transcript-api" },
     { name = "yt-dlp" },
+    { name = "zep" },
+    { name = "zep-cloud" },
+    { name = "zep-crewai" },
 ]
 
 [package.metadata]
@@ -978,6 +981,9 @@ requires-dist = [
     { name = "speechrecognition", specifier = ">=3.15.2" },
     { name = "youtube-transcript-api", specifier = ">=1.2.4" },
     { name = "yt-dlp", specifier = ">=2026.3.3" },
+    { name = "zep", specifier = ">=0.0.1" },
+    { name = "zep-cloud", specifier = ">=3.18.0" },
+    { name = "zep-crewai", specifier = ">=1.1.1" },
 ]
 
 [[package]]
@@ -1757,7 +1763,7 @@ name = "milvus-lite"
 version = "2.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tqdm" },
+    { name = "tqdm", marker = "sys_platform != 'win32'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a9/b2/acc5024c8e8b6a0b034670b8e8af306ebd633ede777dcbf557eac4785937/milvus_lite-2.5.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:6b014453200ba977be37ba660cb2d021030375fa6a35bc53c2e1d92980a0c512", size = 27934713, upload-time = "2025-06-30T04:23:37.028Z" },
@@ -2917,6 +2923,18 @@ wheels = [
 ]
 
 [[package]]
+name = "python-slugify"
+version = "8.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "text-unidecode" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/c7/5e1547c44e31da50a460df93af11a535ace568ef89d7a811069ead340c4a/python-slugify-8.0.4.tar.gz", hash = "sha256:59202371d1d05b54a9e7720c5e038f928f45daaffe41dd10822f3907b937c856", size = 10921, upload-time = "2024-02-08T18:32:45.488Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/62/02da182e544a51a5c3ccf4b03ab79df279f9c60c5e82d5e8bec7ca26ac11/python_slugify-8.0.4-py2.py3-none-any.whl", hash = "sha256:276540b79961052b66b7d116620b36518847f52d5fd9e3a70164fc8c50faa6b8", size = 10051, upload-time = "2024-02-08T18:32:43.911Z" },
+]
+
+[[package]]
 name = "pytube"
 version = "15.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3309,6 +3327,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/47/c6/ee486fd809e357697ee8a44d3d69222b344920433d3b6666ccd9b374630c/tenacity-9.1.4.tar.gz", hash = "sha256:adb31d4c263f2bd041081ab33b498309a57c77f9acf2db65aadf0898179cf93a", size = 49413, upload-time = "2026-02-07T10:45:33.841Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d7/c1/eb8f9debc45d3b7918a32ab756658a0904732f75e555402972246b0b8e71/tenacity-9.1.4-py3-none-any.whl", hash = "sha256:6095a360c919085f28c6527de529e76a06ad89b23659fa881ae0649b867a9d55", size = 28926, upload-time = "2026-02-07T10:45:32.24Z" },
+]
+
+[[package]]
+name = "text-unidecode"
+version = "1.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/e2/e9a00f0ccb71718418230718b3d900e71a5d16e701a3dae079a21e9cd8f8/text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93", size = 76885, upload-time = "2019-08-30T21:36:45.405Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/a5/c0b6468d3824fe3fde30dbb5e1f687b291608f9473681bbf7dabbf5a87d7/text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8", size = 78154, upload-time = "2019-08-30T21:37:03.543Z" },
 ]
 
 [[package]]
@@ -3880,6 +3907,48 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8b/34/7c6b4e3f89cb6416d2cd7ab6dab141a1df97ab0fb22d15816db2c92148c9/yt_dlp-2026.3.17.tar.gz", hash = "sha256:ba7aa31d533f1ffccfe70e421596d7ca8ff0bf1398dc6bb658b7d9dec057d2c9", size = 3119221, upload-time = "2026-03-17T23:43:00.244Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cd/13/5093bcb954878e50f7217fd2ab94282b53934022e4e4a03265582da83bf5/yt_dlp-2026.3.17-py3-none-any.whl", hash = "sha256:32992db94303a8a5d211a183f2174834fe7f8c29d83ed2e7a324eae97a8f26d8", size = 3315134, upload-time = "2026-03-17T23:42:57.863Z" },
+]
+
+[[package]]
+name = "zep"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/85/420f21b8c1b648e20a8529059f82a394effa4f476458ce23c75eb0cb8c2c/zep-0.0.1.tar.gz", hash = "sha256:a8f24dce7cece5c5f771c72ecfaaea38eb1b9d10c0c511d70239f61f3ab62556", size = 13059, upload-time = "2025-08-30T15:16:39.379Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b7/c8/3bb56bb2c769fc22fb789f5e243788079cc7003c1c8d11b5de9784824ff6/zep-0.0.1-py3-none-any.whl", hash = "sha256:0f44291550385e10e05e202786dff1ab1b6b08279bc85cb2b89b6cc341273ba8", size = 13290, upload-time = "2025-08-30T15:16:38.091Z" },
+]
+
+[[package]]
+name = "zep-cloud"
+version = "3.18.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "python-dateutil" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/af/9a/15c693f8f81ae2e91591f5c45d76b8f40cbb84dd0c95f016d1c3b0bd2a1e/zep_cloud-3.18.0.tar.gz", hash = "sha256:3dcd3be2adb2d6bf91b7030a43bc35649e2bb9cbe0468ef51c43eb6b268f23e3", size = 71512, upload-time = "2026-03-10T01:23:46.474Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/e8/75f66c10e43dfb620497c9c8d7244dc4be783671782bbd9959fa850de0c1/zep_cloud-3.18.0-py3-none-any.whl", hash = "sha256:4f39448b99aa9f3d75aaa980959a73858a59c5f3154f0488e770ec6a2fc813e1", size = 122918, upload-time = "2026-03-10T01:23:45.218Z" },
+]
+
+[[package]]
+name = "zep-crewai"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "crewai" },
+    { name = "python-dotenv" },
+    { name = "python-slugify" },
+    { name = "rich" },
+    { name = "zep-cloud" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/13/95/925bf4d4897f486703d1b2ea39498f6ffc68febc7b0cb16d70768e9e9a7b/zep_crewai-1.1.1.tar.gz", hash = "sha256:5c0247a89e6c53e941737067efa9be9e7b53a3b01660085c5f074008b38569b8", size = 27724, upload-time = "2025-09-11T18:02:31.106Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a8/63/6d96bc62ccca771c0ea5bb16d6bedb4ff79a9f0569d41c6f5923dec395dd/zep_crewai-1.1.1-py3-none-any.whl", hash = "sha256:5f3bdeb09c82d9d1d7a9c934e480874a9703b644a14af3a1bf029345a6dfa323", size = 15395, upload-time = "2025-09-11T18:02:29.554Z" },
 ]
 
 [[package]]
