@@ -8,6 +8,9 @@ list_of_filepaths = [
     "backend/core/",
     "backend/core/logging.py",
     "backend/core/exceptions.py",
+    "memory/",
+    "memory/__init__.py",
+    "memory/memory.py",
     "services/",
     "services/__init__.py",
 
