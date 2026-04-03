@@ -32,7 +32,7 @@ class AudioTranscriber:
     def _create_chunks_by_chapters(self, transcript, source_file="audio_source"):
         chunks = []
         start = time.time()
-
+        print(transcript.chapters)
         for idx, chapter in enumerate(transcript.chapters):
 
            chapter_utterances = [
@@ -74,10 +74,7 @@ class AudioTranscriber:
             audio_url, 
             config=aai.TranscriptionConfig(speech_models=[aai.SpeechModel.universal], speaker_labels=True, auto_chapters=True)
         )
-        
         structured_chunks = self._create_chunks_by_chapters(transcript, source_file=audio_url)
-    
-        
         return {
           "chunks": structured_chunks,
           "full_text": transcript.text

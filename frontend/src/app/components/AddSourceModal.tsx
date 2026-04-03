@@ -19,13 +19,7 @@ interface AddSourceModalProps {
   }) => void;
 }
 
-type SourceType =
-  | "document"
-  | "youtube"
-  | "audio"
-  | "text"
-  | "web"
-  | null;
+type SourceType = "document" | "youtube" | "audio" | "text" | "web" | null;
 
 export function AddSourceModal({
   isOpen,
@@ -40,7 +34,36 @@ export function AddSourceModal({
 
   if (!isOpen) return null;
 
+  const handleAudioUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "audio",
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      console.log(file.name);
+      const res = await fetch("http://localhost:8000/api/audio/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
 
+      const data = await res.json();
+
+      onAddSource({
+        name: file.name,
+        type: type === "audio" ? "Audio File" : "Unknown",
+      });
+
+      console.log("Processed:", data);
+      handleClose();
+    } catch (err) {
+      console.log(err);
+      alert("Audio upload failed");
+    }
+  };
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
     type: "document" | "audio",
@@ -51,14 +74,11 @@ export function AddSourceModal({
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      const res = await fetch(
-        "http://localhost:8000/api/documents/upload",
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      console.log(formData.get("file"));
+      const res = await fetch("http://localhost:8000/api/documents/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       if (!res.ok) throw new Error("Upload failed");
 
@@ -104,7 +124,7 @@ export function AddSourceModal({
 
   const handleWebSubmit = async () => {
     if (!webUrl.trim()) return;
-    console.log(webUrl)
+    console.log(webUrl);
     try {
       const res = await fetch(
         `http://localhost:8000/api/web/web_upload?url=${encodeURIComponent(
@@ -114,7 +134,7 @@ export function AddSourceModal({
           method: "POST",
         },
       );
-      
+
       if (!res.ok) throw new Error("Failed to process Web URL");
 
       onAddSource({
@@ -129,11 +149,29 @@ export function AddSourceModal({
     }
   };
 
-
-  const handleTextSubmit = () => {
+  const handleTextSubmit = async () => {
     if (!copiedText.trim()) return;
 
     const preview = copiedText.substring(0, 30);
+    try {
+      const res = await fetch("http://localhost:8000/api/text/process", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: fileName, 
+          copiedText: copiedText, 
+        }),
+      });
+      if (!res.ok) {
+        alert("Text processing failed");
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Text processing failed");
+    }
 
     onAddSource({
       name: fileName || `Text: ${preview}...`,
@@ -186,7 +224,6 @@ export function AddSourceModal({
                 <FileText className="w-6 h-6 text-blue-600" />
                 <div>
                   <h3>Upload Document</h3>
-      
                 </div>
               </button>
 
@@ -211,9 +248,7 @@ export function AddSourceModal({
 
               {/* AUDIO */}
               <button
-                onClick={() =>
-                  document.getElementById("audio-upload")?.click()
-                }
+                onClick={() => document.getElementById("audio-upload")?.click()}
                 className="w-full flex items-center gap-4 p-4 border rounded-lg hover:border-purple-500 hover:bg-purple-50"
               >
                 <Mic className="w-6 h-6 text-purple-600" />
@@ -226,7 +261,7 @@ export function AddSourceModal({
                 id="audio-upload"
                 type="file"
                 accept=".mp3,.wav,.m4a"
-                onChange={(e) => handleFileUpload(e, "audio")}
+                onChange={(e) => handleAudioUpload(e, "audio")}
                 className="hidden"
               />
 
@@ -301,13 +336,7 @@ export function AddSourceModal({
 }
 
 // 🔥 Reusable input component
-function InputUI({
-  label,
-  value,
-  setValue,
-  onSubmit,
-  onBack,
-}: any) {
+function InputUI({ label, value, setValue, onSubmit, onBack }: any) {
   return (
     <div className="space-y-4">
       <button onClick={onBack}>← Back</button>

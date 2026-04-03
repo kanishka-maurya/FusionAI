@@ -6,14 +6,14 @@ from backend.core.logging import logging
 import uuid
 import os
 
-from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
+from services.research_service.data_processing.audio_processing.audio_transcriber import AudioTranscriber,transcribe_audio
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
 from services.research_service.generation.generation import RAGGenerator, RAGResult
     
     
 router = APIRouter()
-processor = DocumentProcessor()
+processor = AudioTranscriber()
 embedding_generator = EmbeddingGenerator()
 vector_db = ChromaVectorDatabase()
 
@@ -31,10 +31,8 @@ if not api_key:
 async def upload_document(file: UploadFile = File(...)):
     try:
         ext = Path(file.filename).suffix.lower()
-        print("processing doc")
-        print(file.filename)
-        if ext not in processor.supported_formats:
-            raise HTTPException(status_code=400, detail="Unsupported file format")
+        print("processing audio")
+        print(file)
         unique_name = f"{uuid.uuid4()}_{file.filename}"
         file_path = UPLOAD_DIR / unique_name
         print(file_path)
@@ -43,13 +41,16 @@ async def upload_document(file: UploadFile = File(...)):
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         try:
-          chunks = processor.process_document(file_path)
+          with open(file_path, "rb") as f:
+            audio_bytes = f.read()
+
+          results = processor.run_notebook_pipeline(audio_bytes)
         except Exception as e:
           print(e)
-        print(chunks)
+        print(results)
         file_path.unlink(missing_ok=True)
         try:
-          embedded_chunks = embedding_generator.generate_embeddings(chunks)
+          embedded_chunks = embedding_generator.generate_embeddings(results["chunks"])
         except Exception as e:
           print(e)
         print(len(embedded_chunks))
@@ -61,43 +62,19 @@ async def upload_document(file: UploadFile = File(...)):
         print(f"Inserted {len(inserted_ids)} embeddings")
         return {
             "filename": file.filename,
-            "total_chunks": len(chunks),
+            "total_chunks": len(results["chunks"]),
             "chunks_preview": [
                 {
                     "content": chunk.content[:200],
                     "page": chunk.page_number,
                     "chunk_id": chunk.chunk_id
                 }
-                for chunk in chunks[:5]
+                for chunk in results["chunks"][:5]
             ]
         }
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@router.get("/query")
-async def query_documents(q: str):
-    try:
-        # Validate input
-        print(q)
-        if not q or not q.strip():
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
-        # Generate response (ensure your RAGGenerator supports this signature)
-        rag_generator = RAGGenerator(
-         embedding_generator=embedding_generator,
-         vector_db=vector_db,
-         api_key=api_key,
-         temperature=0.1
-        )
-        result = rag_generator.generate_results(
-            query=q
-        )
-        print("results to be sent",result.response)
-        return {
-            
-            "results": result.response
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500,detail=str(e))
