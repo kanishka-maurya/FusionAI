@@ -7,6 +7,7 @@ import {
   ClipboardType,
   WebhookIcon,
 } from "lucide-react";
+import { supabase } from "../contexts/AuthContext";
 
 interface AddSourceModalProps {
   isOpen: boolean;
@@ -41,10 +42,17 @@ export function AddSourceModal({
     const file = event.target.files?.[0];
     if (!file) return;
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
       const formData = new FormData();
       formData.append("file", file);
       console.log(file.name);
       const res = await fetch("http://localhost:8000/api/audio/upload", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         method: "POST",
         body: formData,
       });
@@ -72,10 +80,21 @@ export function AddSourceModal({
     if (!file) return;
 
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!session) {
+        alert("Please log in first!");
+        return;
+      }
       const formData = new FormData();
       formData.append("file", file);
       console.log(formData.get("file"));
       const res = await fetch("http://localhost:8000/api/documents/upload", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         method: "POST",
         body: formData,
       });
@@ -101,11 +120,20 @@ export function AddSourceModal({
     if (!youtubeUrl.trim()) return;
 
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
       const res = await fetch(
         `http://localhost:8000/api/youtube/process_video_link?video_link=${encodeURIComponent(
           youtubeUrl,
         )}`,
-        { method: "POST" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          method: "POST",
+        },
       );
 
       if (!res.ok) throw new Error("Failed to process Youtube Link");
@@ -126,11 +154,18 @@ export function AddSourceModal({
     if (!webUrl.trim()) return;
     console.log(webUrl);
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
       const res = await fetch(
         `http://localhost:8000/api/web/web_upload?url=${encodeURIComponent(
           webUrl,
         )}`,
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           method: "POST",
         },
       );
@@ -154,14 +189,18 @@ export function AddSourceModal({
 
     const preview = copiedText.substring(0, 30);
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
       const res = await fetch("http://localhost:8000/api/text/process", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          fileName: fileName, 
-          copiedText: copiedText, 
+          fileName: fileName,
+          copiedText: copiedText,
         }),
       });
       if (!res.ok) {
