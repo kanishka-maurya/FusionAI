@@ -247,11 +247,43 @@ class NotebookMemoryLayer:
         except Exception as e:
             logging.error(f"Error getting relevant memory: {str(e)}")
             return []
+        
+    def get_last_n_turns_memory(self, n: int=4):
+        try:
+            response = self.zep_client.thread.get(thread_id=self.session_id)
+            messages = response.messages if response and response.messages else []
+            if not messages or not messages.messages:
+                return {"message_count": 0, "past_n_chats": "No chats in session"}
+            
+            # Take last 2*n messages (approx n turns)
+            last_messages = messages[-2*n:]
+        
+            return [
+                {"role": m.role, "message": m.content}
+                for m in last_messages
+            ]
+        except Exception as e:
+            error = CustomException(e, sys)
+            logging.error(error)
+            raise error
     
     def wait_for_indexing(self):
         logging.info(f"Waiting {self.indexing_wait_time}s for Zep indexing...")
         time.sleep(self.indexing_wait_time)
     
+    
+    def build_memory_context(self, user_query: str):
+        summary = self.get_session_summary()
+        recent = self.get_last_n_turns_memory(n=4)
+        preferences = self.get_relevant_memory(query=user_query)
+
+        
+        return {
+            "summary": summary,
+            "recent_turns": recent,
+            "preferences": preferences
+        }
+
 
     def get_session_summary(self) -> Dict[str, Any]:
         try:

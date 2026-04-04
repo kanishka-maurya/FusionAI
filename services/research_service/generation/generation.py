@@ -56,6 +56,7 @@ class RAGGenerator:
         
     def generate_results(self,
                 query: str,
+                memory: dict,
                 max_chunks: int = 8,
                 max_context_chars: int = 4000,
                 top_k: int = 10,
@@ -94,8 +95,8 @@ class RAGGenerator:
             context, sources_info = self._format_context_with_citations(
                 search_results, max_chunks, max_context_chars
             )
-
-            prompt = self._create_rag_prompt(query, context)
+            
+            prompt = self._create_rag_prompt(memory, context, query)
             
             try:
                 response = self.llm.call(prompt)
@@ -167,7 +168,7 @@ class RAGGenerator:
 
                 return (formatted_context, sources_info)
     
-    def _create_rag_prompt(self, query: str, context: str) -> str:
+    def _create_rag_prompt(self, memory: dict, context: str, query: str) -> str:
         prompt = f"""You are an AI assistant that answers questions based on provided source material. You must follow these citation rules:
 
 CITATION REQUIREMENTS:
@@ -180,6 +181,7 @@ CITATION REQUIREMENTS:
 CONTEXT (with citation references):
 {context}
 
+MEMORY: {memory}
 QUESTION: {query}
 
 Please provide a comprehensive answer with proper citations. Make sure every factual statement is supported by a citation reference."""
