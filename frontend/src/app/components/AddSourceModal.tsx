@@ -335,7 +335,6 @@ export function AddSourceModal({
   );
 }
 
-// 🔥 Reusable input component
 function InputUI({ label, value, setValue, onSubmit, onBack }: any) {
   return (
     <div className="space-y-4">
