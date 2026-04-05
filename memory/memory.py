@@ -72,6 +72,7 @@ class NotebookMemoryLayer:
                     
                     self.zep_client.thread.create(thread_id=self.session_id, user_id=self.user_id)
                     logging.info(f"Created new session: {self.session_id}")
+                    print("created new session", self.session_id)
                 else:
                     # Try to use existing session, create if doesn't exist
                     try:

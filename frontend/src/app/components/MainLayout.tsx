@@ -4,7 +4,7 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { EmptyState } from "./EmptyState";
 import { useAuth, supabase } from "../contexts/AuthContext";
-
+import { useNotebook } from "../contexts/NotebookContext";
 interface Source {
   id: string;
   name: string;
@@ -26,6 +26,7 @@ function MainLayout() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<any>(null);
+  const { currentNotebook } = useNotebook();
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -78,6 +79,7 @@ function MainLayout() {
         {
           headers: {
             Authorization: `Bearer ${session?.access_token}`,
+            "X-Notebook-Id": currentNotebook?.notebook_id || "",
           },
         },
       );

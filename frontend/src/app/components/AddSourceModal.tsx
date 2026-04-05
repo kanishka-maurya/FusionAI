@@ -8,7 +8,7 @@ import {
   WebhookIcon,
 } from "lucide-react";
 import { supabase } from "../contexts/AuthContext";
-
+import { useNotebook } from "../contexts/NotebookContext";
 interface AddSourceModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,7 +32,7 @@ export function AddSourceModal({
   const [webUrl, setWebUrl] = useState("");
   const [copiedText, setCopiedText] = useState("");
   const [fileName, setFileName] = useState("");
-
+  const { currentNotebook } = useNotebook();
   if (!isOpen) return null;
 
   const handleAudioUpload = async (
@@ -94,6 +94,7 @@ export function AddSourceModal({
       const res = await fetch("http://localhost:8000/api/documents/upload", {
         headers: {
           Authorization: `Bearer ${token}`,
+          "X-Notebook-Id": currentNotebook?.notebook_id || "",
         },
         method: "POST",
         body: formData,
@@ -131,6 +132,7 @@ export function AddSourceModal({
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "X-Notebook-Id": currentNotebook?.notebook_id || "",
           },
           method: "POST",
         },
@@ -165,6 +167,7 @@ export function AddSourceModal({
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "X-Notebook-Id": currentNotebook?.notebook_id || "",
           },
           method: "POST",
         },
@@ -197,6 +200,7 @@ export function AddSourceModal({
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          "X-Notebook-Id": currentNotebook?.notebook_id || "",
         },
         body: JSON.stringify({
           fileName: fileName,
