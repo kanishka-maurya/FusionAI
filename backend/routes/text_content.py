@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException, Header
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator 
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
@@ -8,8 +8,11 @@ router=APIRouter()
 class TextContent(BaseModel):
    fileName:str
    copiedText:str
+
 @router.post("/process")
-async def process_text(text: TextContent):
+async def process_text(text: TextContent,
+                       user_id: str = Header(default=None),
+                          session_id: str = Header(default=None)):
     try:
       filename=text.fileName
       content=text.copiedText
@@ -19,7 +22,7 @@ async def process_text(text: TextContent):
       embedding_generator=EmbeddingGenerator()
       embedded_chunks=embedding_generator.generate_embeddings(chunks)
       vector_db=ChromaVectorDatabase()
-      inserted_ids=vector_db.insert_embeddings(embedded_chunks)
+      inserted_ids=vector_db.insert_embeddings(embedded_chunks, user_id=user_id, session_id=session_id)
       return {
             "filename": filename,
             "total_chunks": len(chunks),

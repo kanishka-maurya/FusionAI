@@ -5,33 +5,30 @@ import chromadb
 from chromadb.config import Settings
 import sys
 from backend.core.exceptions import CustomException
-
 from services.research_service.embeddings.embedding_generator import EmbeddedChunk
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class ChromaVectorDatabase:
+
     def __init__(
         self,
         db_path: str = "./chroma_db",
-        collection_name: str = "fusionai_collection"
+        collection_name: str="fusionai_docs"
     ):
         self.db_path = db_path
         self.collection_name = collection_name
-
         self.client = chromadb.PersistentClient(path=self.db_path)
-
         self.collection = self.client.get_or_create_collection(
             name=self.collection_name
         )
-
         logger.info(f"ChromaDB initialized at {self.db_path}")
 
-    def insert_embeddings(self, embedded_chunks: List[EmbeddedChunk]) -> List[str]:
+    def insert_embeddings(self, embedded_chunks: List[EmbeddedChunk], user_id, session_id) -> List[str]:
         if not embedded_chunks:
             return []
-
+        
         try:
             ids = []
             documents = []
@@ -46,6 +43,8 @@ class ChromaVectorDatabase:
                 embeddings.append(data["vector"])
 
                 metadata = {
+                    "user_id": user_id,
+    "               session_id": session_id,
                     "source_file": data.get("source_file"),
                     "source_type": data.get("source_type"),
                     "page_number": data.get("page_number", -1),
@@ -89,13 +88,19 @@ class ChromaVectorDatabase:
     def search(
         self,
         query_vector: List[float],
-        limit: int = 10
+        limit: int = 10,
+        user_id: str = None,
+        session_id: str = None
     ) -> List[Dict[str, Any]]:
 
         try:
             results = self.collection.query(
                 query_embeddings=[query_vector],
-                n_results=limit
+                n_results=limit,
+                where={
+                    "user_id": user_id,
+                    "session_id": session_id
+                }
             )
             logging.info("Vector search concluded....")
             formatted_results = []

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Header
 from typing import List
 from pathlib import Path
 import shutil
@@ -28,7 +28,9 @@ if not api_key:
 
 
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = File(...),
+                           user_id: str = Header(default=None),
+                          session_id: str = Header(default=None)):
     try:
         ext = Path(file.filename).suffix.lower()
         print("processing audio")
@@ -56,7 +58,7 @@ async def upload_document(file: UploadFile = File(...)):
         print(len(embedded_chunks))
         print(embedded_chunks)
         try:
-          inserted_ids = vector_db.insert_embeddings(embedded_chunks)
+          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         except Exception as e:
           print(e)
         print(f"Inserted {len(inserted_ids)} embeddings")

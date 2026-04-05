@@ -1,4 +1,4 @@
-from fastapi import APIRouter 
+from fastapi import APIRouter, Header
 from services.research_service.data_processing.audio_processing.youtube_transcriber import YoutubeTranscriber
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
@@ -8,7 +8,9 @@ transcriber=YoutubeTranscriber()
 embedding_generator=EmbeddingGenerator()
 vector_db=ChromaVectorDatabase()
 @router.post("/process_video_link")
-async def process_video_link(video_link:str):
+async def process_video_link(video_link:str,
+                              user_id: str = Header(default=None),
+                          session_id: str = Header(default=None)):
     try:
         print("coming to youtube route")
         video_id = transcriber._extract_video_id(video_link)
@@ -22,7 +24,7 @@ async def process_video_link(video_link:str):
         embedded_chunks = embedding_generator.generate_embeddings(chunks)
         print(len(embedded_chunks))
         print("now here")
-        inserted_ids = vector_db.insert_embeddings(embedded_chunks)
+        inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         print(f"Inserted {len(inserted_ids)} embeddings")
         return {
             "filename": video_link,

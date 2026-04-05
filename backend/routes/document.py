@@ -32,10 +32,10 @@ if not memory_api_key:
 
 
 
-
-
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = File(...), 
+                          user_id: str = Header(default=None),
+                          session_id: str = Header(default=None)):
     try:
         ext = Path(file.filename).suffix.lower()
         print("processing doc")
@@ -62,7 +62,7 @@ async def upload_document(file: UploadFile = File(...)):
         print(len(embedded_chunks))
         print(embedded_chunks)
         try:
-          inserted_ids = vector_db.insert_embeddings(embedded_chunks)
+          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         except Exception as e:
           print(e)
         print(f"Inserted {len(inserted_ids)} embeddings")
@@ -90,14 +90,9 @@ async def query_documents(q: str,
     try:
         # Validate input
         print(q)
-        if not q or not q.strip():
-            raise HTTPException(status_code=400, detail="Query cannot be empty")
-        
-        if not user_id:
-            user_id = f"user_{uuid.uuid4().hex[:8]}"
+        print(user_id)
+        print(session_id)
 
-        if not session_id:
-            session_id = f"session_{uuid.uuid4().hex[:12]}"
 
         # Generate response (ensure your RAGGenerator supports this signature)
         rag_generator = RAGGenerator(
