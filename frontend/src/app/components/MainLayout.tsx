@@ -5,6 +5,7 @@ import { ChatInput } from "./ChatInput";
 import { EmptyState } from "./EmptyState";
 import { useAuth, supabase } from "../contexts/AuthContext";
 import { useNotebook } from "../contexts/NotebookContext";
+import { useSearchParams } from "react-router-dom";
 interface Source {
   id: string;
   name: string;
@@ -21,21 +22,66 @@ interface Message {
 }
 function MainLayout() {
   const { user, logout } = useAuth();
+  const [searchParams] = useSearchParams();
   const [sources, setSources] = useState<Source[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<any>(null);
-  const { currentNotebook } = useNotebook();
+  const { currentNotebook ,setNotebook} = useNotebook();
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  useEffect(() => {
+    const syncNotebookFromUrl = async () => {
+      const notebookIdFromUrl = searchParams.get("notebook_id");
+      
+      if (!notebookIdFromUrl) return;
+      const { data, error } = await supabase
+        .from("notebooks")
+        .select("notebook_id, name")
+        .eq("notebook_id", notebookIdFromUrl)
+        .single();
+
+      if (data && !error) {
+        setNotebook({
+          notebook_id: data.notebook_id,
+          name: data.name
+        });
+      } else {
+        console.error("Notebook not found in Supabase:", error);
+      }
+    };
+
+    syncNotebookFromUrl();
+  }, []);
+
    useEffect(() => {
         const getActiveSession = async () => {
           const { data } = await supabase.auth.getSession();
           setSession(data.session);
         };
+          const syncNotebookFromUrl = async () => {
+      const notebookIdFromUrl = searchParams.get("notebook_id");
+      
+      if (!notebookIdFromUrl) return;
+      const { data, error } = await supabase
+        .from("notebooks")
+        .select("notebook_id, name")
+        .eq("notebook_id", notebookIdFromUrl)
+        .single();
 
+      if (data && !error) {
+        setNotebook({
+          notebook_id: data.notebook_id,
+          name: data.name
+        });
+      } else {
+        console.error("Notebook not found in Supabase:", error);
+      }
+    };
+
+    syncNotebookFromUrl();
         getActiveSession();
       }, []);
   useEffect(() => {
@@ -74,6 +120,7 @@ function MainLayout() {
     try {
       console.log("querying backend with content:",content)
       console.log("current session:",session)
+      console.log(currentNotebook)
       const res = await fetch(
         `http://localhost:8000/api/documents/query?q=${encodeURIComponent(content)}`,
         {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../contexts/AuthContext";
 import { useNotebook } from "../contexts/NotebookContext";
@@ -76,16 +76,7 @@ export function NotebookSessions() {
       if (res.ok) {
         const data = await res.json();
         const newNotebookId = data.notebook_id;
-        const { error } = await supabase.from("notebooks").insert([
-          {
-            notebook_id: newNotebookId,
-            name:newNotebookName,
-            description: newNotebookDesc,
-            user_id: session?.user.id, 
-          },
-        ]);
 
-        if (error) throw error;
         const newNotebook: Notebook = {
           id: newNotebookId,
           name: newNotebookName,

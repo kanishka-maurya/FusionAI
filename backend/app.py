@@ -20,7 +20,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.method == "OPTIONS" or request.url.path in ["/docs", "/openapi.json", "/health"]:
             return await call_next(request)
+
         auth_header = request.headers.get("Authorization")
+        notebook_id = request.headers.get("X-Notebook-Id")
+        print("auth header",auth_header)
+        print("notebook id",notebook_id)
         if not auth_header or not auth_header.startswith("Bearer "):
             return JSONResponse(status_code=401, content={"detail": "Missing token"})
 
@@ -35,9 +39,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
                         "apikey": SUPABASE_ANON_KEY
                     }
                 )
+            
             if response.status_code == 200:
                 user_data = response.json()
+                
                 request.state.user_id = user_data.get("id")
+                request.state.notebook_id = notebook_id 
+                
                 return await call_next(request)
             else:
                 return JSONResponse(status_code=401, content={"detail": "Invalid token from Supabase"})
