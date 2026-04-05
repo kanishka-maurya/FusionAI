@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Header
+from fastapi import APIRouter, Request, UploadFile, File, HTTPException, Header
 from typing import List
 from pathlib import Path
 import shutil
 from backend.core.logging import logging
 import uuid
 import os
+from pydantic import BaseModel
 
 
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
@@ -84,22 +85,17 @@ async def upload_document(file: UploadFile = File(...)):
     
 
 @router.get("/query")
-async def query_documents(q: str, 
-                          user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+async def query_documents(q: str, request:Request):
     try:
-        # Validate input
+        user_id = getattr(request.state, "user_id", None)
+        notebook_id = getattr(request.state, "notebook_id", None)
+
+        print("user_id from middleware:", user_id)
+        print("notebook_id from middleware:", notebook_id)
         print(q)
         if not q or not q.strip():
             raise HTTPException(status_code=400, detail="Query cannot be empty")
         
-        if not user_id:
-            user_id = f"user_{uuid.uuid4().hex[:8]}"
-
-        if not session_id:
-            session_id = f"session_{uuid.uuid4().hex[:12]}"
-
-        # Generate response (ensure your RAGGenerator supports this signature)
         rag_generator = RAGGenerator(
          embedding_generator=embedding_generator,
          vector_db=vector_db,
@@ -110,7 +106,7 @@ async def query_documents(q: str,
 
         memory_layer = NotebookMemoryLayer(
            user_id = user_id,
-           session_id = session_id,
+           session_id = notebook_id,
            zep_api_key= memory_api_key
         )
 
@@ -126,8 +122,9 @@ async def query_documents(q: str,
         return {
             "results": result.response,
             "user_id": user_id,
-            "session_id": session_id
+            "session_id": notebook_id
         }
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500,detail=str(e))
