@@ -15,7 +15,7 @@ class ChromaVectorDatabase:
     def __init__(
         self,
         db_path: str = "./chroma_db",
-        collection_name: str="fusionai_docs"
+        collection_name: str="FusionAI_Collection"
     ):
         self.db_path = db_path
         self.collection_name = collection_name
@@ -25,7 +25,7 @@ class ChromaVectorDatabase:
         )
         logger.info(f"ChromaDB initialized at {self.db_path}")
 
-    def insert_embeddings(self, embedded_chunks: List[EmbeddedChunk], user_id, session_id) -> List[str]:
+    def insert_embeddings(self, embedded_chunks: List[EmbeddedChunk], user_id:str , session_id: str) -> List[str]:
         if not embedded_chunks:
             return []
         
@@ -36,15 +36,19 @@ class ChromaVectorDatabase:
             metadatas = []
             print(embedded_chunks[0])
             for chunk in embedded_chunks:
-                data = chunk.to_vector_db_format()
+                data = chunk.to_vector_db_format(user_id=user_id, session_id=session_id)
 
                 ids.append(data["id"])
                 documents.append(data["content"])
                 embeddings.append(data["vector"])
-
+                
+                print("we are inside insert_embedding func....")
+                print(user_id)
+                print(session_id)
+                
                 metadata = {
-                    "user_id": user_id,
-    "               session_id": session_id,
+                    "user_id": str(user_id),
+                    "session_id": str(session_id),
                     "source_file": data.get("source_file"),
                     "source_type": data.get("source_type"),
                     "page_number": data.get("page_number", -1),
@@ -58,6 +62,10 @@ class ChromaVectorDatabase:
                 if isinstance(data.get("metadata"), dict):
                     metadata.update(data["metadata"])
 
+                metadata["user_id"] = user_id
+                metadata["session_id"] = session_id
+    
+
                 clean_metadata = {}
 
                 for key, value in metadata.items():
@@ -67,7 +75,7 @@ class ChromaVectorDatabase:
                     clean_metadata[key] = value
                   else:
                     clean_metadata[key] = str(value)
-
+                logging.info(clean_metadata)
                 metadatas.append(clean_metadata)
 
             self.collection.add(
@@ -87,20 +95,29 @@ class ChromaVectorDatabase:
 
     def search(
         self,
-        query_vector: List[float],
-        limit: int = 10,
-        user_id: str = None,
-        session_id: str = None
-    ) -> List[Dict[str, Any]]:
+        query_vector,
+        limit,
+        user_id,
+        session_id
+    ) :
 
         try:
+            where = None
+
+            if user_id and session_id:
+                print("we are inside search func of vector DB....")
+                print(user_id)
+                print(session_id)
+                where = {
+                    "$and": [
+                        {"user_id": str(user_id)},
+                        {"session_id": str(session_id)}
+                    ]
+                }
             results = self.collection.query(
                 query_embeddings=[query_vector],
                 n_results=limit,
-                where={
-                    "user_id": user_id,
-                    "session_id": session_id
-                }
+                where= where
             )
             logging.info("Vector search concluded....")
             formatted_results = []
@@ -124,6 +141,9 @@ class ChromaVectorDatabase:
                     "embedding_model": metadata.get("embedding_model")
                 })
             logging.info(f"Search returned {len(formatted_results)} results")
+
+            all_data = self.collection.get()
+            logging.info(all_data["metadatas"][:5])
             return formatted_results
 
         except Exception as e:

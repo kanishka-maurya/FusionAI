@@ -19,8 +19,10 @@ class EmbeddedChunk:
     embedding: np.ndarray
     embedding_model: str
 
-    def to_vector_db_format(self) -> Dict[str, Any]:
+    def to_vector_db_format(self, user_id, session_id) -> Dict[str, Any]:
         return {
+            "user_id": user_id,
+            "session_id": session_id,
             'id': self.chunk.chunk_id,
             'vector': self.embedding.tolist(),
             'content': self.chunk.content,

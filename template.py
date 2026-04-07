@@ -49,6 +49,9 @@ list_of_filepaths = [
     "services/research_service/podcast/__init__.py",
     "services/research_service/podcast/script_generator.py",
     "services/research_service/podcast/text_to_speech.py"
+
+    "service/roadmap_service/",
+    "services/roadmap_service/__init__.py",
 ]
 
 for filepath in list_of_filepaths:

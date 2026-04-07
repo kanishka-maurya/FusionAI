@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Header
+from fastapi import APIRouter, Request, UploadFile, File, HTTPException, Header
 from typing import List
 from pathlib import Path
 import shutil
 from backend.core.logging import logging
 import uuid
 import os
+from pydantic import BaseModel
 
 
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
@@ -33,9 +34,11 @@ if not memory_api_key:
 
 
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...), 
-                          user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+async def upload_document(request: Request, file: UploadFile = File(...)):
+    
+    user_id = getattr(request.state, "user_id", None)
+    notebook_id = getattr(request.state, "notebook_id", None)
+
     try:
         ext = Path(file.filename).suffix.lower()
         print("processing doc")
@@ -62,7 +65,7 @@ async def upload_document(file: UploadFile = File(...),
         print(len(embedded_chunks))
         print(embedded_chunks)
         try:
-          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
+          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=notebook_id)
         except Exception as e:
           print(e)
         print(f"Inserted {len(inserted_ids)} embeddings")
@@ -84,17 +87,17 @@ async def upload_document(file: UploadFile = File(...),
     
 
 @router.get("/query")
-async def query_documents(q: str, 
-                          user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+async def query_documents(q: str, request:Request):
     try:
-        # Validate input
+        user_id = getattr(request.state, "user_id", None)
+        notebook_id = getattr(request.state, "notebook_id", None)
+
+        print("user_id from middleware:", user_id)
+        print("notebook_id from middleware:", notebook_id)
         print(q)
-        print(user_id)
-        print(session_id)
-
-
-        # Generate response (ensure your RAGGenerator supports this signature)
+        if not q or not q.strip():
+            raise HTTPException(status_code=400, detail="Query cannot be empty")
+        
         rag_generator = RAGGenerator(
          embedding_generator=embedding_generator,
          vector_db=vector_db,
@@ -105,7 +108,7 @@ async def query_documents(q: str,
 
         memory_layer = NotebookMemoryLayer(
            user_id = user_id,
-           session_id = session_id,
+           session_id = notebook_id,
            zep_api_key= memory_api_key
         )
 
@@ -113,7 +116,10 @@ async def query_documents(q: str,
         
         result = rag_generator.generate_results(
             query=q,
-            memory= memory
+            memory= memory,
+            user_id=user_id,
+            session_id=notebook_id
+
         )
 
         memory_layer.save_conversation_turn(result)
@@ -121,8 +127,9 @@ async def query_documents(q: str,
         return {
             "results": result.response,
             "user_id": user_id,
-            "session_id": session_id
+            "session_id": notebook_id
         }
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500,detail=str(e))

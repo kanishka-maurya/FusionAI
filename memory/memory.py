@@ -253,7 +253,7 @@ class NotebookMemoryLayer:
         try:
             response = self.zep_client.thread.get(thread_id=self.session_id)
             messages = response.messages if response and response.messages else []
-            if not messages or not messages.messages:
+            if not messages:
                 return {"message_count": 0, "past_n_chats": "No chats in session"}
             
             # Take last 2*n messages (approx n turns)

@@ -60,6 +60,8 @@ class RAGGenerator:
                 max_chunks: int = 8,
                 max_context_chars: int = 4000,
                 top_k: int = 10,
+                user_id: str = None,
+                session_id: str = None
             ) -> RAGResult:
         
         if not query.strip():
@@ -71,7 +73,6 @@ class RAGGenerator:
                 retrieval_count=0
             )
        
-        
         try:
             logging.info(f"Generating response for: '{query[:50]}...'")
             
@@ -79,7 +80,9 @@ class RAGGenerator:
             logging.info(f"query vector:{query_vector}")
             search_results =self.ChromaDB.search(
                 query_vector=query_vector.tolist(),
-                limit=top_k
+                limit=top_k,
+                user_id=user_id,
+                session_id=session_id
             )
             print("search results",search_results)
             if not search_results:
