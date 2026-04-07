@@ -9,17 +9,16 @@ from dotenv import load_dotenv
 
 from zep_cloud.client import Zep
 from backend.core.exceptions import CustomException
-from backend.core.logging import logging
 from zep_crewai import ZepUserStorage
 from crewai.memory.external.external_memory import ExternalMemory
 from services.research_service.generation.generation import RAGResult
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ConversationTurn:
-    """Represents a single conversation turn with context"""
     user_query: str
     assistant_response: str
     sources_used: List[Dict[str, Any]]
@@ -27,6 +26,7 @@ class ConversationTurn:
     session_id: str
 
 class NotebookMemoryLayer:
+
     def __init__(
         self,
         user_id: str,
@@ -39,8 +39,9 @@ class NotebookMemoryLayer:
         self.user_id = user_id
         self.session_id = session_id
         self.indexing_wait_time = indexing_wait_time
+
         self.zep_client = Zep(api_key=zep_api_key or os.getenv("ZEP_API_KEY"))
-        
+
         self._setup_user_and_session(create_new_session)
 
         self.user_storage = ZepUserStorage(
@@ -49,44 +50,44 @@ class NotebookMemoryLayer:
             thread_id=self.session_id,
             mode=mode,
         )
+
         self.external_memory = ExternalMemory(storage=self.user_storage)
-        
-        logging.info(f"NotebookMemoryLayer initialized for user {user_id}, session {session_id}")
+
+        logger.info(f"Memory initialized for user={user_id}, session={session_id}")
+
 
     def _setup_user_and_session(self, create_new_session: bool):
+        try:
+            # Ensure user
             try:
-                # Ensure user exists
+                self.zep_client.user.get(self.user_id)
+            except:
+                self.zep_client.user.add(user_id=self.user_id)
+
+            # Session handling
+            if create_new_session:
                 try:
-                    self.zep_client.user.get(self.user_id)
-                    logging.info(f"Using existing user: {self.user_id}")
+                    self.zep_client.thread.delete(self.session_id)
                 except:
-                    self.zep_client.user.add(user_id=self.user_id)
-                    logging.info(f"Created new user: {self.user_id}")
-                
-                if create_new_session:
-                    try:
-                        self.zep_client.thread.delete(self.session_id)
-                        logging.info(f"Deleted previous session: {self.session_id}")
-                    except:
-                        pass
-                    
-                    self.zep_client.thread.create(thread_id=self.session_id, user_id=self.user_id)
-                    logging.info(f"Created new session: {self.session_id}")
-                    print("created new session", self.session_id)
-                else:
-                    # Try to use existing session, create if doesn't exist
-                    try:
-                        self.zep_client.thread.get(self.session_id)
-                        logging.info(f"Using existing session: {self.session_id}")
-                    except:
-                        self.zep_client.thread.create(thread_id=self.session_id, user_id=self.user_id)
-                        logging.info(f"Created session: {self.session_id}")
-                        
-            except Exception as e:
-                    error = CustomException(e, sys)
-                    logging.error(error)
-                    raise error
-    
+                    pass
+
+                self.zep_client.thread.create(
+                    thread_id=self.session_id,
+                    user_id=self.user_id
+                )
+            else:
+                try:
+                    self.zep_client.thread.get(self.session_id)
+                except:
+                    self.zep_client.thread.create(
+                        thread_id=self.session_id,
+                        user_id=self.user_id
+                    )
+
+        except Exception as e:
+            raise CustomException(e, sys)
+
+
     def save_conversation_turn(
         self,
         rag_result: RAGResult,
@@ -94,20 +95,21 @@ class NotebookMemoryLayer:
         assistant_metadata: Optional[Dict[str, Any]] = None
     ):
         try:
+            # USER MESSAGE
             user_meta = {
                 "type": "message",
-                "role": "user", 
+                "role": "user",
                 "timestamp": datetime.now().isoformat(),
                 "session_id": self.session_id,
                 **(user_metadata or {})
             }
-            
-            # Save user message
+
             self.external_memory.save(
                 rag_result.query,
                 metadata=user_meta
             )
-            
+
+            # ASSISTANT MESSAGE
             assistant_meta = {
                 "type": "message",
                 "role": "assistant",
@@ -115,50 +117,51 @@ class NotebookMemoryLayer:
                 "session_id": self.session_id,
                 "sources_count": len(rag_result.sources_used),
                 "retrieval_count": rag_result.retrieval_count,
-                "model_used": getattr(rag_result, 'model_name', 'unknown'),
                 "sources_summary": self._create_sources_summary(rag_result.sources_used),
                 **(assistant_metadata or {})
             }
-            
-            # Save assistant response
+
             self.external_memory.save(
                 rag_result.response,
                 metadata=assistant_meta
             )
+
+            # SAVE SOURCE CONTEXT
             self._save_source_context(rag_result.sources_used)
-            
-            logging.info(f"Saved conversation turn with {len(rag_result.sources_used)} sources")
-            
+
         except Exception as e:
-            error = CustomException(e, sys)
-            logging.error(error)
-            raise error
-        
+            raise CustomException(e, sys)
+
 
     def _create_sources_summary(self, sources_used: List[Dict[str, Any]]) -> str:
         if not sources_used:
             return "No sources used"
-        
-        source_files = list(set(source.get('source_file', 'Unknown') for source in sources_used))
-        source_types = list(set(source.get('source_type', 'unknown') for source in sources_used))
-        
+
+        source_files = list(set(
+            s.get('source_file') or 'Unknown' for s in sources_used
+        ))
+
+        source_types = list(set(
+            s.get('source_type') or 'unknown' for s in sources_used
+        ))
+
         summary = f"{len(source_files)} files ({', '.join(source_types)}): {', '.join(source_files[:3])}"
+
         if len(source_files) > 3:
             summary += f" and {len(source_files) - 3} more"
-        
+
         return summary
-    
+
 
     def _save_source_context(self, sources_used: List[Dict[str, Any]]):
         if not sources_used:
-            return "No sources used"
-        
+            return
+
         source_context = {
             "referenced_documents": [],
-            "document_types": set(),
-            "key_topics_discussed": []
+            "document_types": set()
         }
-        
+
         for source in sources_used:
             doc_info = {
                 "file": source.get('source_file', 'Unknown'),
@@ -166,11 +169,12 @@ class NotebookMemoryLayer:
                 "page": source.get('page_number'),
                 "relevance": source.get('relevance_score', 0)
             }
+
             source_context["referenced_documents"].append(doc_info)
             source_context["document_types"].add(doc_info["type"])
-        
+
         source_context["document_types"] = list(source_context["document_types"])
-        
+
         self.external_memory.save(
             f"Document sources referenced: {source_context}",
             metadata={
@@ -180,187 +184,121 @@ class NotebookMemoryLayer:
             }
         )
 
-    def save_user_preferences(self, preferences: Dict[str, Any]):
-        try:
-            self.external_memory.save(
-                f"User preferences: {preferences}",
-                metadata={
-                    "type": "preferences",
-                    "category": "user_settings",
-                    "timestamp": datetime.now().isoformat(),
-                    "session_id": self.session_id
-                }
-            )
-            logging.info("User preferences saved to memory")
-            
-        except Exception as e:
-            logging.error(f"Error saving preferences: {str(e)}")
 
-    def save_document_metadata(self, document_info: Dict[str, Any]):
-        try:
-            self.external_memory.save(
-                f"Document processed: {document_info}",
-                metadata={
-                    "type": "document_metadata",
-                    "category": "system_events",
-                    "timestamp": datetime.now().isoformat(),
-                    "session_id": self.session_id
-                }
-            )
-            logging.info(f"Document metadata saved: {document_info.get('name', 'Unknown')}")
-            
-        except Exception as e:
-            logging.error(f"Error saving document metadata: {str(e)}")
+    def save_user_preferences(self, preferences: Dict[str, Any]):
+        self.external_memory.save(
+            f"User preferences: {preferences}",
+            metadata={
+                "type": "preferences",
+                "category": "user_settings",
+                "timestamp": datetime.now().isoformat(),
+                "session_id": self.session_id
+            }
+        )
+
 
     def get_conversation_context(self) -> str:
         try:
-            memory = self.zep_client.thread.get_user_context(thread_id=self.session_id)
-            return memory.context if memory.context else ""
-            
-        except Exception as e:
-            logging.error(f"Error getting conversation context: {str(e)}")
-            return "No conversation context available"
-        
-    def get_relevant_memory(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
-        try:
-            # Use Zep's semantic graph search on memory
-            results = self.zep_client.graph.search(
-                user_id=self.user_id,
-                query=query,
-                scope="episodes",
+            memory = self.zep_client.thread.get_user_context(
+                thread_id=self.session_id
             )
-            
-            relevant_memories = []
-            for ep in results.episodes:
-                memory_info = {
-                    "content": ep.content if ep.content else "",
-                    "role": ep.role_type if ep.role_type else "unknown",
-                    "relevance_score": ep.score if hasattr(ep, 'score') else 0,
-                    "thread_id": ep.thread_id if ep.thread_id else None,
-                    "session_id": ep.session_id if ep.session_id else None,
-                    "timestamp": ep.created_at if ep.created_at else None,
-                }
-                relevant_memories.append(memory_info)
-            
-            logging.info(f"Retrieved {len(relevant_memories)} relevant memories for query")
-            return relevant_memories
-            
-        except Exception as e:
-            logging.error(f"Error getting relevant memory: {str(e)}")
-            return []
-        
-    def get_last_n_turns_memory(self, n: int=4):
+            return memory.context if memory.context else ""
+        except:
+            return ""
+
+    def get_last_n_turns_memory(self, n: int = 4):
         try:
             response = self.zep_client.thread.get(thread_id=self.session_id)
-            messages = response.messages if response and response.messages else []
-            if not messages:
-                return {"message_count": 0, "past_n_chats": "No chats in session"}
-            
-            # Take last 2*n messages (approx n turns)
-            last_messages = messages[-2*n:]
-        
+            messages = response.messages or []
+
+            last_messages = messages[-2 * n:]
+
             return [
                 {"role": m.role, "message": m.content}
                 for m in last_messages
             ]
-        except Exception as e:
-            error = CustomException(e, sys)
-            logging.error(error)
-            raise error
-    
-    def wait_for_indexing(self):
-        logging.info(f"Waiting {self.indexing_wait_time}s for Zep indexing...")
-        time.sleep(self.indexing_wait_time)
-    
-    
-    def build_memory_context(self, user_query: str):
+        except:
+            return []
+
+    def get_relevant_memory(self, query: str, limit: int = 5):
+        try:
+            results = self.zep_client.graph.search(
+                user_id=self.user_id,
+                thread_id=self.session_id,   # ✅ FILTER
+                query=query,
+                scope="episodes"
+            )
+
+            return [
+                {
+                    "content": ep.content,
+                    "role": ep.role_type,
+                    "score": getattr(ep, "score", 0)
+                }
+                for ep in results.episodes[:limit]
+            ]
+
+        except:
+            return []
+
+
+    def build_memory_context(self, user_query: str, limit: int = 5):
+
         summary = self.get_session_summary()
         recent = self.get_last_n_turns_memory(n=4)
-        preferences = self.get_relevant_memory(query=user_query)
+        relevant = self.get_relevant_memory(user_query, limit)
+        context_summary = self.get_conversation_context()
 
-        
+        # FORMAT FOR LLM
+        formatted_recent = "\n".join(
+            [f"{r['role']}: {r['message']}" for r in recent]
+        ) if recent else "No recent chats"
+
+        formatted_relevant = "\n".join(
+            [f"- {m['content']}" for m in relevant]
+        ) if relevant else "No relevant memory"
+
+        formatted = f"""
+SESSION SUMMARY:
+Total Messages: {summary.get('total_messages', 0)}
+
+RECENT:
+{formatted_recent}
+
+RELEVANT MEMORY:
+{formatted_relevant}
+
+SUMMARY:
+{context_summary}
+"""
+
         return {
-            "summary": summary,
-            "recent_turns": recent,
-            "preferences": preferences
+            "raw": {
+                "summary": summary,
+                "recent": recent,
+                "relevant": relevant
+            },
+            "formatted": formatted  
         }
-
-
-    def get_session_summary(self) -> Dict[str, Any]:
+    def get_session_summary(self):
         try:
-            messages = self.zep_client.thread.get(thread_id=self.session_id)
-            
-            if not messages or not messages.messages:
-                return {"message_count": 0, "summary": "No messages in session"}
-            
-            user_messages = [m for m in messages.messages if m.role == "user"]
-            assistant_messages = [m for m in messages.messages if m.role == "assistant"]
-            
-            summary = {
-                "session_id": self.session_id,
-                "user_id": self.user_id,
-                "total_messages": len(messages.messages),
-                "user_messages": len(user_messages),
-                "assistant_messages": len(assistant_messages),
-                "context_available": bool(self.get_conversation_context()),
-                "last_interaction": messages.messages[0].created_at if messages.messages else None
+            response = self.zep_client.thread.get(thread_id=self.session_id)
+            messages = response.messages or []
+
+            return {
+                "total_messages": len(messages),
+                "user_messages": len([m for m in messages if m.role == "user"]),
+                "assistant_messages": len([m for m in messages if m.role == "assistant"]),
             }
-            
-            return summary
-            
-        except Exception as e:
-            logging.error(f"Error getting session summary: {str(e)}")
-            return {"error": str(e)}
-     
-    def clear_session(self):
-        try:
-            self.zep_client.thread.delete(self.session_id)
-            self.zep_client.thread.create(thread_id=self.session_id, user_id=self.user_id)
-            logging.info(f"Session {self.session_id} cleared and recreated")
-            
-        except Exception as e:
-            logging.error(f"Error clearing session: {str(e)}")
-            raise
-    
-if __name__ == "__main__":
-    from services.research_service.generation.generation import RAGGenerator, RAGResult
-    
-    memory = NotebookMemoryLayer(
-        user_id="test_user",
-        session_id="test_session_123",
-        create_new_session=True
-    )
-    
-    try:
-        mock_rag_result = RAGResult(
-            query="What are the main findings in the research?",
-            response="The research shows three key findings [1, 2]. First, the methodology was effective [1]. Second, the results were significant [2].",
-            sources_used=[
-                {"source_file": "research_paper.pdf", "source_type": "pdf", "page_number": 5},
-                {"source_file": "data_analysis.pdf", "source_type": "pdf", "page_number": 12}
-            ],
-            retrieval_count=8
-        )
-        
-        memory.save_conversation_turn(mock_rag_result)
-        memory.wait_for_indexing()
-        context = memory.get_conversation_context()
-        print(f"Conversation Context:\n{context}")
-        
-        relevant = memory.get_relevant_memory("research findings")
-        print(f"\nRelevant Memories: {len(relevant)} found")
-        
-        summary = memory.get_session_summary()
-        print(f"\nSession Summary: {summary}")
-        
-        memory.save_user_preferences({
-            "response_length": "detailed",
-            "citation_style": "academic",
-            "preferred_sources": ["pdf", "web"]
-        })
-        
-        print("Memory integration test completed successfully")
-        
-    except Exception as e:
-        print(f"Error in memory integration test: {e}")
+        except:
+            return {}
 
+    def wait_for_indexing(self):
+        time.sleep(self.indexing_wait_time)
+
+    def clear_session(self):
+        self.zep_client.thread.delete(self.session_id)
+        self.zep_client.thread.create(
+            thread_id=self.session_id,
+            user_id=self.user_id
+        )

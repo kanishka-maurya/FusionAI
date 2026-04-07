@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException,Request, Header
 from pathlib import Path
 from urllib.parse import urlparse
 import os
@@ -19,13 +19,14 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 @router.post("/web_upload")
 async def upload_url(url: str,
-                      user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+                      request:Request):
     try:
         # Validate API key (like a guard, not exit)
         print(url)
         api_key = os.getenv("FIRECRAWL_API_KEY")
         web_scraper = WebScraper(api_key=api_key)
+        user_id = getattr(request.state, "user_id", None)
+        session_id = getattr(request.state, "notebook_id", None)
         if not api_key:
             raise HTTPException(
                 status_code=500,

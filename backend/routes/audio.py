@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Header
+from fastapi import APIRouter, UploadFile, File, HTTPException, Header,Request
 from typing import List
 from pathlib import Path
 import shutil
@@ -28,10 +28,10 @@ if not api_key:
 
 
 @router.post("/upload")
-async def upload_document(file: UploadFile = File(...),
-                           user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+async def upload_document(request:Request,file: UploadFile = File(...)):
     try:
+        user_id = getattr(request.state, "user_id", None)
+        session_id = getattr(request.state, "notebook_id", None)
         ext = Path(file.filename).suffix.lower()
         print("processing audio")
         print(file)

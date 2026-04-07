@@ -199,6 +199,7 @@ export function AddSourceModal({
       const res = await fetch("http://localhost:8000/api/text/process", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
           "X-Notebook-Id": currentNotebook?.notebook_id || "",
         },

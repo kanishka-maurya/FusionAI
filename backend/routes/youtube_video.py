@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Request,Header
 from services.research_service.data_processing.audio_processing.youtube_transcriber import YoutubeTranscriber
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
@@ -9,13 +9,13 @@ embedding_generator=EmbeddingGenerator()
 vector_db=ChromaVectorDatabase()
 @router.post("/process_video_link")
 async def process_video_link(video_link:str,
-                              user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+                              request:Request):
     try:
         print("coming to youtube route")
         video_id = transcriber._extract_video_id(video_link)
         chunks = transcriber.process_transcript(url=video_link, video_id=video_id)
-        
+        user_id = getattr(request.state, "user_id", None)
+        session_id = getattr(request.state, "notebook_id", None)
         """ print(f"Transcribed {len(chunks)} utterances:")
         for chunk in chunks[:5]:
             print(f"  {chunk.content}")"""

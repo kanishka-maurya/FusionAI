@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException, Header
+from fastapi import APIRouter,HTTPException, Request
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
 from services.research_service.embeddings.embedding_generator import EmbeddingGenerator 
 from services.research_service.vector_database.vector_database import ChromaVectorDatabase
@@ -11,11 +11,13 @@ class TextContent(BaseModel):
 
 @router.post("/process")
 async def process_text(text: TextContent,
-                       user_id: str = Header(default=None),
-                          session_id: str = Header(default=None)):
+                       request:Request):
     try:
       filename=text.fileName
       content=text.copiedText
+      user_id = getattr(request.state, "user_id", None)
+      session_id = getattr(request.state, "notebook_id", None)
+
       print("processing text content",filename,content)
       processor=DocumentProcessor()
       chunks=processor._create_chunks_from_text(content,filename,"text")
