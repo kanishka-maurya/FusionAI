@@ -224,7 +224,7 @@ class NotebookMemoryLayer:
         try:
             results = self.zep_client.graph.search(
                 user_id=self.user_id,
-                thread_id=self.session_id,   # ✅ FILTER
+                thread_id=self.session_id,  
                 query=query,
                 scope="episodes"
             )

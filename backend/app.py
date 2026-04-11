@@ -7,7 +7,8 @@ from backend.routes.youtube_video import router as youtube_router
 from backend.routes.web import router as web_router
 from backend.routes.audio import router as audio_router
 from backend.routes.text_content import router as text_content_router
-from backend.routes.Notebook_Routes.create import router as notebook_create_router
+from backend.routes.Notebook_Routes.getContents import router as get_notebook_contents_router
+from backend.routes.Notebook_Routes.getMessages import router as chat_router
 import httpx
 import os
 from fastapi.responses import JSONResponse
@@ -39,6 +40,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                         "apikey": SUPABASE_ANON_KEY
                     }
                 )
+                print(response)
             
             if response.status_code == 200:
                 user_data = response.json()
@@ -51,6 +53,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 return JSONResponse(status_code=401, content={"detail": "Invalid token from Supabase"})
 
         except Exception as e:
+            print(f"Auth error: {str(e)}")
             return JSONResponse(status_code=401, content={"detail": f"Auth error: {str(e)}"})
 
 app=FastAPI()
@@ -67,4 +70,5 @@ app.include_router(youtube_router, prefix="/api/youtube", tags=["Youtube Videos"
 app.include_router(web_router,prefix="/api/web",tags=["Web Pages"])
 app.include_router(audio_router,prefix="/api/audio",tags=["Audio Files"])
 app.include_router(text_content_router,prefix="/api/text",tags=["Text Content"])
-app.include_router(notebook_create_router,prefix="/api/notebooks",tags=["Notebooks"])
+app.include_router(get_notebook_contents_router,prefix="/api/notebooks",tags=["Notebooks"])
+app.include_router(chat_router,prefix="/api/notebooks",tags=["Notebook Chats"])

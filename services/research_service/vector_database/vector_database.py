@@ -34,7 +34,6 @@ class ChromaVectorDatabase:
             documents = []
             embeddings = []
             metadatas = []
-            print(embedded_chunks[0])
             for chunk in embedded_chunks:
                 data = chunk.to_vector_db_format(user_id=user_id, session_id=session_id)
 
@@ -60,14 +59,13 @@ class ChromaVectorDatabase:
 
         
                 if isinstance(data.get("metadata"), dict):
-                    metadata.update(data["metadata"])
-
+                   for key, value in data["metadata"].items():
+                      metadata[key] = value
                 metadata["user_id"] = user_id
                 metadata["session_id"] = session_id
     
 
                 clean_metadata = {}
-
                 for key, value in metadata.items():
                   if value is None:
                     continue
@@ -75,16 +73,27 @@ class ChromaVectorDatabase:
                     clean_metadata[key] = value
                   else:
                     clean_metadata[key] = str(value)
+                cnt=0
+                for key, value in clean_metadata.items():
+                   if key=="user_id" or key=="session_id":
+                       print(f"{key}:{value}")
+                       cnt+=1
+                   elif value is None:
+                       print(f"this is none: {key}")
+                   else:
+                       print(f"{key}")
                 logging.info(clean_metadata)
                 metadatas.append(clean_metadata)
-
-            self.collection.add(
+            print("metadatas appended",metadatas)
+            try:
+             self.collection.add(
                 ids=ids,
                 documents=documents,
                 embeddings=embeddings,
                 metadatas=metadatas
             )
-
+            except Exception as e:
+                print(e)
             logging.info(f"Inserted {len(ids)} embeddings")
             return ids
 
@@ -190,6 +199,122 @@ class ChromaVectorDatabase:
             logger.info("ChromaDB persisted successfully")
         except Exception as e:
             logger.error(f"Close error: {str(e)}")
+            
+    def get_sources_by_session(self, user_id: str, session_id: str):
+      try:
+        # Fetch for the user
+        results = self.collection.get(where={"user_id": str(user_id)})
+        metadatas = results.get("metadatas", [])
+        unique_sources = {}
+
+        for metadata in metadatas:
+            # 1. Get the session ID from metadata
+            nb_id = metadata.get("session_id")
+            s_type = metadata.get("source_type", "text")
+            s_file = metadata.get("source_file")
+            if s_file=="audio_source":
+                print("anything inserted",nb_id)
+            # 2. Safety Check: Convert both to strings to avoid mismatch
+            if str(nb_id) != str(session_id):
+                continue
+
+            # 3. Initialize source_file from metadata
+
+            # 4. Handle Audio naming specifically
+            display_name = s_file
+            if s_type == "audio_source":
+                # Use headline if available, otherwise use source_file
+                headline = metadata.get('headline')
+                if headline:
+                    display_name = f"Audio: {headline[:20]}..."
+                elif not s_file or s_file == "audio_source":
+                    display_name = "Audio Recording"
+            
+            # 5. Final fallback for name
+            if not display_name:
+                display_name = "Untitled Source"
+
+            # 6. Add to result list
+            if display_name not in unique_sources:
+                unique_sources[display_name] = {
+                    "id": display_name, 
+                    "name": display_name,
+                    "type": s_type 
+                }
+
+        print(f"Final sources list: {list(unique_sources.values())}")
+        return list(unique_sources.values())
+
+      except Exception as e:
+        print(f"Error in get_sources: {e}")
+        return []
+      
+    def delete_sources_by_session(self, user_id: str, session_id: str):
+      try:
+        results = self.collection.get(where={"user_id": str(user_id)})
+
+        ids = results.get("ids", [])
+        metadatas = results.get("metadatas", [])
+
+        ids_to_delete = []
+
+        for doc_id, metadata in zip(ids, metadatas):
+            nb_id = metadata.get("session_id")
+            if str(nb_id) == str(session_id):
+                ids_to_delete.append(doc_id)
+        if ids_to_delete:
+            self.collection.delete(ids=ids_to_delete)
+            print(f"Deleted {len(ids_to_delete)} sources for session {session_id}")
+        else:
+            print("No sources found to delete")
+
+        return {
+            "success": True,
+            "deleted_count": len(ids_to_delete)
+        }
+
+      except Exception as e:
+        print(f"Error in delete_sources_by_session: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+      
+    def delete_single_source(self, user_id: str, session_id: str, source_name: str):
+     try:
+        results = self.collection.get(where={"user_id": str(user_id)})
+
+        ids = results.get("ids", [])
+        metadatas = results.get("metadatas", [])
+
+        ids_to_delete = []
+
+        for doc_id, metadata in zip(ids, metadatas):
+            if (
+                str(metadata.get("session_id")) == str(session_id)
+                and metadata.get("source_file") == source_name
+            ):
+                ids_to_delete.append(doc_id)
+
+        if ids_to_delete:
+            self.collection.delete(ids=ids_to_delete)
+
+        return {"deleted_count": len(ids_to_delete)}
+
+     except Exception as e:
+        return {"error": str(e)}
+    def _map_source_type(self, source_type: str):
+      if source_type == "pdf":
+        return "PDF Document"
+      elif source_type == "youtube":
+        return "YouTube"
+      elif source_type == "audio":
+        return "Audio File"
+      elif source_type == "web":
+        return "Web URL"
+      elif source_type == "text":
+        return "Copied Text"
+      return "Unknown"
 
 if __name__ == "__main__":
     from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import {
   X,
   FileText,
@@ -19,7 +19,10 @@ interface AddSourceModalProps {
     pages?: number;
   }) => void;
 }
-
+interface Source {
+  name: string;
+  type: string;
+}
 type SourceType = "document" | "youtube" | "audio" | "text" | "web" | null;
 
 export function AddSourceModal({
@@ -34,7 +37,7 @@ export function AddSourceModal({
   const [fileName, setFileName] = useState("");
   const { currentNotebook } = useNotebook();
   if (!isOpen) return null;
-
+  
   const handleAudioUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
     type: "audio",
@@ -52,6 +55,7 @@ export function AddSourceModal({
       const res = await fetch("http://localhost:8000/api/audio/upload", {
         headers: {
           Authorization: `Bearer ${token}`,
+          "X-Notebook-Id": currentNotebook?.notebook_id || "",
         },
         method: "POST",
         body: formData,
@@ -233,7 +237,7 @@ export function AddSourceModal({
     setFileName("");
     onClose();
   };
-
+  
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"

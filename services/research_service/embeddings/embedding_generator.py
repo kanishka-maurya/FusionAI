@@ -20,21 +20,27 @@ class EmbeddedChunk:
     embedding_model: str
 
     def to_vector_db_format(self, user_id, session_id) -> Dict[str, Any]:
-        return {
-            "user_id": user_id,
-            "session_id": session_id,
-            'id': self.chunk.chunk_id,
-            'vector': self.embedding.tolist(),
-            'content': self.chunk.content,
-            'source_file': self.chunk.source_file,
-            'source_type': self.chunk.source_type,
-            'page_number': self.chunk.page_number,
-            'chunk_index': self.chunk.chunk_index,
-            'start_char': self.chunk.start_char,
-            'end_char': self.chunk.end_char,
-            'metadata': self.chunk.metadata,
-            'embedding_model': self.embedding_model
-        }
+    # Ensure metadata exists
+      metadata = self.chunk.metadata if self.chunk.metadata else {}
+    
+    # FORCE the IDs into the metadata so they aren't lost
+      metadata["user_id"] = str(user_id)
+      metadata["session_id"] = str(session_id)
+
+      return {
+        "user_id": user_id,
+        "session_id": session_id,
+        'id': self.chunk.chunk_id,
+        'vector': self.embedding.tolist(),
+        'content': self.chunk.content,
+        'source_file': self.chunk.source_file,
+        'source_type': self.chunk.source_type,
+        'page_number': self.chunk.page_number,
+        'chunk_index': self.chunk.chunk_index,
+        'metadata': metadata, # Use the updated metadata dict
+        'embedding_model': self.embedding_model
+    }
+
 
 class EmbeddingGenerator:
     def __init__(self, model_name: str = "gemini-embedding-001"):
@@ -94,8 +100,9 @@ class EmbeddingGenerator:
                     )
 
             logging.info(f"Generated {len(embedded_chunks)} embeddings")
+            print("embedded chunks",embedded_chunks)
             return embedded_chunks
-
+            
         except Exception as e:
             error = CustomException(e, sys)
             logging.error(error)

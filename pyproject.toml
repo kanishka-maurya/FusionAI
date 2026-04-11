@@ -35,4 +35,5 @@ dependencies = [
     "zep-crewai>=1.1.1",
     "python-jose[cryptography]>=3.5.0",
     "httpx>=0.28.1",
+    "tavily-python>=0.7.23",
 ]

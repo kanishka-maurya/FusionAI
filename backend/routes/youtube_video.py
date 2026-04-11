@@ -25,7 +25,7 @@ async def process_video_link(video_link:str,
         print(len(embedded_chunks))
         print("now here")
         inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
-        print(f"Inserted {len(inserted_ids)} embeddings")
+        print(f"Inserted {inserted_ids} embeddings")
         return {
             "filename": video_link,
             "total_chunks": len(chunks),

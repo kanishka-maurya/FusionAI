@@ -34,30 +34,40 @@ async def upload_document(request:Request,file: UploadFile = File(...)):
         session_id = getattr(request.state, "notebook_id", None)
         ext = Path(file.filename).suffix.lower()
         print("processing audio")
-        print(file)
         unique_name = f"{uuid.uuid4()}_{file.filename}"
         file_path = UPLOAD_DIR / unique_name
-        print(file_path)
         if not file_path:
             print("you are going wrong")
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         try:
-          with open(file_path, "rb") as f:
-            audio_bytes = f.read()
-
-          results = processor.run_notebook_pipeline(audio_bytes)
+            with open(file_path, "rb") as f:
+                audio_bytes = f.read()
+            results = processor.run_notebook_pipeline(audio_bytes)
         except Exception as e:
-          print(e)
-        print(results)
+            print(e)
+            logging.error(f"Transcription failed: {e}")
+            raise HTTPException(status_code=500, detail="Failed to transcribe audio")
         file_path.unlink(missing_ok=True)
         try:
           embedded_chunks = embedding_generator.generate_embeddings(results["chunks"])
         except Exception as e:
           print(e)
-        print(len(embedded_chunks))
-        print(embedded_chunks)
+        for chunk in embedded_chunks:
+            if not hasattr(chunk, "metadata") or chunk.metadata is None:
+                chunk.metadata = {}
+            
+            chunk.metadata.update({
+                "source_file": file.filename,
+                "source_type": "audio",
+                "user_id": user_id,
+                "session_id": session_id 
+            })
+
+        print(f"DEBUG: Session ID being sent to DB for audio: {session_id}")
         try:
+          print("session id coming:",session_id)
+          print("embedded chunks going to vector_db",embedded_chunks)
           inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         except Exception as e:
           print(e)

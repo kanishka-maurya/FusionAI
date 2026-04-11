@@ -1,7 +1,7 @@
 from backend.core.logging import logging
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
-
+from tavily import TavilyClient
 from crewai import LLM 
 from backend.core.exceptions import CustomException
 import sys
@@ -53,7 +53,41 @@ class RAGGenerator:
         )
         logging.info("RAG Generator initialized....")
         logging.info(f"RAG Generator initialized with {model_name}")
-        
+
+    def _tavily_search(self, query: str):
+      try:
+        from tavily import TavilyClient
+        import os
+        tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+
+        results = tavily.search(
+            query=query,
+            search_depth="advanced",
+            max_results=3
+        )
+
+        context_parts = []
+        sources = []
+
+        for i, r in enumerate(results.get("results", [])):
+            idx = i + 100  
+
+            content = r.get("content", "")
+            url = r.get("url", "Unknown")
+
+            context_parts.append(f"[{idx}] {content}")
+
+            sources.append({
+                "reference": f"[{idx}]",
+                "source_file": url,
+                "source_type": "web"
+            })
+        print("tavily search results:",context_parts,sources)
+        return "\n\n".join(context_parts), sources
+
+      except Exception as e:
+        logging.error(f"Tavily failed: {e}")
+        return "", []  
     def generate_results(self,
                 query: str,
                 memory: dict,
@@ -85,22 +119,17 @@ class RAGGenerator:
                 session_id=session_id
             )
             print("search results",search_results)
-            if not search_results:
-                logging.info("Nothing retrieved from the vector DB....")
-                return RAGResult(
-                    query=query,
-                    response="I couldn't find any relevant information in the available documents to answer your question.",
-                    sources_used=[],
-                    retrieval_count=0
-                )
             
             logging.info("Retrieval results from vector DB are non-empty....")
             context, sources_info = self._format_context_with_citations(
                 search_results, max_chunks, max_context_chars
             )
-            
+            web_context, web_sources = self._tavily_search(query)
+
+            context += "\n\nWEB RESULTS:\n" + web_context
+            sources_info.extend(web_sources)
             prompt = self._create_rag_prompt(memory, context, query)
-            
+            print("final context to LLM",context)
             try:
                 response = self.llm.call(prompt)
                 logging.info("Results obtained from LLM....")
@@ -110,7 +139,7 @@ class RAGGenerator:
                 logging.error(error)
                 raise error
 
-           
+            
             rag_result = RAGResult(
                 query=query,
                 response=response,
@@ -120,7 +149,7 @@ class RAGGenerator:
 
             logging.info(f"Response generated successfully using {len(sources_info)} sources")
             return rag_result
-            
+         
         except Exception as e:
             logging.error(f"Error generating response: {str(e)}")
             return RAGResult(

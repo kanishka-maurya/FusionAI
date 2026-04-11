@@ -31,10 +31,10 @@ class AudioTranscriber:
     
     def _create_chunks_by_chapters(self, transcript, source_file="audio_source"):
         chunks = []
-        start = time.time()
-        print(transcript.chapters)
+        # Move 'start' outside if you want to measure the total time
+        start_time = time.time() 
+        
         for idx, chapter in enumerate(transcript.chapters):
-
            chapter_utterances = [
             f"[{self._ms_to_timestamp(u.start)}] Speaker {u.speaker}: {u.text}"
             for u in transcript.utterances
@@ -44,6 +44,7 @@ class AudioTranscriber:
            chapter_text = "\n".join(chapter_utterances)
 
            metadata = {
+            "source_file": source_file,
             "headline": chapter.headline,
             "start_time_ms": chapter.start,
             "end_time_ms": chapter.end,
@@ -64,21 +65,24 @@ class AudioTranscriber:
 
            chunks.append(chunk)
 
-           end = time.time()
-           logging.info(f"Chapter chunking time: {end - start:.2f} seconds")
+        # FIX: Move these outside the for loop
+        end_time = time.time()
+        logging.info(f"Total Chapter chunking time: {end_time - start_time:.2f} seconds")
+        print("normal chunks",chunks)
+        return chunks 
 
-           return chunks
     
     def run_notebook_pipeline(self, audio_url):
         transcript = self.transcriber.transcribe(
             audio_url, 
             config=aai.TranscriptionConfig(speech_models=[aai.SpeechModel.universal], speaker_labels=True, auto_chapters=True)
         )
-        structured_chunks = self._create_chunks_by_chapters(transcript, source_file=audio_url)
+        structured_chunks = self._create_chunks_by_chapters(transcript, source_file="audio_source")
         return {
           "chunks": structured_chunks,
           "full_text": transcript.text
     }
+
     
 if __name__ == "__main__":
     start = time.time()

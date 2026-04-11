@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../contexts/AuthContext";
@@ -11,7 +11,32 @@ import {
   FileText,
   Sparkles,
 } from "lucide-react";
+const formatDate = (dateString: string) => {
+  if (!dateString) return "Unknown";
 
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const formatRelativeTime = (dateString: string) => {
+  if (!dateString) return "Unknown";
+
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffMs = now.getTime() - past.getTime();
+
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 60) return `${diffMinutes} min ago`;
+  if (diffHours < 24) return `${diffHours} hours ago`;
+  return `${diffDays} days ago`;
+};
 interface Notebook {
   id: string;
   name: string;
@@ -26,80 +51,93 @@ export function NotebookSessions() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { setNotebook } = useNotebook();
-  const [notebooks, setNotebooks] = useState<Notebook[]>([
-    {
-      id: "1",
-      name: "Machine Learning Research",
-      description: "Research papers on neural networks and deep learning",
-      sourcesCount: 5,
-      messagesCount: 24,
-      lastModified: "2 hours ago",
-      createdAt: "April 3, 2026",
-    },
-    {
-      id: "2",
-      name: "AI Ethics Study",
-      description: "Documents about AI ethics and responsible AI development",
-      sourcesCount: 3,
-      messagesCount: 12,
-      lastModified: "1 day ago",
-      createdAt: "April 1, 2026",
-    },
-  ]);
+  const [notebooks, setNotebooks] = useState<Notebook[]>([]);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState("");
   const [newNotebookDesc, setNewNotebookDesc] = useState("");
-
+  useEffect(() => {
+    fetchNotebooks();
+  }, []);
   const handleCreateNotebook = async () => {
-    if (newNotebookName.trim()) {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
+    if (!newNotebookName.trim()) return;
 
-      const res = await fetch("http://localhost:8000/api/notebooks/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const userId = session?.user?.id;
+
+    const { data, error } = await supabase
+      .from("notebooks")
+      .insert([
+        {
+          user_id: userId,
+          name: newNotebookName,
+          description: newNotebookDesc,
         },
-        body: JSON.stringify({
-          name: newNotebookName,
-          description: newNotebookDesc,
-        }),
-      });
-      if (!res.ok) {
-        alert("Failed to create notebook. Please try again.");
-        return;
-      }
-      if (res.ok) {
-        const data = await res.json();
-        const newNotebookId = data.notebook_id;
+      ])
+      .select()
+      .single();
 
-        const newNotebook: Notebook = {
-          id: newNotebookId,
-          name: newNotebookName,
-          description: newNotebookDesc,
-          sourcesCount: 0,
-          messagesCount: 0,
-          lastModified: "Just now",
-          createdAt: new Date().toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-        };
-        setNotebook({ notebook_id: newNotebookId, name: newNotebookName });
-        setNotebooks([newNotebook, ...notebooks]);
-        setNewNotebookName("");
-        setNewNotebookDesc("");
-        setShowCreateModal(false);
-        navigate(`/notebook/${newNotebook.id}`);
-      }
+    if (error) {
+      console.error(error);
+      alert("Failed to create notebook");
+      return;
     }
-  };
 
+    const newNotebookId = data.notebook_id;
+
+    const newNotebook: Notebook = {
+      id: newNotebookId,
+      name: data.name,
+      description: data.description,
+      sourcesCount: 0,
+      messagesCount: 0,
+      lastModified: "Just now",
+      createdAt: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    };
+
+    setNotebook({
+      notebook_id: newNotebookId,
+      name: data.name,
+    });
+
+    setNotebooks((prev) => [newNotebook, ...prev]);
+
+    setNewNotebookName("");
+    setNewNotebookDesc("");
+    setShowCreateModal(false);
+
+    navigate(`/notebook/${newNotebookId}`);
+  };
+  const fetchNotebooks = async () => {
+  const { data, error } = await supabase
+    .from("notebooks")
+    .select("notebook_id, name, description, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const formatted = data.map((n) => ({
+    id: n.notebook_id,
+    name: n.name,
+    description: n.description,
+    sourcesCount: 0,
+    messagesCount: 0,
+    lastModified: "Recently",
+    createdAt: new Date(n.created_at).toLocaleDateString(),
+  }));
+
+  setNotebooks(formatted);
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
