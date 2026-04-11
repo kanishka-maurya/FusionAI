@@ -7,3 +7,9 @@ SUPPORTED_FORMATS = {'.pdf', '.txt', '.md'}
 
 # Logging
 LOG_LEVEL = "INFO"
+
+# Model
+MODEL = "groq/llama-3.1-8b-instant"
+TEMPERATURE = 0.1
+MAX_TOKENS = 2000
+
