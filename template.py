@@ -5,9 +5,21 @@ list_of_filepaths = [
     "config.py",
     "frontend/",
     "backend/",
+    "backend/app.py",
     "backend/core/",
     "backend/core/logging.py",
     "backend/core/exceptions.py",
+    "backend/routes/",
+    "backend/routes/Notebook_Routes/",
+    "backend/routes/Roadmap_Routes/",
+    "backend/routes/Roadmap_Routes/roadmap_response.py",
+    "backend/routes/Notebook_Routes/create.py",
+    "backend/routes/audio.py",
+    "backend/routes/document.py",
+    "backend/routes/text_content.py",
+    "backend/routes/web.py",
+    "backend/routes/youtube_video.py",
+
     "memory/",
     "memory/__init__.py",
     "memory/memory.py",
@@ -50,7 +62,11 @@ list_of_filepaths = [
     "services/research_service/podcast/script_generator.py",
     "services/research_service/podcast/text_to_speech.py"
 
-    "service/roadmap_service/",
+    "services/roadmap_service/",
+    "services/roadmap_service/data_models.py",
+    "services/roadmap_service/database.py",
+    "services/roadmap_service/llm_service.py",
+    "services/roadmap_service/cache.py",
     "services/roadmap_service/__init__.py",
 ]
 
