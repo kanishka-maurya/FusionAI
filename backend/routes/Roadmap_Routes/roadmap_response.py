@@ -7,8 +7,7 @@ import services.roadmap_service.database as db
 import cache
 from services.roadmap_service.llm_service import generate_roadmap_json, generate_node_content
 
-router = APIRouter(prefix="/api/roadmap", tags=["Roadmap"])
-
+router = APIRouter()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # POST /api/roadmap/generate
@@ -23,7 +22,8 @@ async def generate_roadmap(request: GenerateRoadmapRequest):
     4. Return to frontend
     """
     roadmap_id = str(uuid.uuid4())
-
+    print(request.topic)
+    print(request.level)
     # ── Step 1: Generate via Gemini ───────────────────────────────────────────
     try:
         raw = await generate_roadmap_json(request.topic, request.level.value)
@@ -40,7 +40,7 @@ async def generate_roadmap(request: GenerateRoadmapRequest):
     for node in nodes:
         node["status"]            = "unlocked" if not node.get("dependencies") else "locked"
         node["content_generated"] = False
-
+    print(nodes)
     # ── Step 2: Persist to Supabase PostgreSQL ────────────────────────────────
     await db.insert_roadmap(
         roadmap_id  = roadmap_id,

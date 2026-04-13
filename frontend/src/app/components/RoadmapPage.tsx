@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../contexts/AuthContext";
 import {
   ArrowLeft,
   GraduationCap,
@@ -13,11 +14,27 @@ import {
   Clock,
   Star,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export function RoadmapPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [level, setLevel] = useState("beginner");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const courses = [
     {
@@ -61,6 +78,53 @@ export function RoadmapPage() {
     { title: "Neural Networks Test", score: 92, date: "5 days ago" },
   ];
 
+  const handleGenerateRoadmap = async () => {
+    if (!topic.trim()) return;
+
+    setIsGenerating(true);
+    try {
+      const {
+            data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const userId = session?.user?.id;
+      
+      console.log("generating");
+      const response = await fetch("http://localhost:8000/api/roadmap/generate", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic,
+          level: level,
+          user_id: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate roadmap");
+      }
+
+      const data = await response.json();
+      navigate(`/roadmap/${data.roadmap_id}`, {
+        state: {
+          topic: data.topic,
+          level: level,
+        },
+      });
+
+      setIsCreateDialogOpen(false);
+      setTopic("");
+      setLevel("beginner");
+    } catch (error) {
+      console.error("Failed to generate roadmap:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
@@ -78,8 +142,12 @@ export function RoadmapPage() {
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">AI Tutor & Roadmap</h1>
-                <p className="text-sm text-gray-600">Your personalized learning journey</p>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  AI Tutor & Roadmap
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Your personalized learning journey
+                </p>
               </div>
             </div>
           </div>
@@ -95,7 +163,9 @@ export function RoadmapPage() {
                 />
               )}
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
             </div>
@@ -180,7 +250,9 @@ export function RoadmapPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{course.title}</h3>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {course.title}
+                          </h3>
                           <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
                             {course.level}
                           </span>
@@ -202,7 +274,9 @@ export function RoadmapPage() {
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-gray-600">Progress</span>
-                        <span className="text-sm font-semibold text-blue-600">{course.progress}%</span>
+                        <span className="text-sm font-semibold text-blue-600">
+                          {course.progress}%
+                        </span>
                       </div>
                       <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
@@ -218,7 +292,9 @@ export function RoadmapPage() {
 
             {/* Quizzes Section */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Quizzes</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Recent Quizzes
+              </h2>
               <div className="space-y-4">
                 {recentQuizzes.map((quiz, idx) => (
                   <div
@@ -230,12 +306,16 @@ export function RoadmapPage() {
                         <Brain className="w-6 h-6 text-purple-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
+                        <h3 className="font-semibold text-gray-900">
+                          {quiz.title}
+                        </h3>
                         <p className="text-sm text-gray-600">{quiz.date}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-purple-600">{quiz.score}%</p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {quiz.score}%
+                      </p>
                       <p className="text-xs text-gray-500">Score</p>
                     </div>
                   </div>
@@ -246,6 +326,23 @@ export function RoadmapPage() {
 
           {/* Sidebar */}
           <div className="space-y-8">
+            {/* Create AI Roadmap */}
+            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-6 text-white">
+              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Create AI Roadmap</h3>
+              <p className="text-purple-100 text-sm mb-4">
+                Generate a personalized learning path for any topic
+              </p>
+              <button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="w-full py-3 bg-white text-purple-700 rounded-lg font-medium hover:bg-purple-50 transition-colors"
+              >
+                Generate Roadmap
+              </button>
+            </div>
+
             {/* AI Tutor */}
             <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
@@ -292,6 +389,71 @@ export function RoadmapPage() {
           </div>
         </div>
       </main>
+
+      {/* Create Roadmap Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              Create AI Roadmap
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="topic">Topic</Label>
+              <Input
+                id="topic"
+                placeholder="e.g., Machine Learning, React, Python"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isGenerating) {
+                    handleGenerateRoadmap();
+                  }
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="level">Difficulty Level</Label>
+              <Select value={level} onValueChange={setLevel}>
+                <SelectTrigger id="level">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Beginner</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="advanced">Advanced</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setIsCreateDialogOpen(false)}
+              disabled={isGenerating}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="flex-1 bg-purple-600 hover:bg-purple-700"
+              onClick={handleGenerateRoadmap}
+              disabled={!topic.trim() || isGenerating}
+            >
+              {isGenerating ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  Generating...
+                </>
+              ) : (
+                "Generate"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

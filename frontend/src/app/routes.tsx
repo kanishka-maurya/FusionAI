@@ -7,7 +7,6 @@ import { RoadmapPage } from "./components/RoadmapPage";
 import { AINewsPage } from "./components/AINewsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotebookProvider } from "./contexts/NotebookContext";
-
 export const router = createBrowserRouter([
   {
     path: "/auth",

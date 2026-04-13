@@ -1,0 +1,376 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Lock,
+  Circle,
+  Sparkles,
+  BookOpen,
+  Clock,
+  Target,
+} from "lucide-react";
+import { NodeContentModal } from "./NodeContentModal";
+
+interface RoadmapNode {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  status: "locked" | "unlocked" | "completed";
+  dependencies: string[];
+  content_generated: boolean;
+  position: { x: number; y: number };
+}
+
+interface RoadmapData {
+  roadmap_id: string;
+  title: string;
+  topic: string;
+  description: string;
+  total_nodes: number;
+  nodes: RoadmapNode[];
+}
+
+export function RoadmapViewPage() {
+  const navigate = useNavigate();
+  const { roadmapId } = useParams();
+  const location = useLocation();
+  const { user } = useAuth();
+
+  const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
+  const [selectedNode, setSelectedNode] = useState<RoadmapNode | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadRoadmap();
+  }, [roadmapId]);
+
+  const loadRoadmap = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch(`/api/roadmap/${roadmapId}`);
+      // const data = await response.json();
+      // setRoadmapData(data);
+
+      // Mock data based on the topic from navigation state
+      const { topic = "Machine Learning", level = "beginner" } = location.state || {};
+
+      const mockData: RoadmapData = {
+        roadmap_id: roadmapId || "",
+        title: `${topic} Learning Path`,
+        topic: topic,
+        description: `A comprehensive ${level}-level roadmap to master ${topic}`,
+        total_nodes: 8,
+        nodes: [
+          {
+            id: "node_1",
+            title: "Introduction & Fundamentals",
+            description: "Core concepts and basic terminology",
+            level: "beginner",
+            status: "unlocked",
+            dependencies: [],
+            content_generated: false,
+            position: { x: 50, y: 10 },
+          },
+          {
+            id: "node_2",
+            title: "Mathematical Foundations",
+            description: "Linear algebra, calculus, and statistics",
+            level: "beginner",
+            status: "locked",
+            dependencies: ["node_1"],
+            content_generated: false,
+            position: { x: 25, y: 30 },
+          },
+          {
+            id: "node_3",
+            title: "Programming Basics",
+            description: "Python fundamentals and libraries",
+            level: "beginner",
+            status: "locked",
+            dependencies: ["node_1"],
+            content_generated: false,
+            position: { x: 75, y: 30 },
+          },
+          {
+            id: "node_4",
+            title: "Data Preprocessing",
+            description: "Data cleaning, transformation, and feature engineering",
+            level: "intermediate",
+            status: "locked",
+            dependencies: ["node_2", "node_3"],
+            content_generated: false,
+            position: { x: 35, y: 50 },
+          },
+          {
+            id: "node_5",
+            title: "Supervised Learning",
+            description: "Classification and regression algorithms",
+            level: "intermediate",
+            status: "locked",
+            dependencies: ["node_4"],
+            content_generated: false,
+            position: { x: 20, y: 70 },
+          },
+          {
+            id: "node_6",
+            title: "Unsupervised Learning",
+            description: "Clustering and dimensionality reduction",
+            level: "intermediate",
+            status: "locked",
+            dependencies: ["node_4"],
+            content_generated: false,
+            position: { x: 50, y: 70 },
+          },
+          {
+            id: "node_7",
+            title: "Neural Networks",
+            description: "Deep learning and neural network architectures",
+            level: "advanced",
+            status: "locked",
+            dependencies: ["node_5", "node_6"],
+            content_generated: false,
+            position: { x: 35, y: 90 },
+          },
+          {
+            id: "node_8",
+            title: "Advanced Topics & Projects",
+            description: "Real-world applications and capstone projects",
+            level: "advanced",
+            status: "locked",
+            dependencies: ["node_7"],
+            content_generated: false,
+            position: { x: 50, y: 110 },
+          },
+        ],
+      };
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setRoadmapData(mockData);
+    } catch (error) {
+      console.error("Failed to load roadmap:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleNodeClick = (node: RoadmapNode) => {
+    if (node.status === "locked") return;
+    setSelectedNode(node);
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case "unlocked":
+        return <Circle className="w-5 h-5 text-blue-600" />;
+      case "locked":
+        return <Lock className="w-5 h-5 text-gray-400" />;
+      default:
+        return <Circle className="w-5 h-5 text-gray-400" />;
+    }
+  };
+
+  const getLevelColor = (level: string) => {
+    switch (level.toLowerCase()) {
+      case "beginner":
+        return "bg-green-100 text-green-700 border-green-300";
+      case "intermediate":
+        return "bg-yellow-100 text-yellow-700 border-yellow-300";
+      case "advanced":
+        return "bg-red-100 text-red-700 border-red-300";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-300";
+    }
+  };
+
+  const stats = roadmapData
+    ? {
+        total: roadmapData.total_nodes,
+        unlocked: roadmapData.nodes.filter(n => n.status === "unlocked").length,
+        completed: roadmapData.nodes.filter(n => n.status === "completed").length,
+      }
+    : { total: 0, unlocked: 0, completed: 0 };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Generating your roadmap...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!roadmapData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Roadmap not found</p>
+          <button
+            onClick={() => navigate("/roadmap")}
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Back to Roadmap
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/roadmap")}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">{roadmapData.title}</h1>
+                <p className="text-sm text-gray-600">{roadmapData.description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Stats Bar */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-gray-600" />
+              <span className="text-sm text-gray-600">
+                <span className="font-semibold text-gray-900">{stats.total}</span> Topics
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-blue-600" />
+              <span className="text-sm text-gray-600">
+                <span className="font-semibold text-blue-600">{stats.unlocked}</span> Unlocked
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <span className="text-sm text-gray-600">
+                <span className="font-semibold text-green-600">{stats.completed}</span> Completed
+              </span>
+            </div>
+            <div className="flex-1">
+              <div className="w-full max-w-md h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-600 to-purple-500 rounded-full transition-all"
+                  style={{ width: `${(stats.completed / stats.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Roadmap Content */}
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="relative">
+          {/* SVG for connecting lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+            {roadmapData.nodes.map((node) =>
+              node.dependencies.map((depId) => {
+                const depNode = roadmapData.nodes.find((n) => n.id === depId);
+                if (!depNode) return null;
+
+                const x1 = `${depNode.position.x}%`;
+                const y1 = `${depNode.position.y}%`;
+                const x2 = `${node.position.x}%`;
+                const y2 = `${node.position.y}%`;
+
+                return (
+                  <line
+                    key={`${depId}-${node.id}`}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke="#e5e7eb"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                  />
+                );
+              })
+            )}
+          </svg>
+
+          {/* Nodes */}
+          <div className="relative" style={{ minHeight: "120vh" }}>
+            {roadmapData.nodes.map((node) => (
+              <div
+                key={node.id}
+                className="absolute"
+                style={{
+                  left: `${node.position.x}%`,
+                  top: `${node.position.y}%`,
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 10,
+                }}
+              >
+                <div
+                  onClick={() => handleNodeClick(node)}
+                  className={`
+                    w-64 bg-white rounded-xl border-2 p-5 shadow-lg transition-all cursor-pointer
+                    ${
+                      node.status === "locked"
+                        ? "border-gray-300 opacity-60 cursor-not-allowed"
+                        : node.status === "completed"
+                        ? "border-green-400 hover:shadow-xl hover:scale-105"
+                        : "border-blue-400 hover:shadow-xl hover:scale-105"
+                    }
+                  `}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="flex-shrink-0 mt-1">{getStatusIcon(node.status)}</div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 mb-1">{node.title}</h3>
+                      <p className="text-sm text-gray-600 line-clamp-2">{node.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(node.level)}`}>
+                      {node.level}
+                    </span>
+                    {node.status === "locked" && node.dependencies.length > 0 && (
+                      <span className="text-xs text-gray-500">
+                        {node.dependencies.length} prerequisite{node.dependencies.length > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      {/* Node Content Modal */}
+      {selectedNode && (
+        <NodeContentModal
+          node={selectedNode}
+          roadmapId={roadmapData.roadmap_id}
+          onClose={() => setSelectedNode(null)}
+        />
+      )}
+    </div>
+  );
+}
