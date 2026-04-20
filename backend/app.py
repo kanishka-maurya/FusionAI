@@ -31,7 +31,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=401, content={"detail": "Missing token"})
 
         token = auth_header.split(" ")[1]
-
+        request.state.token = token
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(

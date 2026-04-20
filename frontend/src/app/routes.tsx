@@ -7,6 +7,8 @@ import { RoadmapPage } from "./components/RoadmapPage";
 import { AINewsPage } from "./components/AINewsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NotebookProvider } from "./contexts/NotebookContext";
+import {RoadmapViewPage} from "./components/RoadmapViewPage"
+import { RoadmapProvider } from "./contexts/RoadmapContext";
 export const router = createBrowserRouter([
   {
     path: "/auth",
@@ -16,8 +18,10 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <NotebookProvider>
+         <RoadmapProvider>
           {/* Outlet renders whichever child route is active */}
           <Outlet /> 
+          </RoadmapProvider>
         </NotebookProvider>
       </ProtectedRoute>
     ),
@@ -45,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "/ai-news",
         element: <AINewsPage />,
+      },
+      {
+        path:"/roadmap/:roadmapId",
+        element:<RoadmapViewPage/>
       },
     ],
   },

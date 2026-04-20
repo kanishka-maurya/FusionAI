@@ -12,25 +12,31 @@ import {
   Target,
 } from "lucide-react";
 import { NodeContentModal } from "./NodeContentModal";
+import { supabase } from "../contexts/AuthContext";
 
-interface RoadmapNode {
-  id: string;
+export interface RoadmapNode {
+  node_id: string;
+  roadmap_id: string;
   title: string;
-  description: string;
+  type?: string | null;
   level: string;
-  status: "locked" | "unlocked" | "completed";
-  dependencies: string[];
-  content_generated: boolean;
-  position: { x: number; y: number };
+  status: string;
+  dependencies?: string[] | null;
+  position_x?: number | null;
+  position_y?: number | null;
+  content_generated?: boolean | null;
+  raw_content?: any | null;
+  created_at?: string | null;
 }
 
 interface RoadmapData {
   roadmap_id: string;
+  user_id?: string;
   title: string;
   topic: string;
   description: string;
   total_nodes: number;
-  nodes: RoadmapNode[];
+  created_at?: string;
 }
 
 export function RoadmapViewPage() {
@@ -40,6 +46,7 @@ export function RoadmapViewPage() {
   const { user } = useAuth();
 
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
+  const [nodes, setNodes] = useState<RoadmapNode[]>([]);
   const [selectedNode, setSelectedNode] = useState<RoadmapNode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,106 +57,164 @@ export function RoadmapViewPage() {
   const loadRoadmap = async () => {
     setIsLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/roadmap/${roadmapId}`);
-      // const data = await response.json();
-      // setRoadmapData(data);
+      const { data: roadmapInfo } = await supabase
+        .from("roadmaps")
+        .select("*")
+        .eq("roadmap_id", roadmapId)
+        .single();
 
+      if (roadmapInfo) setRoadmapData(roadmapInfo);
+      const { data: nodesData } = await supabase
+        .from("nodes")
+        .select("*")
+        .eq("roadmap_id", roadmapId);
+
+      const normalizedNodes: RoadmapNode[] = (nodesData || []).map(
+        (n: any) => ({
+          node_id: n.node_id,
+          roadmap_id: n.roadmap_id,
+          title: n.title,
+          type: n.type,
+          level: n.level,
+          status: n.status,
+          dependencies: Array.isArray(n.dependencies)
+            ? n.dependencies
+            : typeof n.dependencies === "string"
+              ? JSON.parse(n.dependencies || "[]")
+              : [],
+          position_x: Number(n.position_x ?? 50),
+          position_y: Number(n.position_y ?? 50),
+
+          content_generated: n.content_generated,
+          raw_content: n.raw_content,
+          created_at: n.created_at,
+        }),
+      );
+
+      setNodes(normalizedNodes);
       // Mock data based on the topic from navigation state
-      const { topic = "Machine Learning", level = "beginner" } = location.state || {};
+      const { topic = "Machine Learning", level = "beginner" } =
+        location.state || {};
 
-      const mockData: RoadmapData = {
+      const mockRoadmapData: RoadmapData = {
         roadmap_id: roadmapId || "",
+        user_id: user?.id,
         title: `${topic} Learning Path`,
         topic: topic,
         description: `A comprehensive ${level}-level roadmap to master ${topic}`,
         total_nodes: 8,
-        nodes: [
-          {
-            id: "node_1",
-            title: "Introduction & Fundamentals",
-            description: "Core concepts and basic terminology",
-            level: "beginner",
-            status: "unlocked",
-            dependencies: [],
-            content_generated: false,
-            position: { x: 50, y: 10 },
-          },
-          {
-            id: "node_2",
-            title: "Mathematical Foundations",
-            description: "Linear algebra, calculus, and statistics",
-            level: "beginner",
-            status: "locked",
-            dependencies: ["node_1"],
-            content_generated: false,
-            position: { x: 25, y: 30 },
-          },
-          {
-            id: "node_3",
-            title: "Programming Basics",
-            description: "Python fundamentals and libraries",
-            level: "beginner",
-            status: "locked",
-            dependencies: ["node_1"],
-            content_generated: false,
-            position: { x: 75, y: 30 },
-          },
-          {
-            id: "node_4",
-            title: "Data Preprocessing",
-            description: "Data cleaning, transformation, and feature engineering",
-            level: "intermediate",
-            status: "locked",
-            dependencies: ["node_2", "node_3"],
-            content_generated: false,
-            position: { x: 35, y: 50 },
-          },
-          {
-            id: "node_5",
-            title: "Supervised Learning",
-            description: "Classification and regression algorithms",
-            level: "intermediate",
-            status: "locked",
-            dependencies: ["node_4"],
-            content_generated: false,
-            position: { x: 20, y: 70 },
-          },
-          {
-            id: "node_6",
-            title: "Unsupervised Learning",
-            description: "Clustering and dimensionality reduction",
-            level: "intermediate",
-            status: "locked",
-            dependencies: ["node_4"],
-            content_generated: false,
-            position: { x: 50, y: 70 },
-          },
-          {
-            id: "node_7",
-            title: "Neural Networks",
-            description: "Deep learning and neural network architectures",
-            level: "advanced",
-            status: "locked",
-            dependencies: ["node_5", "node_6"],
-            content_generated: false,
-            position: { x: 35, y: 90 },
-          },
-          {
-            id: "node_8",
-            title: "Advanced Topics & Projects",
-            description: "Real-world applications and capstone projects",
-            level: "advanced",
-            status: "locked",
-            dependencies: ["node_7"],
-            content_generated: false,
-            position: { x: 50, y: 110 },
-          },
-        ],
       };
 
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setRoadmapData(mockData);
+      const mockNodes: RoadmapNode[] = [
+        {
+          node_id: "node_1",
+          roadmap_id: roadmapId || "",
+          title: "Introduction & Fundamentals",
+          type: "concept",
+          level: "beginner",
+          status: "unlocked",
+          dependencies: [],
+          position_x: 50,
+          position_y: 10,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_2",
+          roadmap_id: roadmapId || "",
+          title: "Mathematical Foundations",
+          type: "concept",
+          level: "beginner",
+          status: "locked",
+          dependencies: ["node_1"],
+          position_x: 25,
+          position_y: 30,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_3",
+          roadmap_id: roadmapId || "",
+          title: "Programming Basics",
+          type: "concept",
+          level: "beginner",
+          status: "locked",
+          dependencies: ["node_1"],
+          position_x: 75,
+          position_y: 30,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_4",
+          roadmap_id: roadmapId || "",
+          title: "Data Preprocessing",
+          type: "skill",
+          level: "intermediate",
+          status: "locked",
+          dependencies: ["node_2", "node_3"],
+          position_x: 35,
+          position_y: 50,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_5",
+          roadmap_id: roadmapId || "",
+          title: "Supervised Learning",
+          type: "concept",
+          level: "intermediate",
+          status: "locked",
+          dependencies: ["node_4"],
+          position_x: 20,
+          position_y: 70,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_6",
+          roadmap_id: roadmapId || "",
+          title: "Unsupervised Learning",
+          type: "concept",
+          level: "intermediate",
+          status: "locked",
+          dependencies: ["node_4"],
+          position_x: 50,
+          position_y: 70,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_7",
+          roadmap_id: roadmapId || "",
+          title: "Neural Networks",
+          type: "concept",
+          level: "advanced",
+          status: "locked",
+          dependencies: ["node_5", "node_6"],
+          position_x: 35,
+          position_y: 90,
+          content_generated: false,
+          raw_content: null,
+        },
+        {
+          node_id: "node_8",
+          roadmap_id: roadmapId || "",
+          title: "Advanced Topics & Projects",
+          type: "project",
+          level: "advanced",
+          status: "locked",
+          dependencies: ["node_7"],
+          position_x: 50,
+          position_y: 110,
+          content_generated: false,
+          raw_content: null,
+        },
+      ];
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setRoadmapData(mockRoadmapData);
+      setNodes(mockNodes);
     } catch (error) {
       console.error("Failed to load roadmap:", error);
     } finally {
@@ -188,13 +253,11 @@ export function RoadmapViewPage() {
     }
   };
 
-  const stats = roadmapData
-    ? {
-        total: roadmapData.total_nodes,
-        unlocked: roadmapData.nodes.filter(n => n.status === "unlocked").length,
-        completed: roadmapData.nodes.filter(n => n.status === "completed").length,
-      }
-    : { total: 0, unlocked: 0, completed: 0 };
+  const stats = {
+    total: roadmapData?.total_nodes || nodes.length,
+    unlocked: nodes.filter((n) => n.status === "unlocked").length,
+    completed: nodes.filter((n) => n.status === "completed").length,
+  };
 
   if (isLoading) {
     return (
@@ -240,8 +303,12 @@ export function RoadmapViewPage() {
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">{roadmapData.title}</h1>
-                <p className="text-sm text-gray-600">{roadmapData.description}</p>
+                <h1 className="text-xl font-semibold text-gray-900">
+                  {roadmapData.title}
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {roadmapData.description}
+                </p>
               </div>
             </div>
           </div>
@@ -255,19 +322,28 @@ export function RoadmapViewPage() {
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5 text-gray-600" />
               <span className="text-sm text-gray-600">
-                <span className="font-semibold text-gray-900">{stats.total}</span> Topics
+                <span className="font-semibold text-gray-900">
+                  {stats.total}
+                </span>{" "}
+                Topics
               </span>
             </div>
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-blue-600" />
               <span className="text-sm text-gray-600">
-                <span className="font-semibold text-blue-600">{stats.unlocked}</span> Unlocked
+                <span className="font-semibold text-blue-600">
+                  {stats.unlocked}
+                </span>{" "}
+                Unlocked
               </span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-green-600" />
               <span className="text-sm text-gray-600">
-                <span className="font-semibold text-green-600">{stats.completed}</span> Completed
+                <span className="font-semibold text-green-600">
+                  {stats.completed}
+                </span>{" "}
+                Completed
               </span>
             </div>
             <div className="flex-1">
@@ -286,20 +362,30 @@ export function RoadmapViewPage() {
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="relative">
           {/* SVG for connecting lines */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
-            {roadmapData.nodes.map((node) =>
-              node.dependencies.map((depId) => {
-                const depNode = roadmapData.nodes.find((n) => n.id === depId);
-                if (!depNode) return null;
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ zIndex: 0 }}
+          >
+            {nodes.map((node) =>
+              node.dependencies?.map((depId) => {
+                const depNode = nodes.find((n) => n.node_id === depId);
+                if (
+                  !depNode ||
+                  !depNode.position_x ||
+                  !depNode.position_y ||
+                  !node.position_x ||
+                  !node.position_y
+                )
+                  return null;
 
-                const x1 = `${depNode.position.x}%`;
-                const y1 = `${depNode.position.y}%`;
-                const x2 = `${node.position.x}%`;
-                const y2 = `${node.position.y}%`;
+                const x1 = `${depNode.position_x}%`;
+                const y1 = `${depNode.position_y}%`;
+                const x2 = `${node.position_x}%`;
+                const y2 = `${node.position_y}%`;
 
                 return (
                   <line
-                    key={`${depId}-${node.id}`}
+                    key={`${depId}-${node.node_id}`}
                     x1={x1}
                     y1={y1}
                     x2={x2}
@@ -309,19 +395,19 @@ export function RoadmapViewPage() {
                     strokeDasharray="5,5"
                   />
                 );
-              })
+              }),
             )}
           </svg>
 
           {/* Nodes */}
           <div className="relative" style={{ minHeight: "120vh" }}>
-            {roadmapData.nodes.map((node) => (
+            {nodes.map((node) => (
               <div
-                key={node.id}
+                key={node.node_id}
                 className="absolute"
                 style={{
-                  left: `${node.position.x}%`,
-                  top: `${node.position.y}%`,
+                  left: `${node.position_x}%`,
+                  top: `${node.position_y}%`,
                   transform: "translate(-50%, -50%)",
                   zIndex: 10,
                 }}
@@ -334,27 +420,40 @@ export function RoadmapViewPage() {
                       node.status === "locked"
                         ? "border-gray-300 opacity-60 cursor-not-allowed"
                         : node.status === "completed"
-                        ? "border-green-400 hover:shadow-xl hover:scale-105"
-                        : "border-blue-400 hover:shadow-xl hover:scale-105"
+                          ? "border-green-400 hover:shadow-xl hover:scale-105"
+                          : "border-blue-400 hover:shadow-xl hover:scale-105"
                     }
                   `}
                 >
                   <div className="flex items-start gap-3 mb-3">
-                    <div className="flex-shrink-0 mt-1">{getStatusIcon(node.status)}</div>
+                    <div className="flex-shrink-0 mt-1">
+                      {getStatusIcon(node.status)}
+                    </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{node.title}</h3>
-                      <p className="text-sm text-gray-600 line-clamp-2">{node.description}</p>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {node.title}
+                      </h3>
+                      {node.type && (
+                        <p className="text-xs text-gray-500 capitalize mb-1">
+                          {node.type}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(node.level)}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(node.level)}`}
+                    >
                       {node.level}
                     </span>
-                    {node.status === "locked" && node.dependencies.length > 0 && (
-                      <span className="text-xs text-gray-500">
-                        {node.dependencies.length} prerequisite{node.dependencies.length > 1 ? "s" : ""}
-                      </span>
-                    )}
+                    {node.status === "locked" &&
+                      node.dependencies &&
+                      node.dependencies.length > 0 && (
+                        <span className="text-xs text-gray-500">
+                          {node.dependencies.length} prerequisite
+                          {node.dependencies.length > 1 ? "s" : ""}
+                        </span>
+                      )}
                   </div>
                 </div>
               </div>
@@ -364,13 +463,13 @@ export function RoadmapViewPage() {
       </main>
 
       {/* Node Content Modal */}
-      {selectedNode && (
+      {/* {selectedNode && roadmapData && (
         <NodeContentModal
           node={selectedNode}
           roadmapId={roadmapData.roadmap_id}
           onClose={() => setSelectedNode(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }

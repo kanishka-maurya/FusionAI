@@ -85,7 +85,7 @@ STRICT RULES:
 
 
 # ── Main Function ────────────────────────────────────────────────
-def generate_roadmap_json(topic: str, level: str) -> dict:
+async def generate_roadmap_json(topic: str, level: str) -> dict:
     """
     Generates a structured roadmap JSON using LLM.
     """
