@@ -14,7 +14,7 @@ import os
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from backend.routes.Roadmap_Routes.roadmap_response import router as roadmap_router
-
+from backend.routes.Research_Routes.get_Latest_Data import router as research_router
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 
@@ -74,3 +74,4 @@ app.include_router(text_content_router,prefix="/api/text",tags=["Text Content"])
 app.include_router(get_notebook_contents_router,prefix="/api/notebooks",tags=["Notebooks"])
 app.include_router(chat_router,prefix="/api/notebooks",tags=["Notebook Chats"])
 app.include_router(roadmap_router,prefix="/api/roadmap",tags=["Roadmap"])
+app.include_router(research_router,prefix="/ai-news",tags=["AI News"])

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../contexts/AuthContext";
 import {
   ArrowLeft,
   Newspaper,
@@ -16,10 +17,40 @@ import {
 } from "lucide-react";
 
 export function AINewsPage() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [selectedTab, setSelectedTab] = useState<"news" | "repos" | "papers">("news");
+  const fetchData = async () => {
+    try {
+      const {
+            data: { session },
+      } = await supabase.auth.getSession();
+      
+      const token = session?.access_token;
+      const res = await fetch("http://localhost:8000/ai-news/get", {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+      const json = await res.json();
+      setData(json.data || []);
+      console.log("data fetched",data)
+    } catch (err) {
+      console.error("Error fetching:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchData();
+
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
+  }, []);
   const newsItems = [
     {
       id: "1",
