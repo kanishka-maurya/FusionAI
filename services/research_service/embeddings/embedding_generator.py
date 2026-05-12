@@ -62,10 +62,7 @@ class EmbeddingGenerator:
             logging.info("Initializing embedding model.")
             self.model = GoogleGenerativeAIEmbeddings(model=self.model_name)
 
-            sample_embedding = self.model.embed_query("test")
-            self.embedding_dim = len(sample_embedding)
-
-            logging.info(f"Model initialized. Dimension: {self.embedding_dim}")
+            logging.info(f"Model initialized.")
 
         except Exception as e:
             error = CustomException(e, sys)

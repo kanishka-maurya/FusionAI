@@ -1,0 +1,68 @@
+[
+  {
+    "input": "ced level so that both freshers and experienced professionals can prepare step by step.1. What is Generative AI?Generative AI is a type of Artificial Intelligence that can create new content such as text, images, audio, videos, or code based on the data it has learned from.Instead of only analyzing data or predicting outcomes, Generative AI can generate completely new outputs. Tools like ChatGPT, Gemini, Claude, and Midjourney are popular examples of Generative AI applications.2. How is Generati",
+    "output": {
+      "summary": "Generative AI is a type of Artificial Intelligence that creates new content, including text, images, audio, videos, or code, by learning from existing data. It generates completely new outputs rather than just analyzing or predicting outcomes. Popular applications include ChatGPT, Gemini, Claude, and Midjourney.",
+      "key_points": [
+        "Generative AI creates new content based on learned data.",
+        "It generates novel outputs, differing from traditional AI's analysis or prediction.",
+        "Examples include ChatGPT, Gemini, Claude, and Midjourney."
+      ],
+      "entities": [
+        "Generative AI",
+        "Artificial Intelligence",
+        "ChatGPT",
+        "Gemini",
+        "Claude",
+        "Midjourney"
+      ],
+      "risks": []
+    }
+  },
+  {
+    "input": "Gemini, Claude, and Midjourney are popular examples of Generative AI applications.2. How is Generative AI different from Traditional AI?Traditional AI mainly focuses on classification, prediction, or decision-making. For example, spam detection or fraud detection systems.Generative AI focuses on creating new content. It can write articles, generate images, create code, summarize documents, and even simulate conversations.In simple words:Traditional AI predicts.Generative AI creates.3. What are s",
+    "output": {
+      "summary": "The text differentiates Generative AI from Traditional AI, stating that Generative AI creates new content like articles, images, and code, while Traditional AI focuses on prediction, classification, and decision-making. Popular Generative AI applications include Gemini, Claude, and Midjourney.",
+      "key_points": [
+        "Generative AI creates new content.",
+        "Traditional AI focuses on classification, prediction, or decision-making.",
+        "Examples of Generative AI applications include Gemini, Claude, and Midjourney."
+      ],
+      "entities": [
+        "Gemini",
+        "Claude",
+        "Midjourney",
+        "Generative AI",
+        "Traditional AI"
+      ],
+      "risks": []
+    }
+  },
+  {
+    "input": "n simulate conversations.In simple words:Traditional AI predicts.Generative AI creates.3. What are some real-world applications of Generative AI?Some common real-world applications are:AI chatbots and virtual assistantsContent writingCode generationImage generationVideo creationDocument summarizationAI search systemsCustomer support automationPersonalized recommendationsMany companies also use Generative AI internally for productivity and automation tasks.4. What is a Large Language Model (LLM)?",
+    "output": {
+      "summary": "Generative AI creates content, contrasting with Traditional AI's predictive nature. Its real-world applications include AI chatbots, content and code generation, image and video creation, document summarization, and customer support automation.",
+      "key_points": [
+        "Generative AI creates, while Traditional AI predicts.",
+        "Generative AI has diverse real-world applications across various industries.",
+        "Companies utilize Generative AI for productivity and automation tasks."
+      ],
+      "entities": [
+        "Generative AI",
+        "Traditional AI",
+        "AI chatbots",
+        "Virtual assistants",
+        "Content writing",
+        "Code generation",
+        "Image generation",
+        "Video creation",
+        "Document summarization",
+        "AI search systems",
+        "Customer support automation",
+        "Personalized recommendations",
+        "Large Language Model (LLM)"
+      ],
+      "risks": []
+    }
+  }
+]

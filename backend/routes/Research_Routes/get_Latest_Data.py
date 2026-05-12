@@ -179,15 +179,18 @@ async def store_sliding_window(data):
     await pipe.execute()
 
 async def adaptive_fetch(source, fetch_func):
-    activity = await get_activity_level(source)
-    interval = get_dynamic_interval(activity)
+    try:
+      activity = await get_activity_level(source)
+      interval = get_dynamic_interval(activity)
 
-    if not await allow_request(source):
+      if not await allow_request(source):
         print(f"Rate limited: {source}")
         return [], interval
 
-    data = await fetch_func()
-    await log_activity(source, len(data))
+      data = await fetch_func()
+      await log_activity(source, len(data))
+    except Exception as e:
+      print(f"Error fetching {source}:", e)
 
     return data, interval
 def pretty_print(source, data):
