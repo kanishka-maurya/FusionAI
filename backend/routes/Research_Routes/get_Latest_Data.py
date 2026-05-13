@@ -5,6 +5,7 @@ import asyncio
 import json
 import hashlib
 import xml.etree.ElementTree as ET
+from matplotlib.pyplot import title
 import redis.asyncio as redis
 import os
 from backend.routes.Research_Routes.Extraction.extractor import extract_full_document
@@ -12,7 +13,16 @@ from backend.routes.Research_Routes.processor import process_and_build_dataset
 router = APIRouter()
 
 redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
-
+BLOCKED_KEYWORDS = [
+    "cheat",
+    "hack",
+    "crack",
+    "exploit",
+    "malware",
+    "stealer",
+    "phishing",
+    "keylogger"
+]
 ZSET_KEY = "ai:raw:current"
 SEEN_KEY = "ai:seen_ids"
 
@@ -47,6 +57,10 @@ async def fetch_github():
 
     items = []
     for repo in data.get("items", []):
+        title = repo["full_name"].lower()
+
+        if any(k in title for k in BLOCKED_KEYWORDS):
+           continue
         items.append({
             "title": repo["full_name"],
             "url": repo["html_url"],

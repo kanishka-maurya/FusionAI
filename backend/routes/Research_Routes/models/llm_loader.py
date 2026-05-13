@@ -17,14 +17,18 @@ You are an expert AI analyst.
 
 Summarize the following text into STRICT JSON format.
 
+IMPORTANT:
+Return ONLY valid parsable JSON.
+Do NOT wrap JSON inside markdown.
+Do NOT truncate output.
+
 Rules:
 - Be factual
 - No hallucination
-- Extract key entities
-- Identify risks if any
+- Extract key entities 
 - Keep summary concise (3-5 lines)
 - Return ONLY valid JSON
-- Do not add markdown formatting
+- Do not add markdown or any formatting
 
 Return format:
 
@@ -32,7 +36,6 @@ Return format:
   "summary": "...",
   "key_points": ["...", "..."],
   "entities": ["...", "..."],
-  "risks": ["...", "..."]
 }}
 
 Text:
@@ -54,8 +57,8 @@ async def summarize_with_gemini(chunk: str):
             }
         ],
         "generationConfig": {
-            "temperature": 0.2,
-            "maxOutputTokens": 512,
+            "temperature": 0,
+            "maxOutputTokens": 2048,
             "responseMimeType": "application/json"
         }
     }
