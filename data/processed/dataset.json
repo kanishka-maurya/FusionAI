@@ -345,5 +345,473 @@
         "MIT License"
       ]
     }
+  },
+  {
+    "input": "#  GTA 5 Mod Menu - Unlock Powerful Features for GTA 5  [Download Here](https://github.com/S4rdenz/gta-5-mod-menu/releases/latest) ##  Getting Started Welcome to the GTA 5 Mod Menu! This application enhances your GTA 5 gaming experience by providing powerful features such as ESP, aimbot, vehicle spawning, and money drops. It is designed to be easy to use and undetected, ensuring you enjoy a seamless gaming experience. ##  Download & Install To get started, you'll need to download the application",
+    "output": {
+      "summary": "The GTA 5 Mod Menu is an application designed to enhance the GTA 5 gaming experience. It offers powerful features such as ESP, aimbot, vehicle spawning, and money drops. The mod is built for ease of use and undetectability, ensuring a seamless gaming experience for users.",
+      "key_points": [
+        "Enhances GTA 5 gaming experience with powerful features.",
+        "Includes features like ESP, aimbot, vehicle spawning, and money drops.",
+        "Designed for ease of use and to remain undetected.",
+        "Requires downloading the application to get started."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5",
+        "ESP",
+        "Aimbot",
+        "Vehicle Spawning",
+        "Money Drops"
+      ]
+    }
+  },
+  {
+    "input": "#  GTA 5 Mod Menu - Unlock Powerful Features for GTA 5  [Download Here](https://github.com/S4rdenz/gta-5-mod-menu/releases/latest) ##  Getting Started Welcome to the GTA 5 Mod Menu! This application enhances your GTA 5 gaming experience by providing powerful features such as ESP, aimbot, vehicle spawning, and money drops. It is designed to be easy to use and undetected, ensuring you enjoy a seamless gaming experience. ##  Download & Install To get started, you'll need to download the application",
+    "output": {
+      "summary": "The GTA 5 Mod Menu application enhances the GTA 5 gaming experience by offering powerful features such as ESP, aimbot, vehicle spawning, and money drops. It is designed for ease of use and to remain undetected, with the latest version available for download on GitHub.",
+      "key_points": [
+        "GTA 5 Mod Menu enhances the GTA 5 gaming experience.",
+        "Provides powerful features including ESP, aimbot, vehicle spawning, and money drops.",
+        "Designed to be easy to use and undetected.",
+        "Download the application to get started."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5",
+        "ESP",
+        "Aimbot",
+        "Vehicle Spawning",
+        "Money Drops",
+        "GitHub"
+      ]
+    }
+  },
+  {
+    "input": "ss gaming experience. ##  Download & Install To get started, you'll need to download the application. Follow these step-by-step instructions: 1. **Visit the Releases Page:** Click the link below to go to the official download page: - [Download from Releases](https://github.com/S4rdenz/gta-5-mod-menu/releases/latest) 2. **Choose Your File:** Look for the latest version, typically listed at the top. You may see multiple files; select the one that mentions the mod menu. 3. **Download the File:** Cl",
+    "output": {
+      "summary": "The provided text outlines the download and installation process for an application, likely a mod menu, to enhance a gaming experience. Users are instructed to visit the official GitHub releases page, locate the latest version, and download the specific mod menu file.",
+      "key_points": [
+        "Instructions for downloading and installing an application are provided.",
+        "Users must visit the official GitHub releases page to start the download process.",
+        "The latest version of the mod menu file needs to be selected and downloaded from the releases page."
+      ],
+      "entities": [
+        "GitHub",
+        "S4rdenz/gta-5-mod-menu",
+        "Releases Page",
+        "mod menu",
+        "application"
+      ]
+    }
+  },
+  {
+    "input": "ss gaming experience. ##  Download & Install To get started, you'll need to download the application. Follow these step-by-step instructions: 1. **Visit the Releases Page:** Click the link below to go to the official download page: - [Download from Releases](https://github.com/S4rdenz/gta-5-mod-menu/releases/latest) 2. **Choose Your File:** Look for the latest version, typically listed at the top. You may see multiple files; select the one that mentions the mod menu. 3. **Download the File:** Cl",
+    "output": {
+      "summary": "This text provides step-by-step instructions for downloading and installing the gta-5-mod-menu application. Users are directed to visit the official GitHub releases page, select the latest mod menu file, and download it to enhance their gaming experience.",
+      "key_points": [
+        "Instructions for downloading and installing the gta-5-mod-menu application.",
+        "Visit the official releases page on GitHub.",
+        "Select and download the latest mod menu file."
+      ],
+      "entities": [
+        "gta-5-mod-menu",
+        "GitHub",
+        "S4rdenz"
+      ]
+    }
+  },
+  {
+    "input": " You may see multiple files; select the one that mentions the mod menu. 3. **Download the File:** Click on the file name to start the download. It should save to your computer, usually in your Downloads folder. 4. **Extract the File:** After downloading, locate the file and right-click on it. Choose \"Extract All\" or use a similar option available on your system. This will create a new folder with the necessary files. 5. **Run the Application:** - Navigate to the folder you just extracted. - Find",
+    "output": {
+      "summary": "This guide outlines the process of downloading a mod menu file, extracting its contents to a new folder, and then running the application from the extracted files. Users must select the correct file, download it, extract all contents, and finally navigate to the new folder to run the application.",
+      "key_points": [
+        "Select and download the mod menu file.",
+        "Extract the downloaded file to create a new folder.",
+        "Run the application from the newly extracted folder."
+      ],
+      "entities": [
+        "mod menu",
+        "file",
+        "computer",
+        "Downloads folder",
+        "application"
+      ]
+    }
+  },
+  {
+    "input": " You may see multiple files; select the one that mentions the mod menu. 3. **Download the File:** Click on the file name to start the download. It should save to your computer, usually in your Downloads folder. 4. **Extract the File:** After downloading, locate the file and right-click on it. Choose \"Extract All\" or use a similar option available on your system. This will create a new folder with the necessary files. 5. **Run the Application:** - Navigate to the folder you just extracted. - Find",
+    "output": {
+      "summary": "This guide outlines the process of downloading a mod menu file, extracting its contents to a new folder, and then running the application from the extracted files. Users must select the correct file, download it, extract all contents, and finally navigate to the new folder to run the application.",
+      "key_points": [
+        "Select and download the mod menu file.",
+        "Extract the downloaded file to create a new folder.",
+        "Run the application from the newly extracted folder."
+      ],
+      "entities": [
+        "mod menu",
+        "file",
+        "computer",
+        "Downloads folder",
+        "application"
+      ]
+    }
+  },
+  {
+    "input": "the necessary files. 5. **Run the Application:** - Navigate to the folder you just extracted. - Find and double-click on the executable file (e.g., `GTA5-Mod-Menu.exe`) to launch the application. 6. **Follow Setup Instructions:** Upon launching, the menu should provide instructions. Follow these to set it up in your GTA 5 client. ##  Features The GTA 5 Mod Menu comes with a variety of features designed for an improved gameplay experience. Here are some key highlights: - **ESP (Extra Sensory Perc",
+    "output": {
+      "summary": "The text outlines the steps to run and set up a GTA 5 Mod Menu application, which involves navigating to the extracted folder, launching the executable file (e.g., `GTA5-Mod-Menu.exe`), and following in-app instructions to integrate it with the GTA 5 client. It also highlights that the mod menu offers various features for an improved gameplay experience, including ESP (Extra Sensory Perception).",
+      "key_points": [
+        "Run the GTA 5 Mod Menu application by launching its executable file.",
+        "Follow in-app instructions to set up the mod menu within the GTA 5 client.",
+        "The GTA 5 Mod Menu provides various features for an improved gameplay experience.",
+        "ESP (Extra Sensory Perception) is a key feature of the mod menu."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5 client",
+        "executable file",
+        "ESP (Extra Sensory Perception)",
+        "GTA5-Mod-Menu.exe"
+      ]
+    }
+  },
+  {
+    "input": "the necessary files. 5. **Run the Application:** - Navigate to the folder you just extracted. - Find and double-click on the executable file (e.g., `GTA5-Mod-Menu.exe`) to launch the application. 6. **Follow Setup Instructions:** Upon launching, the menu should provide instructions. Follow these to set it up in your GTA 5 client. ##  Features The GTA 5 Mod Menu comes with a variety of features designed for an improved gameplay experience. Here are some key highlights: - **ESP (Extra Sensory Perc",
+    "output": {
+      "summary": "The text outlines the steps to run and set up a GTA 5 Mod Menu application, which involves navigating to the extracted folder, launching the executable file (e.g., `GTA5-Mod-Menu.exe`), and following in-app instructions to integrate it with the GTA 5 client. It also highlights that the mod menu offers various features for an improved gameplay experience, including ESP (Extra Sensory Perception).",
+      "key_points": [
+        "Run the GTA 5 Mod Menu application by launching its executable file.",
+        "Follow in-app instructions to set up the mod menu within the GTA 5 client.",
+        "The GTA 5 Mod Menu provides various features for an improved gameplay experience.",
+        "ESP (Extra Sensory Perception) is a key feature of the mod menu."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5 client",
+        "executable file",
+        "ESP (Extra Sensory Perception)",
+        "GTA5-Mod-Menu.exe"
+      ]
+    }
+  },
+  {
+    "input": "igned for an improved gameplay experience. Here are some key highlights: - **ESP (Extra Sensory Perception):** See your enemies and items through walls. - **Aimbot:** Enhance your aiming capabilities for precise shots. - **Vehicle Spawning:** Instantly create any vehicle you desire. - **Money Drops:** Generate in-game currency quickly. - **Customizable Options:** Tailor the mod menu to fit your style and needs. ##  System Requirements To ensure optimal performance of the GTA 5 Mod Menu, make sur",
+    "output": {
+      "summary": "The text describes a GTA 5 Mod Menu designed to enhance gameplay, featuring capabilities such as ESP for seeing through walls, Aimbot for precise shots, instant Vehicle Spawning, and quick Money Drops. The mod menu also offers customizable options to fit user preferences.",
+      "key_points": [
+        "ESP (Extra Sensory Perception) allows users to see enemies and items through walls.",
+        "Aimbot enhances aiming capabilities for precise shots.",
+        "Vehicle Spawning enables instant creation of any desired vehicle.",
+        "Money Drops generate in-game currency quickly.",
+        "Customizable Options allow tailoring the mod menu to user style and needs."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "ESP",
+        "Aimbot",
+        "Vehicle Spawning",
+        "Money Drops",
+        "Customizable Options",
+        "System Requirements"
+      ]
+    }
+  },
+  {
+    "input": "igned for an improved gameplay experience. Here are some key highlights: - **ESP (Extra Sensory Perception):** See your enemies and items through walls. - **Aimbot:** Enhance your aiming capabilities for precise shots. - **Vehicle Spawning:** Instantly create any vehicle you desire. - **Money Drops:** Generate in-game currency quickly. - **Customizable Options:** Tailor the mod menu to fit your style and needs. ##  System Requirements To ensure optimal performance of the GTA 5 Mod Menu, make sur",
+    "output": {
+      "summary": "The text describes a GTA 5 Mod Menu designed to enhance gameplay, featuring capabilities such as ESP for seeing through walls, Aimbot for precise shots, instant Vehicle Spawning, and quick Money Drops. The mod menu also offers customizable options to fit user preferences.",
+      "key_points": [
+        "ESP (Extra Sensory Perception) allows users to see enemies and items through walls.",
+        "Aimbot enhances aiming capabilities for precise shots.",
+        "Vehicle Spawning enables instant creation of any desired vehicle.",
+        "Money Drops generate in-game currency quickly.",
+        "Customizable Options allow tailoring the mod menu to user style and needs."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "ESP",
+        "Aimbot",
+        "Vehicle Spawning",
+        "Money Drops",
+        "Customizable Options",
+        "System Requirements"
+      ]
+    }
+  },
+  {
+    "input": "yle and needs. ##  System Requirements To ensure optimal performance of the GTA 5 Mod Menu, make sure your system meets the following requirements: - **Operating System:** Windows 10 or later - **Processor:** Intel Core i3 or AMD equivalent - **RAM:** Minimum 4 GB - **Graphics Card:** NVIDIA GeForce GTX 660 or AMD equivalent - **Internet Connection:** Stable connection for server interactions ##  Support If you encounter any issues while using the GTA 5 Mod Menu, you can reach out for help. Cons",
+    "output": {
+      "summary": "The GTA 5 Mod Menu requires specific system requirements for optimal performance, including Windows 10 or later, an Intel Core i3 or AMD equivalent processor, a minimum of 4 GB RAM, an NVIDIA GeForce GTX 660 or AMD equivalent graphics card, and a stable internet connection for server interactions. Support is available for users encountering issues.",
+      "key_points": [
+        "GTA 5 Mod Menu has specific system requirements.",
+        "Required OS: Windows 10+.",
+        "Required Processor: Intel Core i3 or AMD equivalent.",
+        "Required RAM: Minimum 4 GB.",
+        "Required Graphics Card: NVIDIA GeForce GTX 660 or AMD equivalent.",
+        "Stable internet connection is necessary.",
+        "Support is available for issues."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "Windows 10",
+        "Intel Core i3",
+        "AMD",
+        "NVIDIA GeForce GTX 660"
+      ]
+    }
+  },
+  {
+    "input": "yle and needs. ##  System Requirements To ensure optimal performance of the GTA 5 Mod Menu, make sure your system meets the following requirements: - **Operating System:** Windows 10 or later - **Processor:** Intel Core i3 or AMD equivalent - **RAM:** Minimum 4 GB - **Graphics Card:** NVIDIA GeForce GTX 660 or AMD equivalent - **Internet Connection:** Stable connection for server interactions ##  Support If you encounter any issues while using the GTA 5 Mod Menu, you can reach out for help. Cons",
+    "output": {
+      "summary": "The GTA 5 Mod Menu requires specific system requirements for optimal performance, including Windows 10 or later, an Intel Core i3 or AMD equivalent processor, a minimum of 4 GB RAM, an NVIDIA GeForce GTX 660 or AMD equivalent graphics card, and a stable internet connection for server interactions. Support is available for users encountering issues.",
+      "key_points": [
+        "GTA 5 Mod Menu has specific system requirements.",
+        "Required OS: Windows 10+.",
+        "Required Processor: Intel Core i3 or AMD equivalent.",
+        "Required RAM: Minimum 4 GB.",
+        "Required Graphics Card: NVIDIA GeForce GTX 660 or AMD equivalent.",
+        "Stable internet connection is necessary.",
+        "Support is available for issues."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "Windows 10",
+        "Intel Core i3",
+        "AMD",
+        "NVIDIA GeForce GTX 660"
+      ]
+    }
+  },
+  {
+    "input": "Support If you encounter any issues while using the GTA 5 Mod Menu, you can reach out for help. Consider the following options: - **FAQs:** Review the FAQ section on our GitHub page for common questions and solutions. - **Community Support:** Join our community forums or Discord channel for user tips and advice. - **Report Issues:** If you find a bug, please report it on the \"Issues\" tab of the GitHub repository. We appreciate your feedback. ##  Tips for Use - Start the GTA 5 Mod Menu before lau",
+    "output": {
+      "summary": "Users encountering issues with the GTA 5 Mod Menu can find support through FAQs on GitHub, community forums, or Discord. Bugs should be reported on the GitHub repository's 'Issues' tab. A primary tip for use is to start the mod menu before launching GTA 5.",
+      "key_points": [
+        "Support for GTA 5 Mod Menu issues is available via GitHub FAQs, community forums, and Discord.",
+        "Bugs can be reported on the GitHub repository's 'Issues' tab.",
+        "Users should start the GTA 5 Mod Menu before launching the game."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GitHub",
+        "Discord",
+        "Community Forums",
+        "FAQs"
+      ]
+    }
+  },
+  {
+    "input": "Support If you encounter any issues while using the GTA 5 Mod Menu, you can reach out for help. Consider the following options: - **FAQs:** Review the FAQ section on our GitHub page for common questions and solutions. - **Community Support:** Join our community forums or Discord channel for user tips and advice. - **Report Issues:** If you find a bug, please report it on the \"Issues\" tab of the GitHub repository. We appreciate your feedback. ##  Tips for Use - Start the GTA 5 Mod Menu before lau",
+    "output": {
+      "summary": "Users encountering issues with the GTA 5 Mod Menu can find support through FAQs on GitHub, community forums, or Discord. Bugs should be reported on the GitHub repository's 'Issues' tab. A primary tip for use is to start the mod menu before launching GTA 5.",
+      "key_points": [
+        "Support for GTA 5 Mod Menu issues is available via GitHub FAQs, community forums, and Discord.",
+        "Bugs can be reported on the GitHub repository's 'Issues' tab.",
+        "Users should start the GTA 5 Mod Menu before launching the game."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GitHub",
+        "Discord",
+        "Community Forums",
+        "FAQs"
+      ]
+    }
+  },
+  {
+    "input": "tHub repository. We appreciate your feedback. ##  Tips for Use - Start the GTA 5 Mod Menu before launching your GTA 5 client for the best results. - Take time to explore the settings within the menu. Adjusting options can greatly enhance your gaming experience. - Be cautious with the features used in multiplayer modes to avoid bans. ##  Future Updates We continuously work on enhancing the GTA 5 Mod Menu. Future updates may include: - New features based on user feedback - Improvements to current ",
+    "output": {
+      "summary": "This document provides essential tips for using the GTA 5 Mod Menu, including launching it before the game, exploring settings for enhanced experience, and exercising caution in multiplayer to avoid bans. It also highlights ongoing development, with future updates planned to introduce new features and improvements based on user feedback.",
+      "key_points": [
+        "Start the GTA 5 Mod Menu before launching the GTA 5 client for best results.",
+        "Explore menu settings to enhance the gaming experience.",
+        "Be cautious with features used in multiplayer modes to avoid bans.",
+        "Future updates will include new features and improvements based on user feedback."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5 client",
+        "tHub repository"
+      ]
+    }
+  },
+  {
+    "input": "tHub repository. We appreciate your feedback. ##  Tips for Use - Start the GTA 5 Mod Menu before launching your GTA 5 client for the best results. - Take time to explore the settings within the menu. Adjusting options can greatly enhance your gaming experience. - Be cautious with the features used in multiplayer modes to avoid bans. ##  Future Updates We continuously work on enhancing the GTA 5 Mod Menu. Future updates may include: - New features based on user feedback - Improvements to current ",
+    "output": {
+      "summary": "This document provides essential tips for using the GTA 5 Mod Menu, including launching it before the game, exploring settings for enhanced experience, and exercising caution in multiplayer to avoid bans. It also highlights ongoing development, with future updates planned to introduce new features and improvements based on user feedback.",
+      "key_points": [
+        "Start the GTA 5 Mod Menu before launching the GTA 5 client for best results.",
+        "Explore menu settings to enhance the gaming experience.",
+        "Be cautious with features used in multiplayer modes to avoid bans.",
+        "Future updates will include new features and improvements based on user feedback."
+      ],
+      "entities": [
+        "GTA 5 Mod Menu",
+        "GTA 5 client",
+        "tHub repository"
+      ]
+    }
+  },
+  {
+    "input": "d Menu. Future updates may include: - New features based on user feedback - Improvements to current functionalities - Regular updates to maintain undetectability against anti-cheat systems",
+    "output": {
+      "summary": "Future updates for the 'd Menu' will focus on incorporating new features based on user feedback, enhancing current functionalities, and implementing regular updates to ensure it remains undetectable by anti-cheat systems.",
+      "key_points": [
+        "Future updates for 'd Menu' are planned.",
+        "New features will be based on user feedback.",
+        "Current functionalities will receive improvements.",
+        "Regular updates will maintain undetectability against anti-cheat systems."
+      ],
+      "entities": [
+        "d Menu",
+        "user feedback",
+        "anti-cheat systems"
+      ]
+    }
+  },
+  {
+    "input": "d Menu. Future updates may include: - New features based on user feedback - Improvements to current functionalities - Regular updates to maintain undetectability against anti-cheat systems",
+    "output": {
+      "summary": "Future updates for a 'Menu' system will include new features driven by user feedback, improvements to existing functionalities, and regular updates to ensure undetectability against anti-cheat systems.",
+      "key_points": [
+        "Future updates for a 'Menu' system are planned.",
+        "New features will be based on user feedback.",
+        "Current functionalities will receive improvements.",
+        "Regular updates are crucial for maintaining undetectability against anti-cheat systems."
+      ],
+      "entities": [
+        "Menu",
+        "user feedback",
+        "anti-cheat systems"
+      ]
+    }
+  },
+  {
+    "input": "# PsiphonOverMITM [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D4.svg?style=for-the-badge&logo=windows)]() [![Core](https://img.shields.io/badge/Core-Xray_26.4.25-black.svg?style=for-the-badge)]() [![Mode](https://img.shields.io/badge/Mode-Psiphon_Upstream_Proxy-2ea44f.svg?style=for-the-badge)]() [![Author](https://img.shields.io/badge/by-%40b3hnamrjd-blue.svg?style=for-the-badge)](https://github.com/B3hnamR/PsiphonOverMITM) <p align=\"center\">        Psiphon over MITM   </p> <p a",
+    "output": {
+      "summary": "PsiphonOverMITM is a project designed for Windows 10/11, utilizing Xray 26.4.25 as its core. It operates in Psiphon Upstream Proxy mode, providing a specific network configuration. The project was developed by @b3hnamrjd.",
+      "key_points": [
+        "Project name is PsiphonOverMITM.",
+        "Compatible with Windows 10/11.",
+        "Uses Xray 26.4.25 as its core.",
+        "Functions as a Psiphon Upstream Proxy.",
+        "Authored by @b3hnamrjd."
+      ],
+      "entities": [
+        "PsiphonOverMITM",
+        "Windows 10/11",
+        "Xray 26.4.25",
+        "Psiphon Upstream Proxy",
+        "@b3hnamrjd"
+      ]
+    }
+  },
+  {
+    "input": "(https://github.com/B3hnamR/PsiphonOverMITM) <p align=\"center\">        Psiphon over MITM   </p> <p align=\"center\">             : <a href=\"https://t.me/B3hnamR\">@B3hnamR</a>. </p> <p align=\"center\">        Star  . </p> --- ##             Psiphon    upstream proxy      upstream    MITM-DomainFronting  .   :    Psiphon           Xray   Xray    Patterniha       Psiphon     .     : ```text Psiphon over MITM ```  Psiphon  MITM    .          .      helper       `psiphon-helper@patterniha.json`      Sta",
+    "output": {
+      "summary": "This project, \"Psiphon over MITM\" by @B3hnamR, outlines a method to use Psiphon as an upstream proxy over MITM-DomainFronting. It leverages Xray, specifically with Patterniha, to establish the connection, utilizing a helper configuration file for setup.",
+      "key_points": [
+        "Psiphon is used as an upstream proxy.",
+        "The method operates over MITM-DomainFronting.",
+        "Xray is utilized for connecting Psiphon, specifically with Patterniha.",
+        "A helper configuration file, `psiphon-helper@patterniha.json`, is mentioned for setup."
+      ],
+      "entities": [
+        "Psiphon",
+        "MITM-DomainFronting",
+        "Xray",
+        "Patterniha",
+        "@B3hnamR",
+        "psiphon-helper@patterniha.json"
+      ]
+    }
+  },
+  {
+    "input": "# PsiphonOverMITM [![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D4.svg?style=for-the-badge&logo=windows)]() [![Core](https://img.shields.io/badge/Core-Xray_26.4.25-black.svg?style=for-the-badge)]() [![Mode](https://img.shields.io/badge/Mode-Psiphon_Upstream_Proxy-2ea44f.svg?style=for-the-badge)]() [![Author](https://img.shields.io/badge/by-%40b3hnamrjd-blue.svg?style=for-the-badge)](https://github.com/B3hnamR/PsiphonOverMITM) <p align=\"center\">        Psiphon over MITM   </p> <p a",
+    "output": {
+      "summary": "PsiphonOverMITM is a project designed for Windows 10/11, leveraging Xray 26.4.25 as its core. It functions in Psiphon Upstream Proxy mode and was developed by @b3hnamrjd.",
+      "key_points": [
+        "Project name is PsiphonOverMITM.",
+        "Supports Windows 10/11 operating systems.",
+        "Utilizes Xray 26.4.25 as its core component.",
+        "Operates in Psiphon Upstream Proxy mode.",
+        "Authored by @b3hnamrjd (B3hnamR)."
+      ],
+      "entities": [
+        "PsiphonOverMITM",
+        "Windows 10/11",
+        "Xray 26.4.25",
+        "Psiphon Upstream Proxy",
+        "@b3hnamrjd",
+        "B3hnamR"
+      ]
+    }
+  },
+  {
+    "input": "(https://github.com/B3hnamR/PsiphonOverMITM) <p align=\"center\">        Psiphon over MITM   </p> <p align=\"center\">             : <a href=\"https://t.me/B3hnamR\">@B3hnamR</a>. </p> <p align=\"center\">        Star  . </p> --- ##             Psiphon    upstream proxy      upstream    MITM-DomainFronting  .   :    Psiphon           Xray   Xray    Patterniha       Psiphon     .     : ```text Psiphon over MITM ```  Psiphon  MITM    .          .      helper       `psiphon-helper@patterniha.json`      Sta",
+    "output": {
+      "summary": "This project, \"Psiphon over MITM\" by @B3hnamR, outlines a method to use Psiphon as an upstream proxy over MITM-DomainFronting. It leverages Xray, specifically with Patterniha, to establish the connection, utilizing a helper configuration file for setup.",
+      "key_points": [
+        "Psiphon is used as an upstream proxy.",
+        "The method operates over MITM-DomainFronting.",
+        "Xray is utilized for connecting Psiphon, specifically with Patterniha.",
+        "A helper configuration file, `psiphon-helper@patterniha.json`, is mentioned for setup."
+      ],
+      "entities": [
+        "Psiphon",
+        "MITM-DomainFronting",
+        "Xray",
+        "Patterniha",
+        "@B3hnamR",
+        "psiphon-helper@patterniha.json"
+      ]
+    }
+  },
+  {
+    "input": " MITM ```  Psiphon  MITM    .          .      helper       `psiphon-helper@patterniha.json`      Start  Stop    certificate       Psiphon. --- ##          MITM-DomainFronting   **Patterniha** .           : [https://github.com/patterniha/MITM-DomainFronting](https://github.com/patterniha/MITM-DomainFronting)                 Psiphon . --- ##      - **  Psiphon helper:**  `psiphon-helper@patterniha.json`   Xray   . - **Certificate    Patterniha:**  `mycert.crt`  `mycert.key`     `certificate_genera",
+    "output": {
+      "summary": "This document describes Patterniha's MITM-DomainFronting project, which utilizes a Psiphon helper (`psiphon-helper@patterniha.json`) and specific certificates (`mycert.crt`, `mycert.key`). The setup involves starting and stopping the helper, and it integrates with Xray for managing Psiphon connections.",
+      "key_points": [
+        "Patterniha's MITM-DomainFronting project is introduced.",
+        "A Psiphon helper, configured via `psiphon-helper@patterniha.json`, is a core component.",
+        "Custom certificates (`mycert.crt`, `mycert.key`) from Patterniha are essential.",
+        "The system integrates with Xray for Psiphon helper management."
+      ],
+      "entities": [
+        "MITM",
+        "Psiphon",
+        "Patterniha",
+        "MITM-DomainFronting",
+        "psiphon-helper@patterniha.json",
+        "Xray",
+        "mycert.crt",
+        "mycert.key",
+        "certificates"
+      ]
+    }
+  },
+  {
+    "input": " MITM ```  Psiphon  MITM    .          .      helper       `psiphon-helper@patterniha.json`      Start  Stop    certificate       Psiphon. --- ##          MITM-DomainFronting   **Patterniha** .           : [https://github.com/patterniha/MITM-DomainFronting](https://github.com/patterniha/MITM-DomainFronting)                 Psiphon . --- ##      - **  Psiphon helper:**  `psiphon-helper@patterniha.json`   Xray   . - **Certificate    Patterniha:**  `mycert.crt`  `mycert.key`     `certificate_genera",
+    "output": {
+      "summary": "This document describes Patterniha's MITM-DomainFronting project, which utilizes a Psiphon helper (`psiphon-helper@patterniha.json`) and specific certificates (`mycert.crt`, `mycert.key`). The setup involves starting and stopping the helper, and it integrates with Xray for managing Psiphon connections.",
+      "key_points": [
+        "Patterniha's MITM-DomainFronting project is introduced.",
+        "A Psiphon helper, configured via `psiphon-helper@patterniha.json`, is a core component.",
+        "Custom certificates (`mycert.crt`, `mycert.key`) from Patterniha are essential.",
+        "The system integrates with Xray for Psiphon helper management."
+      ],
+      "entities": [
+        "MITM",
+        "Psiphon",
+        "Patterniha",
+        "MITM-DomainFronting",
+        "psiphon-helper@patterniha.json",
+        "Xray",
+        "mycert.crt",
+        "mycert.key",
+        "certificates"
+      ]
+    }
   }
 ]
