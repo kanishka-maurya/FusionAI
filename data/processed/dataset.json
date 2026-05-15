@@ -813,5 +813,377 @@
         "certificates"
       ]
     }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub is a centralized resource center designed for Roblox game developers, providing Lua tools and testing utilities. It supports Windows 10/11 x64 platforms and is released under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools and testing utilities.",
+        "Compatible with Windows 10/11 x64.",
+        "Licensed under MIT."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox game developers",
+        "Lua",
+        "Windows 10/11 x64",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub Developer Resource Center, version 1.0.0, is a centralized platform designed for Roblox game developers. It provides essential resources such as Lua tools and testing utilities. The hub supports Windows 10/11 x64, utilizes Lua 5.1, and is distributed under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers",
+        "Provides Lua tools and testing utilities",
+        "Supports Windows 10/11 x64 platform",
+        "Uses Lua 5.1",
+        "Licensed under MIT",
+        "Version 1.0.0"
+      ],
+      "entities": [
+        "Roblox Hub Developer Resource Center",
+        "Roblox",
+        "Windows 10/11 x64",
+        "Lua 5.1",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "The Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides essential tools like Lua utilities, testing tools, performance monitors, and educational references. The platform aims to help creators build and optimize their games efficiently.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "Designed to help creators build and optimize Roblox games."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox platform",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides Lua tools, testing utilities, performance monitors, and educational references. The platform aims to help creators build and optimize their games, including features for game analysis like a hierarchy explorer.",
+      "key_points": [
+        "Roblox Hub is a centralized resource hub for Roblox game developers.",
+        "It offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "The hub is designed to help creators build and optimize their games on the Roblox platform.",
+        "Includes game analysis tools such as a hierarchy explorer."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub is a centralized resource center designed for Roblox game developers, providing Lua tools and testing utilities. It supports Windows 10/11 x64 platforms and is released under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools and testing utilities.",
+        "Compatible with Windows 10/11 x64.",
+        "Licensed under MIT."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox game developers",
+        "Lua",
+        "Windows 10/11 x64",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub Developer Resource Center, version 1.0.0, is a centralized platform designed for Roblox game developers. It provides essential resources such as Lua tools and testing utilities. The hub supports Windows 10/11 x64, utilizes Lua 5.1, and is distributed under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers",
+        "Provides Lua tools and testing utilities",
+        "Supports Windows 10/11 x64 platform",
+        "Uses Lua 5.1",
+        "Licensed under MIT",
+        "Version 1.0.0"
+      ],
+      "entities": [
+        "Roblox Hub Developer Resource Center",
+        "Roblox",
+        "Windows 10/11 x64",
+        "Lua 5.1",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides Lua tools, testing utilities, performance monitors, and educational references. The platform aims to help creators build and optimize their games, including features for game analysis like a hierarchy explorer.",
+      "key_points": [
+        "Roblox Hub is a centralized resource hub for Roblox game developers.",
+        "It offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "The hub is designed to help creators build and optimize their games on the Roblox platform.",
+        "Includes game analysis tools such as a hierarchy explorer."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides Lua tools, testing utilities, performance monitors, and educational references. The platform aims to help creators build and optimize their games, including features for game analysis like a hierarchy explorer.",
+      "key_points": [
+        "Roblox Hub is a centralized resource hub for Roblox game developers.",
+        "It offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "The hub is designed to help creators build and optimize their games on the Roblox platform.",
+        "Includes game analysis tools such as a hierarchy explorer."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "de | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object inspector, property viewer | |  **Performance** | FPS tracker, memory monitor, ping checker | |  **Input Testing** | Keyboard, mouse, and virtual input testers | |  **Positioning** | Coordinate logger, teleport presets, waypoint system | |  **Camera** | Freecam controller, zoom options, perspective tools | |  **References** | API quick reference, common patterns, best practices | --- ##  Quick St",
+    "output": {
+      "summary": "The provided text outlines various categories of tools and features, likely for game development or analysis. These categories include Game Analysis (hierarchy, object inspection), Performance (FPS, memory, ping), Input Testing (keyboard, mouse, virtual), Positioning (coordinates, waypoints), Camera controls (freecam, zoom), and References (API, best practices).",
+      "key_points": [
+        "Tools are categorized into Game Analysis, Performance, Input Testing, Positioning, Camera, and References.",
+        "Game Analysis features include hierarchy explorer, object inspector, and property viewer.",
+        "Performance tools track FPS, memory, and ping.",
+        "Input Testing supports keyboard, mouse, and virtual inputs.",
+        "Positioning features offer coordinate logging, teleport presets, and a waypoint system.",
+        "Camera controls include a freecam controller, zoom options, and perspective tools.",
+        "References provide API quick reference, common patterns, and best practices."
+      ],
+      "entities": [
+        "Game Analysis",
+        "Hierarchy explorer",
+        "Object inspector",
+        "Property viewer",
+        "Performance",
+        "FPS tracker",
+        "Memory monitor",
+        "Ping checker",
+        "Input Testing",
+        "Keyboard",
+        "Mouse",
+        "Virtual input testers",
+        "Positioning",
+        "Coordinate logger",
+        "Teleport presets",
+        "Waypoint system",
+        "Camera",
+        "Freecam controller",
+        "Zoom options",
+        "Perspective tools",
+        "References",
+        "API quick reference",
+        "Common patterns",
+        "Best practices"
+      ]
+    }
+  },
+  {
+    "input": "de | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object inspector, property viewer | |  **Performance** | FPS tracker, memory monitor, ping checker | |  **Input Testing** | Keyboard, mouse, and virtual input testers | |  **Positioning** | Coordinate logger, teleport presets, waypoint system | |  **Camera** | Freecam controller, zoom options, perspective tools | |  **References** | API quick reference, common patterns, best practices | --- ##  Quick St",
+    "output": {
+      "summary": "The provided text outlines various categories of tools and features, likely for game development or analysis. These categories include Game Analysis (hierarchy, object inspection), Performance (FPS, memory, ping), Input Testing (keyboard, mouse, virtual), Positioning (coordinates, waypoints), Camera controls (freecam, zoom), and References (API, best practices).",
+      "key_points": [
+        "Tools are categorized into Game Analysis, Performance, Input Testing, Positioning, Camera, and References.",
+        "Game Analysis features include hierarchy explorer, object inspector, and property viewer.",
+        "Performance tools track FPS, memory, and ping.",
+        "Input Testing supports keyboard, mouse, and virtual inputs.",
+        "Positioning features offer coordinate logging, teleport presets, and a waypoint system.",
+        "Camera controls include a freecam controller, zoom options, and perspective tools.",
+        "References provide API quick reference, common patterns, and best practices."
+      ],
+      "entities": [
+        "Game Analysis",
+        "Hierarchy explorer",
+        "Object inspector",
+        "Property viewer",
+        "Performance",
+        "FPS tracker",
+        "Memory monitor",
+        "Ping checker",
+        "Input Testing",
+        "Keyboard",
+        "Mouse",
+        "Virtual input testers",
+        "Positioning",
+        "Coordinate logger",
+        "Teleport presets",
+        "Waypoint system",
+        "Camera",
+        "Freecam controller",
+        "Zoom options",
+        "Perspective tools",
+        "References",
+        "API quick reference",
+        "Common patterns",
+        "Best practices"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub is a centralized resource center designed for Roblox game developers, providing Lua tools and testing utilities. It supports Windows 10/11 x64 platforms and is released under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools and testing utilities.",
+        "Compatible with Windows 10/11 x64.",
+        "Licensed under MIT."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox game developers",
+        "Lua",
+        "Windows 10/11 x64",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub Developer Resource Center, version 1.0.0, is a centralized platform designed for Roblox game developers. It provides essential resources such as Lua tools and testing utilities. The hub supports Windows 10/11 x64, utilizes Lua 5.1, and is distributed under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers",
+        "Provides Lua tools and testing utilities",
+        "Supports Windows 10/11 x64 platform",
+        "Uses Lua 5.1",
+        "Licensed under MIT",
+        "Version 1.0.0"
+      ],
+      "entities": [
+        "Roblox Hub Developer Resource Center",
+        "Roblox",
+        "Windows 10/11 x64",
+        "Lua 5.1",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides Lua tools, testing utilities, performance monitors, and educational references. The platform aims to help creators build and optimize their games, including features for game analysis like a hierarchy explorer.",
+      "key_points": [
+        "Roblox Hub is a centralized resource hub for Roblox game developers.",
+        "It offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "The hub is designed to help creators build and optimize their games on the Roblox platform.",
+        "Includes game analysis tools such as a hierarchy explorer."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "The Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides essential tools like Lua utilities, testing tools, performance monitors, and educational references. The platform aims to help creators build and optimize their games efficiently.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "Designed to help creators build and optimize Roblox games."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox platform",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub Developer Resource Center, version 1.0.0, is a centralized platform designed for Roblox game developers. It provides essential resources such as Lua tools and testing utilities. The hub supports Windows 10/11 x64, utilizes Lua 5.1, and is distributed under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers",
+        "Provides Lua tools and testing utilities",
+        "Supports Windows 10/11 x64 platform",
+        "Uses Lua 5.1",
+        "Licensed under MIT",
+        "Version 1.0.0"
+      ],
+      "entities": [
+        "Roblox Hub Developer Resource Center",
+        "Roblox",
+        "Windows 10/11 x64",
+        "Lua 5.1",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "#  Roblox Hub  Developer Resource Center <div align=\"center\"> ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-lightgrey?style=for-the-badge) ![Lua](https://img.shields.io/badge/Lua-5.1-000080?style=for-the-badge&logo=lua) ![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilitie",
+    "output": {
+      "summary": "The Roblox Hub is a centralized resource center designed for Roblox game developers, providing Lua tools and testing utilities. It supports Windows 10/11 x64 platforms and is released under an MIT license.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools and testing utilities.",
+        "Compatible with Windows 10/11 x64.",
+        "Licensed under MIT."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox game developers",
+        "Lua",
+        "Windows 10/11 x64",
+        "MIT License"
+      ]
+    }
+  },
+  {
+    "input": "badge) <br> **Centralized resource hub for Roblox game developers.** <br>Lua tools, testing utilities, and educational references. </div> --- ##  About Roblox Hub is a curated collection of developer resources for the Roblox platform. It includes Lua utilities, testing tools, performance monitors, and reference materials designed to help creators build and optimize their games. --- ##  What's Inside | Category | Contents | |----------|----------| |  **Game Analysis** | Hierarchy explorer, object",
+    "output": {
+      "summary": "The Roblox Hub is a centralized and curated resource hub for Roblox game developers. It provides essential tools like Lua utilities, testing tools, performance monitors, and educational references. The platform aims to help creators build and optimize their games efficiently.",
+      "key_points": [
+        "Centralized resource hub for Roblox game developers.",
+        "Offers Lua tools, testing utilities, performance monitors, and educational references.",
+        "Designed to help creators build and optimize Roblox games."
+      ],
+      "entities": [
+        "Roblox Hub",
+        "Roblox platform",
+        "Lua",
+        "Game Analysis",
+        "Hierarchy explorer"
+      ]
+    }
   }
 ]
