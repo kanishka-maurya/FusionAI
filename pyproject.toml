@@ -48,4 +48,5 @@ dependencies = [
     "ctransformers>=0.2.27",
     "groq>=1.2.0",
     "sentence-transformers>=5.5.0",
+    "fastmcp>=3.3.1",
 ]
