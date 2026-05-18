@@ -47,4 +47,5 @@ dependencies = [
     "datasets>=4.8.4",
     "ctransformers>=0.2.27",
     "groq>=1.2.0",
+    "sentence-transformers>=5.5.0",
 ]
