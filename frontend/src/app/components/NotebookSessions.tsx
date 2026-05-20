@@ -11,32 +11,7 @@ import {
   FileText,
   Sparkles,
 } from "lucide-react";
-const formatDate = (dateString: string) => {
-  if (!dateString) return "Unknown";
 
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-const formatRelativeTime = (dateString: string) => {
-  if (!dateString) return "Unknown";
-
-  const now = new Date();
-  const past = new Date(dateString);
-  const diffMs = now.getTime() - past.getTime();
-
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMinutes < 60) return `${diffMinutes} min ago`;
-  if (diffHours < 24) return `${diffHours} hours ago`;
-  return `${diffDays} days ago`;
-};
 interface Notebook {
   id: string;
   name: string;
@@ -56,9 +31,11 @@ export function NotebookSessions() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState("");
   const [newNotebookDesc, setNewNotebookDesc] = useState("");
+
   useEffect(() => {
     fetchNotebooks();
   }, []);
+
   const handleCreateNotebook = async () => {
     if (!newNotebookName.trim()) return;
 
@@ -115,74 +92,95 @@ export function NotebookSessions() {
 
     navigate(`/notebook/${newNotebookId}`);
   };
+
   const fetchNotebooks = async () => {
-  const { data, error } = await supabase
-    .from("notebooks")
-    .select("notebook_id, name, description, created_at")
-    .order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("notebooks")
+      .select("notebook_id, name, description, created_at")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-  const formatted = data.map((n) => ({
-    id: n.notebook_id,
-    name: n.name,
-    description: n.description,
-    sourcesCount: 0,
-    messagesCount: 0,
-    lastModified: "Recently",
-    createdAt: new Date(n.created_at).toLocaleDateString(),
-  }));
+    const formatted = data.map((n) => ({
+      id: n.notebook_id,
+      name: n.name,
+      description: n.description,
+      sourcesCount: 0,
+      messagesCount: 0,
+      lastModified: "Recently",
+      createdAt: new Date(n.created_at).toLocaleDateString(),
+    }));
 
-  setNotebooks(formatted);
-};
+    setNotebooks(formatted);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div
+      className="min-h-screen font-sans antialiased relative text-[#94a3b8] selection:bg-blue-500/50 selection:text-white
+    before:absolute before:inset-0 before:-z-10 
+    before:bg-[url('https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcQfq2m4VKCgaIffEPZ75LziLRskUE0fUyfvH0RysF9V5WqhGuRJiEFsfAz_eutzhQgwhJqP1_uZLVrN-zM')] 
+    before:bg-cover before:bg-center before:bg-no-repeat before:bg-fixed 
+    before:blur-md before:brightness-[0.8]"
+    >
+      {/* Dashboard Top Header Bar */}
+      <header className="bg-[#111322]/60 border-b border-white/5 sticky top-0 z-40 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/dashboard")}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <BookOpen className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  NotebookLM
-                </h1>
-                <p className="text-sm text-gray-600">Your notebook sessions</p>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-md font-bold tracking-tight text-white leading-none">
+                    FusionAI
+                  </h1>
+                  <span className="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded font-medium border border-blue-500/20">
+                    Notebook
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Your personalized learning journey
+                </p>
               </div>
             </div>
           </div>
 
-          {/* User Menu */}
+          {/* User Section (Matched with your exact top-right corner layout) */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-              {user?.avatar && (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-9 h-9 rounded-full ring-2 ring-purple-100"
-                />
-              )}
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
-                  {user?.name}
+            <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-[#111322] border border-white/5">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden ring-1 ring-white/10">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span>{user?.name?.charAt(0) || "S"}</span>
+                )}
+              </div>
+              <div className="text-right hidden md:block">
+                <p className="text-xs font-semibold text-white leading-tight">
+                  {user?.name || "Shourya Mishra"}
                 </p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
+                <p className="text-[10px] text-slate-400 font-normal">
+                  {user?.email || "shouryamishra55@gmail.com"}
+                </p>
               </div>
             </div>
             <button
               onClick={logout}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-[#111322] hover:bg-[#16192e] rounded-xl transition-all border border-white/10"
             >
               Sign out
             </button>
@@ -190,153 +188,154 @@ export function NotebookSessions() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
+      {/* Main Container Area */}
+      <main className="max-w-7xl mx-auto px-8 py-12">
+        {/* Title Block matching the exact typography weight from your screenshot */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Your Notebooks
+            <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2">
+              Your Fusion Notebooks
             </h2>
-            <p className="text-gray-600">
-              Create a new notebook or continue with an existing one
+            <p className="text-sm text-white">
+              Choose an isolated notebook session or launch a fresh environment
+              to start research.
             </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg shadow-purple-500/30"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#007eff] to-[#00c6ff] text-white text-xs font-bold tracking-wide rounded-xl hover:opacity-90 transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]"
           >
-            <Plus className="w-5 h-5" />
-            Create New Notebook
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            CREATE NEW NOTEBOOK
           </button>
         </div>
 
-        {/* Notebooks Grid */}
+        {/* Sessions Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notebooks.map((notebook) => (
             <div
               key={notebook.id}
               onClick={() => navigate(`/notebook/${notebook.id}`)}
-              className="bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all cursor-pointer group overflow-hidden"
+              className="bg-[#111322] rounded-2xl border border-white/[0.04] hover:border-blue-500/30 transition-all duration-300 cursor-pointer group flex flex-col justify-between overflow-hidden relative shadow-xl shadow-black/20"
             >
-              {/* Card Header */}
-              <div className="p-6 border-b border-gray-100 bg-gradient-to-br from-purple-50 to-white group-hover:from-purple-100 transition-colors">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-6 h-6 text-white" />
+              {/* Header Content Section of the Card */}
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-9 h-9 bg-white/5 text-blue-400 rounded-xl flex items-center justify-center group-hover:bg-blue-500/10 transition-colors">
+                    <BookOpen className="w-4 h-4" />
                   </div>
-                  <div className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
-                    <Clock className="w-3 h-3 inline mr-1" />
+                  <div className="text-[10px] font-semibold text-slate-400 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                    <Clock className="w-3 h-3 text-blue-400" />
                     {notebook.lastModified}
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+                <h3 className="text-md font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
                   {notebook.name}
                 </h3>
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {notebook.description}
+                <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                  {notebook.description ||
+                    "No unique parameters customized for this learning path yet."}
                 </p>
               </div>
 
-              {/* Card Stats */}
-              <div className="p-6">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <FileText className="w-4 h-4" />
-                    <span>{notebook.sourcesCount} sources</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Sparkles className="w-4 h-4" />
-                    <span>{notebook.messagesCount} messages</span>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-xs text-gray-500">
-                    Created on {notebook.createdAt}
-                  </p>
+              {/* Lower Details / Features list styled just like your "Key Features" layout block */}
+              <div className="px-6 pb-6 pt-4 bg-black/20 border-t border-white/[0.02] flex flex-col gap-4">
+                
+
+                <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                  <span>Created {notebook.createdAt}</span>
+                  <span className="text-blue-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                    Open Hub →
+                  </span>
                 </div>
               </div>
             </div>
           ))}
 
-          {/* Empty State - Create First Notebook */}
+          {/* Empty Layout Component Framework */}
           {notebooks.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center py-20">
-              <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
-                <BookOpen className="w-10 h-10 text-gray-400" />
+            <div className="col-span-full bg-[#111322] border border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center py-20 px-4">
+              <div className="w-12 h-12 bg-white/5 text-slate-400 rounded-2xl flex items-center justify-center mb-4">
+                <BookOpen className="w-5 h-5 text-blue-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No notebooks yet
+              <h3 className="text-lg font-bold text-white mb-1">
+                No active workspace nodes found
               </h3>
-              <p className="text-gray-600 mb-6">
-                Create your first notebook to get started
+              <p className="text-xs text-slate-400 text-center max-w-sm mb-6 leading-relaxed">
+                Your sandbox is clear. Initiate your first context pool to start
+                using your conversational layout tools.
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-[#007eff] to-[#00c6ff] text-white text-xs font-bold tracking-wide rounded-xl hover:opacity-90 transition-all"
               >
-                <Plus className="w-5 h-5" />
-                Create Notebook
+                Launch First Hub
               </button>
             </div>
           )}
         </div>
       </main>
 
-      {/* Create Notebook Modal */}
+      {/* Modern Popover Dialog Frame Container */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Create New Notebook
-            </h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111322] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-white/10 flex flex-col gap-5">
+            <div>
+              <h3 className="text-lg font-bold text-white tracking-tight">
+                Create New Fusion Notebook
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Assign a clean context cluster parameters layout for this index.
+              </p>
+            </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notebook Name
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Notebook Identity Title
                 </label>
                 <input
                   type="text"
                   value={newNotebookName}
                   onChange={(e) => setNewNotebookName(e.target.value)}
-                  placeholder="e.g., Machine Learning Research"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="e.g., Quantum Mechanics Compendiums"
+                  className="w-full text-sm px-4 py-3 bg-black/30 border border-white/5 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description (Optional)
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Scope Focus Description{" "}
+                  <span className="text-slate-500 font-normal">(Optional)</span>
                 </label>
                 <textarea
                   value={newNotebookDesc}
                   onChange={(e) => setNewNotebookDesc(e.target.value)}
-                  placeholder="What is this notebook about?"
+                  placeholder="Summarize the core learning directives of this workspace..."
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                  className="w-full text-sm px-4 py-3 bg-black/30 border border-white/5 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500 resize-none transition-all"
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-1">
               <button
                 onClick={() => {
                   setShowCreateModal(false);
                   setNewNotebookName("");
                   setNewNotebookDesc("");
                 }}
-                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold rounded-xl border border-white/5 transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateNotebook}
                 disabled={!newNotebookName.trim()}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#007eff] to-[#00c6ff] text-white text-xs font-bold rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                Create Notebook
+                Launch Hub
               </button>
             </div>
           </div>

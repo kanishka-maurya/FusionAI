@@ -1185,5 +1185,409 @@
         "Hierarchy explorer"
       ]
     }
+  },
+  {
+    "input": "# 9arm-skills Agent skills loaded by Claude Code. ## Layout Skills live under `skills/`, grouped into buckets: - `engineering/`  daily code work - `productivity/`  daily non-code workflow tools - `misc/`  kept around but rarely used - `personal/`  tied to my own setup, not promoted - `in-progress/`  drafts not yet ready to ship - `deprecated/`  no longer used Each skill is its own directory containing a `SKILL.md` (with YAML frontmatter  `name` and `description`) and any bundled scripts or refer",
+    "output": {
+      "summary": "9arm-skills Agent skills, loaded by Claude Code, are organized in a `skills/` directory structure. They are categorized into buckets such as `engineering`, `productivity`, `misc`, `personal`, `in-progress`, and `deprecated`. Each skill directory contains a `SKILL.md` with YAML frontmatter (name and description) and any bundled scripts.",
+      "key_points": [
+        "9arm-skills Agent skills are loaded by Claude Code.",
+        "Skills are organized under a `skills/` directory, grouped into specific buckets.",
+        "Categories include `engineering`, `productivity`, `misc`, `personal`, `in-progress`, and `deprecated`.",
+        "Each skill directory contains a `SKILL.md` file with name and description, plus associated scripts."
+      ],
+      "entities": [
+        "9arm-skills Agent",
+        "Claude Code",
+        "skills/",
+        "engineering/",
+        "productivity/",
+        "misc/",
+        "personal/",
+        "in-progress/",
+        "deprecated/",
+        "SKILL.md",
+        "YAML frontmatter"
+      ]
+    }
+  },
+  {
+    "input": "# 9arm-skills Agent skills loaded by Claude Code. ## Layout Skills live under `skills/`, grouped into buckets: - `engineering/`  daily code work - `productivity/`  daily non-code workflow tools - `misc/`  kept around but rarely used - `personal/`  tied to my own setup, not promoted - `in-progress/`  drafts not yet ready to ship - `deprecated/`  no longer used Each skill is its own directory containing a `SKILL.md` (with YAML frontmatter  `name` and `description`) and any bundled scripts or refer",
+    "output": {
+      "summary": "9arm-skills Agent skills, loaded by Claude Code, are organized in a `skills/` directory structure. They are categorized into buckets such as `engineering`, `productivity`, `misc`, `personal`, `in-progress`, and `deprecated`. Each skill directory contains a `SKILL.md` with YAML frontmatter (name and description) and any bundled scripts.",
+      "key_points": [
+        "9arm-skills Agent skills are loaded by Claude Code.",
+        "Skills are organized under a `skills/` directory, grouped into specific buckets.",
+        "Categories include `engineering`, `productivity`, `misc`, `personal`, `in-progress`, and `deprecated`.",
+        "Each skill directory contains a `SKILL.md` file with name and description, plus associated scripts."
+      ],
+      "entities": [
+        "9arm-skills Agent",
+        "Claude Code",
+        "skills/",
+        "engineering/",
+        "productivity/",
+        "misc/",
+        "personal/",
+        "in-progress/",
+        "deprecated/",
+        "SKILL.md",
+        "YAML frontmatter"
+      ]
+    }
+  },
+  {
+    "input": "ning a `SKILL.md` (with YAML frontmatter  `name` and `description`) and any bundled scripts or reference files. ## Install For my own dev loop  symlink every shippable skill into `~/.claude/skills/`: ```bash ./scripts/link-skills.sh ``` List every `SKILL.md` in the repo: ```bash ./scripts/list-skills.sh ``` ## Reference ### Engineering - **[debug-mantra](./skills/engineering/debug-mantra/SKILL.md)**  Four-mantra debugging discipline: reproduce  trace the fail path  falsify the hypothesis  cross-",
+    "output": {
+      "summary": "The document outlines a system for defining and managing 'skills' using `SKILL.md` files, which include YAML frontmatter for `name` and `description`, along with bundled scripts. It details the installation process via symlinking skills into `~/.claude/skills/` using `link-skills.sh` and provides a script `list-skills.sh` for listing them. An example skill, `debug-mantra`, is mentioned under 'Engineering' as a four-mantra debugging discipline.",
+      "key_points": [
+        "Skills are defined by `SKILL.md` files with YAML frontmatter (`name`, `description`).",
+        "Skills can include bundled scripts or reference files.",
+        "Installation involves symlinking skills to `~/.claude/skills/` using `link-skills.sh`.",
+        "The `list-skills.sh` script is used to list all `SKILL.md` files.",
+        "`debug-mantra` is an example engineering skill for debugging."
+      ],
+      "entities": [
+        "SKILL.md",
+        "YAML frontmatter",
+        "name",
+        "description",
+        "~/.claude/skills/",
+        "link-skills.sh",
+        "list-skills.sh",
+        "debug-mantra",
+        "Engineering"
+      ]
+    }
+  },
+  {
+    "input": "ning a `SKILL.md` (with YAML frontmatter  `name` and `description`) and any bundled scripts or reference files. ## Install For my own dev loop  symlink every shippable skill into `~/.claude/skills/`: ```bash ./scripts/link-skills.sh ``` List every `SKILL.md` in the repo: ```bash ./scripts/list-skills.sh ``` ## Reference ### Engineering - **[debug-mantra](./skills/engineering/debug-mantra/SKILL.md)**  Four-mantra debugging discipline: reproduce  trace the fail path  falsify the hypothesis  cross-",
+    "output": {
+      "summary": "This document describes a system for defining 'skills' using `SKILL.md` files, which incorporate YAML frontmatter for `name` and `description`, alongside bundled scripts. It details the installation process via symlinking skills into `~/.claude/skills/` using `link-skills.sh` and provides a script for listing skills. An example, `debug-mantra`, is highlighted as an engineering skill focused on a four-mantra debugging discipline.",
+      "key_points": [
+        "Skills are defined by `SKILL.md` files containing YAML frontmatter for `name` and `description`.",
+        "Skills can include bundled scripts or reference files.",
+        "Installation involves symlinking skills into `~/.claude/skills/` using `link-skills.sh`.",
+        "`list-skills.sh` is used to list all `SKILL.md` files.",
+        "`debug-mantra` is an example engineering skill for a four-mantra debugging discipline."
+      ],
+      "entities": [
+        "SKILL.md",
+        "YAML frontmatter",
+        "scripts",
+        "~/.claude/skills/",
+        "link-skills.sh",
+        "list-skills.sh",
+        "debug-mantra",
+        "engineering",
+        "debugging discipline"
+      ]
+    }
+  },
+  {
+    "input": "**  Four-mantra debugging discipline: reproduce  trace the fail path  falsify the hypothesis  cross-reference every breadcrumb. Recites verbatim at session start, then applies in order before any fix. - **[post-mortem](./skills/engineering/post-mortem/SKILL.md)**  Write the canonical engineering record of a fixed bug  root cause, mechanism, fix, validation, how it slipped through. Engineer-audience; refuses to draft without a reliable repro, known cause, and validated fix. - **[scrutinize](./ski",
+    "output": {
+      "summary": "The text describes a \"Four-mantra debugging discipline\" that includes reproducing, tracing the fail path, falsifying hypotheses, and cross-referencing, applied before any fix. It also defines \"post-mortem\" as the canonical engineering record of a fixed bug, detailing its root cause, mechanism, fix, validation, and how it slipped through. Drafting a post-mortem requires a reliable reproduction, known cause, and a validated fix, targeting an engineer audience.",
+      "key_points": [
+        "The \"Four-mantra debugging discipline\" involves specific steps: reproduce, trace the fail path, falsify the hypothesis, and cross-reference every breadcrumb.",
+        "This debugging discipline is applied in order before any fix is implemented.",
+        "A \"post-mortem\" is the official engineering record for a fixed bug, documenting its root cause, mechanism, fix, validation, and how it bypassed initial checks.",
+        "A reliable reproduction, known cause, and validated fix are prerequisites for drafting a post-mortem."
+      ],
+      "entities": [
+        "Four-mantra debugging discipline",
+        "reproduce",
+        "trace the fail path",
+        "falsify the hypothesis",
+        "cross-reference every breadcrumb",
+        "post-mortem",
+        "root cause",
+        "mechanism",
+        "fix",
+        "validation",
+        "scrutinize"
+      ]
+    }
+  },
+  {
+    "input": "**  Four-mantra debugging discipline: reproduce  trace the fail path  falsify the hypothesis  cross-reference every breadcrumb. Recites verbatim at session start, then applies in order before any fix. - **[post-mortem](./skills/engineering/post-mortem/SKILL.md)**  Write the canonical engineering record of a fixed bug  root cause, mechanism, fix, validation, how it slipped through. Engineer-audience; refuses to draft without a reliable repro, known cause, and validated fix. - **[scrutinize](./ski",
+    "output": {
+      "summary": "The text describes a \"Four-mantra debugging discipline\" that includes reproducing, tracing the fail path, falsifying hypotheses, and cross-referencing, applied before any fix. It also defines \"post-mortem\" as the canonical engineering record of a fixed bug, detailing its root cause, mechanism, fix, validation, and how it slipped through. Drafting a post-mortem requires a reliable reproduction, known cause, and a validated fix, targeting an engineer audience.",
+      "key_points": [
+        "The \"Four-mantra debugging discipline\" involves specific steps: reproduce, trace the fail path, falsify the hypothesis, and cross-reference every breadcrumb.",
+        "This debugging discipline is applied in order before any fix is implemented.",
+        "A \"post-mortem\" is the official engineering record for a fixed bug, documenting its root cause, mechanism, fix, validation, and how it bypassed initial checks.",
+        "A reliable reproduction, known cause, and validated fix are prerequisites for drafting a post-mortem."
+      ],
+      "entities": [
+        "Four-mantra debugging discipline",
+        "reproduce",
+        "trace the fail path",
+        "falsify the hypothesis",
+        "cross-reference every breadcrumb",
+        "post-mortem",
+        "root cause",
+        "mechanism",
+        "fix",
+        "validation",
+        "scrutinize"
+      ]
+    }
+  },
+  {
+    "input": "e; refuses to draft without a reliable repro, known cause, and validated fix. - **[scrutinize](./skills/engineering/scrutinize/SKILL.md)**  Outsider-perspective end-to-end review of a plan, PR, or code change. Questions intent (is there a simpler way?), traces the actual code path, and verifies the change does what it claims. Output is concise, actionable, with rationale. ### Productivity - **[management-talk](./skills/productivity/management-talk/SKILL.md)**  Rewrite engineer-to-engineer conten",
+    "output": {
+      "summary": "The text outlines specific engineering and productivity skills. It details 'scrutinize' as an end-to-end review process for plans, PRs, or code changes, emphasizing questioning intent, tracing code paths, and verifying claims. Additionally, it introduces 'management-talk' as a productivity skill focused on rewriting engineer-to-engineer content, and mentions a principle of refusing to draft without a reliable reproduction, known cause, and validated fix.",
+      "key_points": [
+        "The 'scrutinize' skill involves an outsider-perspective, end-to-end review of engineering changes.",
+        "Scrutinize focuses on questioning intent, tracing code paths, and verifying claims with concise, actionable output.",
+        "The 'management-talk' skill is categorized under productivity and involves rewriting engineer-to-engineer content.",
+        "A principle is stated to refuse drafting without a reliable reproduction, known cause, and validated fix."
+      ],
+      "entities": [
+        "scrutinize",
+        "management-talk",
+        "engineering",
+        "productivity",
+        "repro",
+        "PR",
+        "code change"
+      ]
+    }
+  },
+  {
+    "input": "e; refuses to draft without a reliable repro, known cause, and validated fix. - **[scrutinize](./skills/engineering/scrutinize/SKILL.md)**  Outsider-perspective end-to-end review of a plan, PR, or code change. Questions intent (is there a simpler way?), traces the actual code path, and verifies the change does what it claims. Output is concise, actionable, with rationale. ### Productivity - **[management-talk](./skills/productivity/management-talk/SKILL.md)**  Rewrite engineer-to-engineer conten",
+    "output": {
+      "summary": "The text outlines specific engineering and productivity skills. It details 'scrutinize' as an end-to-end review process for plans, PRs, or code changes, emphasizing questioning intent, tracing code paths, and verifying claims. Additionally, it introduces 'management-talk' as a productivity skill focused on rewriting engineer-to-engineer content, and mentions a principle of refusing to draft without a reliable reproduction, known cause, and validated fix.",
+      "key_points": [
+        "The 'scrutinize' skill involves an outsider-perspective, end-to-end review of engineering changes.",
+        "Scrutinize focuses on questioning intent, tracing code paths, and verifying claims with concise, actionable output.",
+        "The 'management-talk' skill is categorized under productivity and involves rewriting engineer-to-engineer content.",
+        "A principle is stated to refuse drafting without a reliable reproduction, known cause, and validated fix."
+      ],
+      "entities": [
+        "scrutinize",
+        "management-talk",
+        "engineering",
+        "productivity",
+        "repro",
+        "PR",
+        "code change"
+      ]
+    }
+  },
+  {
+    "input": "agement-talk](./skills/productivity/management-talk/SKILL.md)**  Rewrite engineer-to-engineer content for engineering-org leadership and shape it for the channel it's going to (JIRA, Slack, async standup, email, meeting talking-points). ### Misc _(none yet)_",
+    "output": {
+      "summary": "The 'management-talk' skill involves rewriting engineer-to-engineer content for engineering-org leadership. This content is then shaped and adapted for various communication channels, including JIRA, Slack, async standups, email, and meeting talking-points, to ensure effective dissemination.",
+      "key_points": [
+        "Rewriting engineer-to-engineer content for leadership.",
+        "Adapting content for specific communication channels.",
+        "Channels include JIRA, Slack, async standup, email, and meeting talking-points."
+      ],
+      "entities": [
+        "management-talk",
+        "engineer-to-engineer content",
+        "engineering-org leadership",
+        "JIRA",
+        "Slack",
+        "async standup",
+        "email",
+        "meeting talking-points"
+      ]
+    }
+  },
+  {
+    "input": "agement-talk](./skills/productivity/management-talk/SKILL.md)**  Rewrite engineer-to-engineer content for engineering-org leadership and shape it for the channel it's going to (JIRA, Slack, async standup, email, meeting talking-points). ### Misc _(none yet)_",
+    "output": {
+      "summary": "The 'management-talk' skill involves rewriting engineer-to-engineer content for engineering-org leadership. This content is then shaped and adapted for various communication channels, including JIRA, Slack, async standups, email, and meeting talking-points, to ensure effective dissemination.",
+      "key_points": [
+        "Rewriting engineer-to-engineer content for leadership.",
+        "Adapting content for specific communication channels.",
+        "Channels include JIRA, Slack, async standup, email, and meeting talking-points."
+      ],
+      "entities": [
+        "management-talk",
+        "engineer-to-engineer content",
+        "engineering-org leadership",
+        "JIRA",
+        "Slack",
+        "async standup",
+        "email",
+        "meeting talking-points"
+      ]
+    }
+  },
+  {
+    "input": "<p align=\"center\"> <img src=\"https://i.imgur.com/cqkp6fG.png\" width=\"500\" alt=\"CloakBrowser\"> </p> <p align=\"center\"> <h3 align=\"center\">Stealth Chromium that passes every bot detection test.</h3> <table><tr><td> Not a patched config. Not a JS injection. A real Chromium binary with fingerprints modified at the C++ source level. Antibot systems score it as a normal browser  because it <em>is</em> a normal browser. </td></tr></table> [Download `CloackBrowser.zip`](https://github.com/SalhaNabil/Clo",
+    "output": {
+      "summary": "CloakBrowser is a stealth Chromium browser designed to bypass bot detection tests. Unlike typical solutions, its fingerprints are modified at the C++ source level, not through patched configurations or JavaScript injections. This allows antibot systems to score it as a normal browser, effectively making it undetectable as a bot.",
+      "key_points": [
+        "CloakBrowser is a stealth Chromium browser.",
+        "It passes all bot detection tests.",
+        "Fingerprints are modified at the C++ source level.",
+        "Antibot systems detect it as a normal browser."
+      ],
+      "entities": [
+        "CloakBrowser",
+        "Chromium",
+        "C++",
+        "Antibot systems"
+      ]
+    }
+  },
+  {
+    "input": "<p align=\"center\"> <img src=\"https://i.imgur.com/cqkp6fG.png\" width=\"500\" alt=\"CloakBrowser\"> </p> <p align=\"center\"> <h3 align=\"center\">Stealth Chromium that passes every bot detection test.</h3> <table><tr><td> Not a patched config. Not a JS injection. A real Chromium binary with fingerprints modified at the C++ source level. Antibot systems score it as a normal browser  because it <em>is</em> a normal browser. </td></tr></table> [Download `CloackBrowser.zip`](https://github.com/SalhaNabil/Clo",
+    "output": {
+      "summary": "CloakBrowser is a stealth Chromium browser designed to bypass bot detection tests. Unlike typical solutions, its fingerprints are modified at the C++ source level, not through patched configurations or JavaScript injections. This allows antibot systems to score it as a normal browser, effectively making it undetectable as a bot.",
+      "key_points": [
+        "CloakBrowser is a stealth Chromium browser.",
+        "It passes all bot detection tests.",
+        "Fingerprints are modified at the C++ source level.",
+        "Antibot systems detect it as a normal browser."
+      ],
+      "entities": [
+        "CloakBrowser",
+        "Chromium",
+        "C++",
+        "Antibot systems"
+      ]
+    }
+  },
+  {
+    "input": " normal browser. </td></tr></table> [Download `CloackBrowser.zip`](https://github.com/SalhaNabil/CloakBrowser/releases/download/Chromium/CloackBrowser.zip) --- <br> </p> <br> <p align=\"center\"> <img src=\"https://i.imgur.com/IvB0It7.gif\" width=\"600\" alt=\"Cloudflare Turnstile  3 Tests Passing\"> <br><em>Cloudflare Turnstile  3 live tests passing (headed mode, macOS)</em> </p> <br> <p align=\"center\"> Drop-in Playwright/Puppeteer replacement for Python and JavaScript.<br> Same API, same code  just sw",
+    "output": {
+      "summary": "The text introduces a tool, possibly named \"CloackBrowser,\" available for download, which functions as a drop-in replacement for Playwright/Puppeteer in Python and JavaScript, maintaining the same API. This tool successfully passes Cloudflare Turnstile live tests in headed mode on macOS.",
+      "key_points": [
+        "A tool, potentially \"CloackBrowser,\" is presented as a Playwright/Puppeteer replacement.",
+        "It offers the same API for both Python and JavaScript.",
+        "The tool successfully passes Cloudflare Turnstile live tests on macOS.",
+        "A download link for \"CloackBrowser.zip\" is provided."
+      ],
+      "entities": [
+        "CloackBrowser",
+        "Playwright",
+        "Puppeteer",
+        "Python",
+        "JavaScript",
+        "Cloudflare Turnstile",
+        "macOS",
+        "GitHub"
+      ]
+    }
+  },
+  {
+    "input": " normal browser. </td></tr></table> [Download `CloackBrowser.zip`](https://github.com/SalhaNabil/CloakBrowser/releases/download/Chromium/CloackBrowser.zip) --- <br> </p> <br> <p align=\"center\"> <img src=\"https://i.imgur.com/IvB0It7.gif\" width=\"600\" alt=\"Cloudflare Turnstile  3 Tests Passing\"> <br><em>Cloudflare Turnstile  3 live tests passing (headed mode, macOS)</em> </p> <br> <p align=\"center\"> Drop-in Playwright/Puppeteer replacement for Python and JavaScript.<br> Same API, same code  just sw",
+    "output": {
+      "summary": "The text introduces a tool, possibly named \"CloackBrowser,\" available for download, which functions as a drop-in replacement for Playwright/Puppeteer in Python and JavaScript, maintaining the same API. This tool successfully passes Cloudflare Turnstile live tests in headed mode on macOS.",
+      "key_points": [
+        "A tool, potentially \"CloackBrowser,\" is presented as a Playwright/Puppeteer replacement.",
+        "It offers the same API for both Python and JavaScript.",
+        "The tool successfully passes Cloudflare Turnstile live tests on macOS.",
+        "A download link for \"CloackBrowser.zip\" is provided."
+      ],
+      "entities": [
+        "CloackBrowser",
+        "Playwright",
+        "Puppeteer",
+        "Python",
+        "JavaScript",
+        "Cloudflare Turnstile",
+        "macOS",
+        "GitHub"
+      ]
+    }
+  },
+  {
+    "input": "<img width=\"1672\" height=\"941\" alt=\"ChatGPT Image 19  2026  , 19_51_12(1)\" src=\"https://github.com/user-attachments/assets/be86c33e-4564-4b4d-8b46-1fd47c0d651c\" /> # AI Final Fantasy VI Remake > **AI Final Fantasy VI Remake**  Modern AI-enhanced remake of the classic JRPG Final Fantasy VI with improved visuals and gameplay. [![GitHub Stars](https://img.shields.io/github/stars/nhutdang198/AI-Final-fantasy-6-remake?style=flat-square&color=00d4aa)](https://github.com/nhutdang198/AI-Final-fantasy-6-",
+    "output": {
+      "summary": "The \"AI Final Fantasy VI Remake\" is a modern, AI-enhanced remake of the classic JRPG Final Fantasy VI. This project aims to deliver improved visuals and gameplay, and its development is hosted on GitHub.",
+      "key_points": [
+        "AI-enhanced remake of Final Fantasy VI",
+        "Features improved visuals and gameplay",
+        "Project hosted on GitHub"
+      ],
+      "entities": [
+        "AI Final Fantasy VI Remake",
+        "Final Fantasy VI",
+        "JRPG",
+        "GitHub",
+        "nhutdang198"
+      ]
+    }
+  },
+  {
+    "input": "<img width=\"1672\" height=\"941\" alt=\"ChatGPT Image 19  2026  , 19_51_12(1)\" src=\"https://github.com/user-attachments/assets/be86c33e-4564-4b4d-8b46-1fd47c0d651c\" /> # AI Final Fantasy VI Remake > **AI Final Fantasy VI Remake**  Modern AI-enhanced remake of the classic JRPG Final Fantasy VI with improved visuals and gameplay. [![GitHub Stars](https://img.shields.io/github/stars/nhutdang198/AI-Final-fantasy-6-remake?style=flat-square&color=00d4aa)](https://github.com/nhutdang198/AI-Final-fantasy-6-",
+    "output": {
+      "summary": "The \"AI Final Fantasy VI Remake\" is a modern, AI-enhanced remake of the classic JRPG Final Fantasy VI. This project aims to deliver improved visuals and gameplay, and its development is hosted on GitHub.",
+      "key_points": [
+        "AI-enhanced remake of Final Fantasy VI",
+        "Features improved visuals and gameplay",
+        "Project hosted on GitHub"
+      ],
+      "entities": [
+        "AI Final Fantasy VI Remake",
+        "Final Fantasy VI",
+        "JRPG",
+        "GitHub",
+        "nhutdang198"
+      ]
+    }
+  },
+  {
+    "input": "fantasy-6-remake?style=flat-square&color=00d4aa)](https://github.com/nhutdang198/AI-Final-fantasy-6-remake/stargazers) [![GitHub Forks](https://img.shields.io/github/forks/nhutdang198/AI-Final-fantasy-6-remake?style=flat-square&color=0099cc)](https://github.com/nhutdang198/AI-Final-fantasy-6-remake/network) [![Downloads](https://img.shields.io/github/downloads/nhutdang198/AI-Final-fantasy-6-remake/total?style=flat-square&color=7c5cbf)](https://github.com/nhutdang198/AI-Final-fantasy-6-remake/rel",
+    "output": {
+      "summary": "The text displays GitHub shield badges for the project \"AI-Final-fantasy-6-remake\" by user \"nhutdang198\". These badges indicate the project's community engagement and popularity by showing its stars, forks, and total downloads on the GitHub platform.",
+      "key_points": [
+        "GitHub badges are presented for a project.",
+        "The project is named \"AI-Final-fantasy-6-remake\".",
+        "The project owner is \"nhutdang198\".",
+        "Metrics displayed include stars, forks, and total downloads."
+      ],
+      "entities": [
+        "AI-Final-fantasy-6-remake",
+        "nhutdang198",
+        "GitHub",
+        "Stars",
+        "Forks",
+        "Downloads"
+      ]
+    }
+  },
+  {
+    "input": "dation of its performance, Biotia's BIOTIA-DX Resistance tool was newly evaluated in the international 2026 CAMDA (Critical Assessment of Massive Data Analysis) Antimicrobial Resistance Challenge, where it achieved the highest prediction accuracy for the second consecutive year. CAMDA is a global benchmarking competition that evaluates computational approaches on real-world metagenomic datasets to predict antimicrobial resistance profiles. \"Winning CAMDA two years in a row is a powerful validati",
+    "output": {
+      "summary": "Biotia's BIOTIA-DX Resistance tool achieved the highest prediction accuracy in the 2026 CAMDA Antimicrobial Resistance Challenge for the second consecutive year. CAMDA is a global benchmarking competition that evaluates computational approaches on real-world metagenomic datasets to predict antimicrobial resistance profiles, validating the tool's performance.",
+      "key_points": [
+        "Biotia's BIOTIA-DX Resistance tool won the 2026 CAMDA Antimicrobial Resistance Challenge.",
+        "The tool achieved the highest prediction accuracy for the second consecutive year.",
+        "CAMDA is a global competition evaluating computational methods for predicting antimicrobial resistance profiles using metagenomic data."
+      ],
+      "entities": [
+        "Biotia",
+        "BIOTIA-DX Resistance tool",
+        "CAMDA (Critical Assessment of Massive Data Analysis)",
+        "Antimicrobial Resistance Challenge",
+        "2026"
+      ]
+    }
+  },
+  {
+    "input": "<img width=\"1672\" height=\"941\" alt=\"ChatGPT Image 19  2026  , 19_51_12(1)\" src=\"https://github.com/user-attachments/assets/be86c33e-4564-4b4d-8b46-1fd47c0d651c\" /> # AI Final Fantasy VI Remake > **AI Final Fantasy VI Remake**  Modern AI-enhanced remake of the classic JRPG Final Fantasy VI with improved visuals and gameplay. [![GitHub Stars](https://img.shields.io/github/stars/nhutdang198/AI-Final-fantasy-6-remake?style=flat-square&color=00d4aa)](https://github.com/nhutdang198/AI-Final-fantasy-6-",
+    "output": {
+      "summary": "The \"AI Final Fantasy VI Remake\" is a modern, AI-enhanced remake of the classic JRPG Final Fantasy VI. This project aims to deliver improved visuals and gameplay, and its development is hosted on GitHub.",
+      "key_points": [
+        "AI-enhanced remake of Final Fantasy VI",
+        "Features improved visuals and gameplay",
+        "Project hosted on GitHub"
+      ],
+      "entities": [
+        "AI Final Fantasy VI Remake",
+        "Final Fantasy VI",
+        "JRPG",
+        "GitHub",
+        "nhutdang198"
+      ]
+    }
   }
 ]
