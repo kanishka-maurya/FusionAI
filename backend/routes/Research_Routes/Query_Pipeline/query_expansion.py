@@ -1,17 +1,23 @@
 import json
 import asyncio
-from google import genai
-from dotenv import load_dotenv
 import os
+
+from groq import Groq
+from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
 
 
 class QueryExpansionService:
 
-    async def expand_query(self, query: str):
+    async def expand_query(
+        self,
+        query: str
+    ):
 
         prompt = f"""
 You are an analytical query expansion engine.
@@ -23,7 +29,9 @@ Generate:
 1. 4 related analytical queries.
 2. entities for ALL 5 queries.
 
-Return STRICT JSON:
+Return STRICT JSON ONLY.
+
+Format:
 {{
     "queries": [
         "original query",
@@ -38,14 +46,61 @@ Return STRICT JSON:
 }}
 """
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        try:
 
-        text = response.text.strip()
+            response = await asyncio.to_thread(
+                client.chat.completions.create,
 
-        return json.loads(text)
+                model="llama-3.3-70b-versatile",
+
+                messages=[
+                    {
+                        "role": "system",
+                        "content":
+                        (
+                            "You are a JSON-only "
+                            "query expansion engine. "
+                            "Never return markdown."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+
+                temperature=0.3,
+
+                response_format={
+                    "type": "json_object"
+                }
+            )
+
+            text = (
+                response
+                .choices[0]
+                .message
+                .content
+                .strip()
+            )
+
+            return json.loads(text)
+
+        except Exception as e:
+
+            print(
+                "\n[QUERY EXPANSION ERROR]",
+                e
+            )
+
+            return {
+                "queries": [query],
+                "entities": {
+                    query: []
+                }
+            }
 
 
-query_expansion_service = QueryExpansionService()
+query_expansion_service = (
+    QueryExpansionService()
+)

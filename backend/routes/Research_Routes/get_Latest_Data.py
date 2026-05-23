@@ -43,13 +43,17 @@ BLOCKED_KEYWORDS = [
 ZSET_KEY = "ai:raw:current"
 SEEN_KEY = "ai:seen_ids"
 
-QUERY_QUEUE = "ai:query_queue"
-
 ACTIVITY_PREFIX = "ai:activity"
 RATE_PREFIX = "ai:rate"
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+
+latest_live_data = {
+    "github": [],
+    "papers": [],
+    "news": []
+}
 
 
 def now_iso():
@@ -99,7 +103,7 @@ async def fetch_github():
     )
 
     async with httpx.AsyncClient(
-        timeout=10
+        timeout=15
     ) as client:
 
         res = await client.get(
@@ -136,6 +140,11 @@ async def fetch_github():
             }
         })
 
+    print(
+        f"\n[GITHUB] "
+        f"Fetched {len(items)} repos"
+    )
+
     return items
 
 
@@ -145,22 +154,57 @@ async def fetch_papers():
         "https://export.arxiv.org/api/query?"
         "search_query=cat:cs.AI"
         "&sortBy=submittedDate"
-        "&max_results=50"
+        "&max_results=25"
     )
 
+    headers = {
+        "User-Agent":
+        "FusionAI/1.0"
+    }
+
     async with httpx.AsyncClient(
-        timeout=15
+        timeout=20
     ) as client:
 
-        res = await client.get(url)
+        res = await client.get(
+            url,
+            headers=headers
+        )
 
-    if not res.text.strip():
+    print(
+        f"\n[ARXIV STATUS] "
+        f"{res.status_code}"
+    )
 
-        print("Empty arXiv response")
+    if res.status_code == 429:
+
+        print(
+            "\n[ARXIV ERROR RESPONSE] "
+            "Rate exceeded."
+        )
 
         return []
 
-    root = ET.fromstring(res.text)
+    if not res.text.strip():
+
+        print(
+            "\n[ARXIV] Empty response"
+        )
+
+        return []
+
+    try:
+
+        root = ET.fromstring(res.text)
+
+    except Exception as e:
+
+        print(
+            "\n[ARXIV XML ERROR]",
+            e
+        )
+
+        return []
 
     items = []
 
@@ -207,9 +251,15 @@ async def fetch_papers():
 
         except Exception as e:
 
-            print("Skip entry:", e)
+            print(
+                "\n[ARXIV ENTRY ERROR]",
+                e
+            )
 
-    print("arXiv fetched:", len(items))
+    print(
+        f"\n[ARXIV] "
+        f"Fetched {len(items)} papers"
+    )
 
     return items
 
@@ -226,7 +276,7 @@ async def fetch_news():
     )
 
     async with httpx.AsyncClient(
-        timeout=10
+        timeout=15
     ) as client:
 
         res = await client.get(url)
@@ -252,6 +302,11 @@ async def fetch_news():
                 article["source"]["name"]
             }
         })
+
+    print(
+        f"\n[NEWS] "
+        f"Fetched {len(items)} articles"
+    )
 
     return items
 
@@ -354,11 +409,22 @@ async def store_sliding_window(data):
             item_id
         ):
 
+            print(
+                f"\n[EXTRACTION] "
+                f"{item['title']}"
+            )
+
             full_text = await extract_full_document(
                 item
             )
 
             if not full_text:
+
+                print(
+                    "\n[SKIPPED] "
+                    "No content extracted"
+                )
+
                 continue
 
             await redis_client.sadd(
@@ -399,6 +465,10 @@ async def store_sliding_window(data):
 
     await pipe.execute()
 
+    print(
+        "\n[REDIS] Sliding window updated"
+    )
+
 
 async def adaptive_fetch(
     source,
@@ -418,7 +488,8 @@ async def adaptive_fetch(
         if not await allow_request(source):
 
             print(
-                f"Rate limited: {source}"
+                f"\n[RATE LIMITED] "
+                f"{source}"
             )
 
             return [], interval
@@ -433,8 +504,8 @@ async def adaptive_fetch(
     except Exception as e:
 
         print(
-            f"Error fetching {source}:",
-            e
+            f"\n[FETCH ERROR] "
+            f"{source}: {e}"
         )
 
         return [], 600
@@ -442,51 +513,17 @@ async def adaptive_fetch(
     return data, interval
 
 
-def pretty_print(source, data):
-
-    print("\n" + "=" * 80)
-
-    print(
-        f"🔥 SOURCE: "
-        f"{source.upper()} "
-        f"| COUNT: {len(data)}"
-    )
-
-    print("=" * 80)
-
-    if not data:
-
-        print("⚠️ No data fetched\n")
-
-        return
-
-    for i, item in enumerate(data, 1):
-
-        print(f"\n[{i}] {item['title']}")
-
-        print(
-            f"   🔗 URL       : "
-            f"{item['url']}"
-        )
-
-        print(
-            f"   🕒 Created   : "
-            f"{item['created_at']}"
-        )
-
-        print(
-            f"   ⚙️ Meta      : "
-            f"{item.get('meta', {})}"
-        )
-
-    print("\n" + "-" * 80 + "\n")
-
-
 async def adaptive_scheduler():
+
+    global latest_live_data
 
     while True:
 
         try:
+
+            print(
+                "\n=============================="
+            )
 
             print(
                 "\nStarting adaptive "
@@ -498,33 +535,32 @@ async def adaptive_scheduler():
                 fetch_github
             )
 
+            await asyncio.sleep(3)
+
             p_data, p_int = await adaptive_fetch(
                 "papers",
                 fetch_papers
             )
+
+            await asyncio.sleep(3)
 
             n_data, n_int = await adaptive_fetch(
                 "news",
                 fetch_news
             )
 
+            latest_live_data = {
+                "github": g_data,
+                "papers": p_data,
+                "news": n_data
+            }
+
+            print(
+                "\n[LIVE CACHE UPDATED]"
+            )
+
             await store_sliding_window(
                 g_data + p_data + n_data
-            )
-
-            pretty_print(
-                "github",
-                g_data
-            )
-
-            pretty_print(
-                "papers",
-                p_data
-            )
-
-            pretty_print(
-                "news",
-                n_data
             )
 
             next_interval = min(
@@ -545,7 +581,7 @@ async def adaptive_scheduler():
         except Exception as e:
 
             print(
-                "Scheduler error:",
+                "\n[SCHEDULER ERROR]",
                 e
             )
 
@@ -584,52 +620,7 @@ async def background_ingestion_worker():
             await asyncio.sleep(5)
 
 
-async def query_worker():
-
-    while True:
-
-        try:
-
-            result = await redis_client.blpop(
-                QUERY_QUEUE
-            )
-
-            if not result:
-                continue
-
-            _, raw = result
-
-            payload = json.loads(raw)
-
-            query = payload["query"]
-
-            print(
-                f"\n[QUERY WORKER] "
-                f"Received query: {query}"
-            )
-
-            response = await query_controller.process(
-                query
-            )
-
-            print(
-                "\n[QUERY WORKER] "
-                "Pipeline completed"
-            )
-
-            print(response)
-
-        except Exception as e:
-
-            print(
-                "\n[QUERY WORKER ERROR]",
-                e
-            )
-
-            await asyncio.sleep(5)
-
-
-@router.on_event("startup")
+#@router.on_event("startup")
 async def start_background_services():
 
     print(
@@ -642,10 +633,6 @@ async def start_background_services():
 
     asyncio.create_task(
         background_ingestion_worker()
-    )
-
-    asyncio.create_task(
-        query_worker()
     )
 
     print(
@@ -665,34 +652,64 @@ async def submit_query(payload: dict):
             "message": "Query missing"
         }
 
-    await redis_client.rpush(
-        QUERY_QUEUE,
-        json.dumps({
-            "query": query
-        })
-    )
+    try:
 
-    return {
-        "success": True,
-        "message": "Query submitted"
-    }
+        print(
+            f"\n[QUERY RECEIVED] "
+            f"{query}"
+        )
+
+        response = await query_controller.process(
+            query
+        )
+
+        print(
+            "\n[QUERY COMPLETED]"
+        )
+
+        return {
+            "success": True,
+            "query": query,
+            "response": response
+        }
+
+    except Exception as e:
+
+        print(
+            "\n[QUERY ERROR]",
+            e
+        )
+
+        return {
+            "success": False,
+            "message": str(e)
+        }
 
 
 @router.get("/get")
 async def get_ai_pulse():
 
-    data = await redis_client.zrevrange(
-        ZSET_KEY,
-        0,
-        100
+    live_data = (
+        latest_live_data["github"]
+        + latest_live_data["papers"]
+        + latest_live_data["news"]
     )
 
-    parsed = [
-        json.loads(x)
-        for x in data
-    ]
+    combined = (
+        live_data
+    )
 
     return {
-        "data": parsed[:30],
+        "data": combined,
+        "live_counts": {
+            "github":
+            len(latest_live_data["github"]),
+
+            "papers":
+            len(latest_live_data["papers"]),
+
+            "news":
+            len(latest_live_data["news"])
+        },
         "last_updated": now_iso()
     }
