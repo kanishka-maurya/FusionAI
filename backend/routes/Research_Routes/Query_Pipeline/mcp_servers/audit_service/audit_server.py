@@ -6,25 +6,33 @@ class AuditService:
 
     async def process(self, subtrees):
 
-        payload = []
+        weakest_alignment = (
+            keypoint_validator.validate(subtrees)
+        )
 
-        for subtree_bundle in subtrees:
+        trace = None
 
-            subtree = subtree_bundle["subtree"]
+        if weakest_alignment:
 
-            for node in subtree:
+            node_id = weakest_alignment["node_id"]
 
-                payload.append({
-                    "node_id": node["node_id"],
-                    "keypoint_consistency": (
-                        keypoint_validator.validate(node)
-                    ),
-                    "traceability": (
-                        traceability.trace(subtree)
-                    )
-                })
+            for subtree_bundle in subtrees:
 
-        return payload
+                subtree = subtree_bundle["subtree"]
+
+                for node in subtree:
+
+                    if node["node_id"] == node_id:
+
+                        trace = traceability.trace(subtree)
+                        break
+
+        return {
+            "weakest_summary_keypoint_alignment":
+                weakest_alignment,
+
+            "traceability": trace
+        }
 
 
 audit_service = AuditService()

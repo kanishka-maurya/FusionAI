@@ -10,7 +10,8 @@ class RiskService:
             parent_nodes
         )
 
-        payload = []
+        highest_pair = None
+        highest_score = float("-inf")
 
         for node1, node2 in pairs:
 
@@ -19,13 +20,20 @@ class RiskService:
                 node2["summary"]
             )
 
-            payload.append({
-                "node_1": node1["node_id"],
-                "node_2": node2["node_id"],
-                "attention_score": attention
-            })
+            # keep only highest positive attention pair
+            if attention > highest_score:
 
-        return payload
+                highest_score = attention
+
+                highest_pair = {
+                    "node_1": node1["node_id"],
+                    "node_2": node2["node_id"],
+                    "summary_1": node1["summary"],
+                    "summary_2": node2["summary"],
+                    "attention_score": attention
+                }
+
+        return highest_pair
 
 
 risk_service = RiskService()

@@ -12,20 +12,25 @@ from backend.routes.Research_Routes.Query_Pipeline.feature_builder import (
 class QueryController:
 
     async def process(self, query):
-
         expanded = await (
             query_expansion_service.expand_query(
                 query
             )
         )
 
+        expanded_queries = expanded[
+            "queries"
+        ]
+
+        expanded_entities = expanded[
+            "entities"
+        ]
         routed_queries = await (
             embedding_router.route_queries(
-                expanded["queries"],
-                expanded["entities"]
+                expanded_queries,
+                expanded_entities
             )
         )
-
         selected_parents = []
 
         for routed in routed_queries:
@@ -36,34 +41,73 @@ class QueryController:
                 )
             )
 
-            selected_parents.append(selected)
+            if selected:
+                selected_parents.append(
+                    selected
+                )
 
         subtrees = []
 
         for parent in selected_parents:
 
             subtree = await (
-                subtree_fetcher.fetch(parent)
+                subtree_fetcher.fetch(
+                    parent
+                )
             )
 
             if subtree:
-                subtrees.append(subtree)
+
+                subtrees.append(
+                    subtree
+                )
 
         orchestration_output = await (
             mcp_orchestrator.execute(
                 subtrees
             )
         )
-
         features = feature_builder.build(
             orchestration_output,
             subtrees
         )
-
         return {
-            "expanded_queries": expanded,
-            "subtrees": subtrees,
-            "features": features
+
+            "query": query,
+
+            "expanded_queries":
+                expanded_queries,
+
+            "entities":
+                expanded_entities,
+
+            "retrieved_subtrees":
+                len(subtrees),
+
+            "subtrees":
+                subtrees,
+            "features": {
+                "graph_features":
+                    features[
+                        "graph_features"
+                    ],
+                "risk_analysis":
+                    features[
+                        "risk_features"
+                    ],
+                "ethics_analysis":
+                    features[
+                        "ethics_features"
+                    ],
+                "audit_analysis":
+                    features[
+                        "audit_features"
+                    ],
+                "strategy_analysis":
+                    features[
+                        "strategy_features"
+                    ]
+            }
         }
 
 

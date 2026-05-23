@@ -1,28 +1,47 @@
-from backend.routes.Research_Routes.Nexus_Graph_DB.services import (
-    engine_services
+from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.risk_service.risk_cross_encoder import (
+    risk_cross_encoder
 )
 
 
 class KeypointValidator:
 
-    def validate(self, node):
+    def validate(self, subtrees):
 
-        kps = node.get("key_points", [])
+        worst_pair = None
+        lowest_score = float("inf")
 
-        consistency_scores = []
+        for subtree_bundle in subtrees:
 
-        for i in range(len(kps)):
+            subtree = subtree_bundle["subtree"]
 
-            for j in range(i + 1, len(kps)):
+            for node in subtree:
 
-                score = engine_services.cosine_similarity(
-                    kps[i]["kp_embedding"],
-                    kps[j]["kp_embedding"]
-                )
+                summary = node.get("summary", "")
+                keypoints = node.get("key_points", [])
 
-                consistency_scores.append(score)
+                for kp in keypoints:
 
-        return consistency_scores
+                    kp_text = kp.get("text", "")
+
+                    score = (
+                        risk_cross_encoder.score(
+                            summary,
+                            kp_text
+                        )
+                    )
+
+                    if score < lowest_score:
+
+                        lowest_score = score
+
+                        worst_pair = {
+                            "node_id": node["node_id"],
+                            "summary": summary,
+                            "keypoint": kp_text,
+                            "attention_score": score
+                        }
+
+        return worst_pair
 
 
 keypoint_validator = KeypointValidator()
