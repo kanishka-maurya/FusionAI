@@ -698,7 +698,7 @@ async def get_ai_pulse():
     combined = (
         live_data
     )
-
+    print(combined)
     return {
         "data": combined,
         "live_counts": {

@@ -76,7 +76,6 @@ Return STRICT JSON:
     "retrieval_improvements": [],
     "clustering_improvements": [],
     "summarization_improvements": [],
-    "confidence_level": "",
     "final_conclusion": ""
 }}
 """
@@ -94,7 +93,7 @@ Return STRICT JSON:
                 .replace("```", "")
                 .strip()
             )
-
+    
         return json.loads(text)
 
 
