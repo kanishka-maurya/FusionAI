@@ -12,11 +12,29 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 async def merge_nodes_with_groq(
     parent_summary,
-    child_summary,
-    parent_keypoints,
-    child_keypoints,
+    child_summary=None,
+    parent_keypoints=None,
+    child_keypoints=None,
     retries=5
 ):
+    if isinstance(parent_summary, dict) and isinstance(child_summary, dict):
+        parent_node = parent_summary
+        child_node = child_summary
+        parent_summary = parent_node.get("summary", "")
+        child_summary = child_node.get("summary", "")
+        parent_keypoints = [
+            kp.get("text", "")
+            for kp in parent_node.get("key_points", [])
+            if kp.get("text")
+        ]
+        child_keypoints = [
+            kp.get("text", "")
+            for kp in child_node.get("key_points", [])
+            if kp.get("text")
+        ]
+
+    parent_keypoints = parent_keypoints or []
+    child_keypoints = child_keypoints or []
 
     merged_keypoints = list(
         set(parent_keypoints + child_keypoints)

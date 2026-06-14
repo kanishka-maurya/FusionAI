@@ -8,30 +8,15 @@ import os
 from pydantic import BaseModel
 
 
+from backend.dependencies import get_embedding_generator, get_vector_db
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
-from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
-from services.research_service.generation.generation import RAGGenerator
-from memory.memory import NotebookMemoryLayer
     
     
 router = APIRouter()
 processor = DocumentProcessor()
-embedding_generator = EmbeddingGenerator()
-vector_db = ChromaVectorDatabase()
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
-
-llm_api_key = os.getenv("GROQ_API_KEY")
-if not llm_api_key:
-    raise RuntimeError("GROQ_API_KEY environment variable not set")
-
-memory_api_key = os.getenv("ZEP_API_KEY")
-if not memory_api_key:
-    raise RuntimeError("ZEP_API_KEY environment variable not set")
-
-
 
 @router.post("/upload")
 async def upload_document(request: Request, file: UploadFile = File(...)):
@@ -59,13 +44,13 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
         print(chunks)
         file_path.unlink(missing_ok=True)
         try:
-          embedded_chunks = embedding_generator.generate_embeddings(chunks)
+          embedded_chunks = get_embedding_generator().generate_embeddings(chunks)
         except Exception as e:
           print(e)
         print(len(embedded_chunks))
         print(embedded_chunks)
         try:
-          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=notebook_id)
+          inserted_ids = get_vector_db().insert_embeddings(embedded_chunks,  user_id=user_id, session_id=notebook_id)
         except Exception as e:
           print(e)
         print(f"Inserted {len(inserted_ids)} embeddings")
@@ -89,6 +74,9 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
 @router.get("/query")
 async def query_documents(q: str, request:Request):
     try:
+        from memory.memory import NotebookMemoryLayer
+        from services.research_service.generation.generation import RAGGenerator
+
         user_id = getattr(request.state, "user_id", None)
         notebook_id = getattr(request.state, "notebook_id", None)
 
@@ -97,10 +85,18 @@ async def query_documents(q: str, request:Request):
         print(q)
         if not q or not q.strip():
             raise HTTPException(status_code=400, detail="Query cannot be empty")
+
+        llm_api_key = os.getenv("GROQ_API_KEY")
+        if not llm_api_key:
+            raise HTTPException(status_code=500, detail="GROQ_API_KEY environment variable not set")
+
+        memory_api_key = os.getenv("ZEP_API_KEY")
+        if not memory_api_key:
+            raise HTTPException(status_code=500, detail="ZEP_API_KEY environment variable not set")
         
         rag_generator = RAGGenerator(
-         embedding_generator=embedding_generator,
-         vector_db=vector_db,
+         embedding_generator=get_embedding_generator(),
+         vector_db=get_vector_db(),
          api_key=llm_api_key,
          temperature=0.1
         )

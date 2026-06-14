@@ -1,12 +1,9 @@
 from fastapi import APIRouter, Request,Header
+from backend.dependencies import get_embedding_generator, get_vector_db
 from services.research_service.data_processing.audio_processing.youtube_transcriber import YoutubeTranscriber
-from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
 router=APIRouter()
 
 transcriber=YoutubeTranscriber()
-embedding_generator=EmbeddingGenerator()
-vector_db=ChromaVectorDatabase()
 @router.post("/process_video_link")
 async def process_video_link(video_link:str,
                               request:Request):
@@ -21,10 +18,10 @@ async def process_video_link(video_link:str,
             print(f"  {chunk.content}")"""
         print(chunks)
         print("generating embeddings")
-        embedded_chunks = embedding_generator.generate_embeddings(chunks)
+        embedded_chunks = get_embedding_generator().generate_embeddings(chunks)
         print(len(embedded_chunks))
         print("now here")
-        inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
+        inserted_ids = get_vector_db().insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         print(f"Inserted {inserted_ids} embeddings")
         return {
             "filename": video_link,

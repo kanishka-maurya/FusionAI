@@ -28,8 +28,6 @@ class CoOccurrenceAnalyzer:
                 for pair in pairs:
 
                     counts[pair] += 1
-
-                for pair in counts.keys():
                     totals[pair] += 1
 
         result = {}

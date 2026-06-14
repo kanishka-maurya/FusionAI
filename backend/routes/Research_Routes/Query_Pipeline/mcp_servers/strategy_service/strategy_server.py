@@ -1,4 +1,5 @@
 from collections import defaultdict
+import ast
 
 from .topic_cube import topic_cube
 from .temporal_trends import temporal_trend_analyzer
@@ -44,9 +45,10 @@ class StrategyService:
 
             for node in subtree:
 
-                entities = node.get(
-                    "entities",
-                    []
+                entities = (
+                    node.get("associated_entities")
+                    or node.get("entities")
+                    or []
                 )
 
                 for entity in entities:
@@ -97,7 +99,10 @@ class StrategyService:
 
         for pair, stats in cooccurrence.items():
 
-            e1, e2 = eval(pair)
+            try:
+                e1, e2 = ast.literal_eval(pair)
+            except (SyntaxError, ValueError, TypeError):
+                continue
 
             if best_topic not in [e1, e2]:
                 continue

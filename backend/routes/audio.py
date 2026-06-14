@@ -6,26 +6,15 @@ from backend.core.logging import logging
 import uuid
 import os
 
+from backend.dependencies import get_embedding_generator, get_vector_db
 from services.research_service.data_processing.audio_processing.audio_transcriber import AudioTranscriber,transcribe_audio
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
-from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
-from services.research_service.generation.generation import RAGGenerator, RAGResult
     
     
 router = APIRouter()
 processor = AudioTranscriber()
-embedding_generator = EmbeddingGenerator()
-vector_db = ChromaVectorDatabase()
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
-
-api_key = os.getenv("GROQ_API_KEY")
-if not api_key:
-    raise RuntimeError("GROQ_API_KEY environment variable not set")
-
-
-
 
 @router.post("/upload")
 async def upload_document(request:Request,file: UploadFile = File(...)):
@@ -50,7 +39,7 @@ async def upload_document(request:Request,file: UploadFile = File(...)):
             raise HTTPException(status_code=500, detail="Failed to transcribe audio")
         file_path.unlink(missing_ok=True)
         try:
-          embedded_chunks = embedding_generator.generate_embeddings(results["chunks"])
+          embedded_chunks = get_embedding_generator().generate_embeddings(results["chunks"])
         except Exception as e:
           print(e)
         for chunk in embedded_chunks:
@@ -68,7 +57,7 @@ async def upload_document(request:Request,file: UploadFile = File(...)):
         try:
           print("session id coming:",session_id)
           print("embedded chunks going to vector_db",embedded_chunks)
-          inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
+          inserted_ids = get_vector_db().insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
         except Exception as e:
           print(e)
         print(f"Inserted {len(inserted_ids)} embeddings")

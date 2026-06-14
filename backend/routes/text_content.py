@@ -1,7 +1,6 @@
 from fastapi import APIRouter,HTTPException, Request
+from backend.dependencies import get_embedding_generator, get_vector_db
 from services.research_service.data_processing.doc_processing.doc_processor import DocumentProcessor
-from services.research_service.embeddings.embedding_generator import EmbeddingGenerator 
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
 from pydantic import BaseModel
 router=APIRouter()
 
@@ -21,10 +20,8 @@ async def process_text(text: TextContent,
       print("processing text content",filename,content)
       processor=DocumentProcessor()
       chunks=processor._create_chunks_from_text(content,filename,"text")
-      embedding_generator=EmbeddingGenerator()
-      embedded_chunks=embedding_generator.generate_embeddings(chunks)
-      vector_db=ChromaVectorDatabase()
-      inserted_ids=vector_db.insert_embeddings(embedded_chunks, user_id=user_id, session_id=session_id)
+      embedded_chunks=get_embedding_generator().generate_embeddings(chunks)
+      inserted_ids=get_vector_db().insert_embeddings(embedded_chunks, user_id=user_id, session_id=session_id)
       return {
             "filename": filename,
             "total_chunks": len(chunks),

@@ -1,10 +1,9 @@
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Header, Query, Request
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
+from backend.dependencies import get_vector_db
 
 router = APIRouter()
-vector_db = ChromaVectorDatabase()
 
 
 @router.get("/get_contents")
@@ -14,7 +13,7 @@ async def get_notebook_sources( request: Request):
     print("something happeninggg",notebook_id)
     try:
         print("hereeeee")
-        sources = vector_db.get_sources_by_session(
+        sources = get_vector_db().get_sources_by_session(
             user_id=user_id,
             session_id=notebook_id
         )
@@ -32,7 +31,7 @@ async def delete_notebook_sources(request:Request):
     notebook_id = getattr(request.state, "notebook_id", None)
     print("deleting contents for notebook",notebook_id)
     try:
-        vector_db.delete_sources_by_session(
+        get_vector_db().delete_sources_by_session(
             user_id=user_id,
             session_id=notebook_id
         )
@@ -57,7 +56,7 @@ async def delete_single_source(
         raise HTTPException(status_code=400, detail="Missing required headers")
 
     try:
-        result = vector_db.delete_single_source(
+        result = get_vector_db().delete_single_source(
             user_id=user_id,
             session_id=notebook_id,
             source_name=source_name,

@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException,Request
 from fastapi.middleware.cors import CORSMiddleware
-from jose import jwt, JWTError
 from starlette.middleware.base import BaseHTTPMiddleware
 from backend.routes.document import router as document_router
 from backend.routes.youtube_video import router as youtube_router
@@ -17,7 +20,6 @@ from backend.routes.Roadmap_Routes.roadmap_response import router as roadmap_rou
 from backend.routes.Research_Routes.get_Latest_Data import router as research_router
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if request.method == "OPTIONS" or request.url.path in ["/docs", "/openapi.json", "/health"]:

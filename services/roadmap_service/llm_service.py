@@ -1,23 +1,28 @@
 import os
 import json
 import re
-from crewai import LLM
+from functools import lru_cache
 import config
 
 
 # ── Validate API Key ───────────────────────────────────────────────
-llm_api_key = os.getenv("GROQ_API_KEY")
-if not llm_api_key:
-    raise RuntimeError("GROQ_API_KEY environment variable not set")
+@lru_cache(maxsize=1)
+def get_llm():
+    from crewai import LLM
+
+    llm_api_key = os.getenv("GROQ_API_KEY")
+    if not llm_api_key:
+        raise RuntimeError("GROQ_API_KEY environment variable not set")
+
+    return LLM(
+        model=config.MODEL,
+        temperature=config.TEMPERATURE,
+        max_tokens=config.MAX_TOKENS,
+        api_key=llm_api_key
+    )
 
 
 # ── Initialize LLM ────────────────────────────────────────────────
-llm = LLM(
-    model=config.MODEL,
-    temperature=config.TEMPERATURE,
-    max_tokens=config.MAX_TOKENS,
-    api_key=llm_api_key
-)
 
 
 # ── JSON Extraction Helper ────────────────────────────────────────
@@ -95,7 +100,7 @@ async def generate_roadmap_json(topic: str, level: str) -> dict:
     )
 
     try:
-        response = llm.call(prompt)
+        response = get_llm().call(prompt)
 
         return _extract_json(response)
 
@@ -171,7 +176,7 @@ async def generate_node_content(
         level=level,
         prerequisites=prereq_str
     )
-    response = llm.call(prompt)
+    response = get_llm().call(prompt)
     return _extract_json(response)
 
 

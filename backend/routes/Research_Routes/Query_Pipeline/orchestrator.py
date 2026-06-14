@@ -1,21 +1,27 @@
 import asyncio
-
+print("ORCH-1 BEFORE strategy")
 from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.strategy_service.strategy_server import (
     strategy_service
 )
+print("ORCH-1 DONE")
 
+print("ORCH-2 BEFORE risk")
 from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.risk_service.risk_scoring import (
     risk_service
 )
+print("ORCH-2 DONE")
 
+print("ORCH-3 BEFORE ethics")
 from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.ethics_service.ethics_validator import (
     ethics_service
 )
+print("ORCH-3 DONE")
 
+print("ORCH-4 BEFORE audit")
 from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.audit_service.audit_server import (
     audit_service
 )
-
+print("ORCH-4 DONE")
 
 class MCPOrchestrator:
 

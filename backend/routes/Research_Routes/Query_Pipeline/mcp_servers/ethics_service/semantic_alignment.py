@@ -1,17 +1,20 @@
-from sentence_transformers import CrossEncoder
-
-
 class SemanticAlignment:
 
     def __init__(self):
+        self.model = None
 
-        self.model = CrossEncoder(
-            "cross-encoder/ms-marco-MiniLM-L-6-v2"
-        )
+    def _get_model(self):
+        if self.model is None:
+            from sentence_transformers import CrossEncoder
+
+            self.model = CrossEncoder(
+                "cross-encoder/ms-marco-MiniLM-L-6-v2"
+            )
+        return self.model
 
     def compare(self, text1, text2):
 
-        score = self.model.predict([
+        score = self._get_model().predict([
             [text1, text2]
         ])
 

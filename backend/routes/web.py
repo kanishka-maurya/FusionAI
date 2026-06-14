@@ -3,15 +3,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 import os
 
-from services.research_service.embeddings.embedding_generator import EmbeddingGenerator
-from services.research_service.vector_database.vector_database import ChromaVectorDatabase
+from backend.dependencies import get_embedding_generator, get_vector_db
 from services.research_service.data_processing.web_scraping.web_scraper import WebScraper
-from services.research_service.generation.generation import RAGGenerator, RAGResult
-from memory.memory import NotebookMemoryLayer
 
 router = APIRouter()
-embedding_generator = EmbeddingGenerator()
-vector_db = ChromaVectorDatabase()
 
 UPLOAD_DIR = Path("web_upload")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -44,13 +39,13 @@ async def upload_url(url: str,
         chunks = web_scraper.scrape_url(url)
 
         # Generate embeddings
-        embedded_chunks = embedding_generator.generate_embeddings(chunks)
+        embedded_chunks = get_embedding_generator().generate_embeddings(chunks)
 
         print(f"Generated {len(embedded_chunks)} embeddings")
         print(embedded_chunks)
 
         # Insert into vector DB
-        inserted_ids = vector_db.insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
+        inserted_ids = get_vector_db().insert_embeddings(embedded_chunks,  user_id=user_id, session_id=session_id)
 
         print(f"Inserted {len(inserted_ids)} embeddings")
 

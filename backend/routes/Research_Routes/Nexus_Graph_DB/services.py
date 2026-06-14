@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from .config import settings, embedding_service
 from .merger import merge_nodes_with_groq
+from backend.routes.Research_Routes.utils import hybrid_relevance_score
 
 load_dotenv()
 
@@ -243,7 +244,8 @@ class EngineServices:
         content,
         summary,
         key_points,
-        entities
+        entities,
+        metadata=None
     ):
 
         logging.info(
@@ -272,7 +274,8 @@ class EngineServices:
             "key_points": [],
             "associated_entities": entities,
             "parent_id": None,
-            "child_ids": []
+            "child_ids": [],
+            "_metadata": metadata or {}
         }
 
         logging.info(
@@ -490,7 +493,11 @@ class EngineServices:
                 "child_ids": [
                     best_root_id,
                     node_id
-                ]
+                ],
+                "_metadata": {
+                    "merge_score": best_score,
+                    "merge_threshold": tau
+                }
             }
 
             await self.save_node(parent_node)
@@ -643,18 +650,24 @@ class EngineServices:
                 query_vector,
                 node["node_embedding"]
             )
+            score_details = hybrid_relevance_score(
+                query_text,
+                query_entities,
+                node,
+                score
+            )
 
             logging.info(
                 f"[QUERY SCORE] "
-                f"{root_id} -> {score:.4f}"
+                f"{root_id} -> {score_details['hybrid_score']:.4f}"
             )
 
             scored.append(
-                (root_id, score)
+                (root_id, score_details)
             )
 
         scored.sort(
-            key=lambda x: x[1],
+            key=lambda x: x[1]["hybrid_score"],
             reverse=True
         )
 
@@ -662,7 +675,7 @@ class EngineServices:
 
         payload = []
 
-        for root_id, score in selected:
+        for root_id, score_details in selected:
 
             subtree = await self.fetch_subtree(
                 root_id
@@ -670,7 +683,8 @@ class EngineServices:
 
             payload.append({
                 "entry_root_id": root_id,
-                "relevance_score": score,
+                "relevance_score": score_details["hybrid_score"],
+                "score_details": score_details,
                 "fallback_triggered": fallback_used,
                 "graph_nodes": subtree
             })

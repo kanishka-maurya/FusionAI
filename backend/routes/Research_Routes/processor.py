@@ -3,6 +3,10 @@ from backend.routes.Research_Routes.dataset_builder import save_sample
 from backend.routes.Research_Routes.models.llm_loader import summarize_with_gemini
 
 from backend.routes.Research_Routes.Nexus_Graph_DB.services import engine_services
+from backend.routes.Research_Routes.utils import (
+    novelty_score,
+    source_authority_score,
+)
 
 import json
 import hashlib
@@ -147,6 +151,11 @@ async def process_and_build_dataset(
             print("=" * 80)
 
             chunks = chunk_text(content)
+            source_score = item.get(
+                "source_score",
+                source_authority_score(item)
+            )
+            previous_chunks = []
 
             print(
                 f"Total chunks: "
@@ -225,6 +234,11 @@ async def process_and_build_dataset(
                         for ent in entities
                         if str(ent).strip()
                     ]
+                    chunk_novelty = novelty_score(
+                        chunk,
+                        previous_chunks
+                    )
+                    previous_chunks.append(chunk)
 
                     save_sample(
                         chunk,
@@ -242,7 +256,16 @@ async def process_and_build_dataset(
                             content=chunk,
                             summary=summary,
                             key_points=key_points,
-                            entities=entities
+                            entities=entities,
+                            metadata={
+                                "title": item.get("title"),
+                                "url": item.get("url"),
+                                "source": item.get("source"),
+                                "created_at": item.get("created_at"),
+                                "fetched_at": item.get("fetched_at"),
+                                "source_score": source_score,
+                                "novelty_score": chunk_novelty,
+                            }
                         )
 
                         print(

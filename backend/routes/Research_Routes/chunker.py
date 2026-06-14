@@ -1,12 +1,9 @@
-def chunk_text(text, chunk_size=500, overlap=100):
-    chunks = []
-    start = 0
+from backend.routes.Research_Routes.utils import semantic_chunk_text
 
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk)
 
-        start += chunk_size - overlap
-
-    return chunks
+def chunk_text(text, chunk_size=1200, overlap=180):
+    return semantic_chunk_text(
+        text,
+        chunk_size=chunk_size,
+        overlap=overlap
+    )

@@ -7,12 +7,13 @@ async def extract_github_content(repo_url):
 
         api_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
             res = await client.get(api_url, headers={"Accept": "application/vnd.github.v3.raw"})
 
         if res.status_code == 200:
             return res.text
         else:
             return ""
-    except:
+    except Exception as exc:
+        print(f"[GITHUB EXTRACTION ERROR] {repo_url}: {exc}")
         return ""

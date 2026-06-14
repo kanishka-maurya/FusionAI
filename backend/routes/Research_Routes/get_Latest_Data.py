@@ -8,18 +8,8 @@ import hashlib
 import xml.etree.ElementTree as ET
 import redis.asyncio as redis
 import os
-
-from backend.routes.Research_Routes.Extraction.extractor import (
-    extract_full_document
-)
-
-from backend.routes.Research_Routes.processor import (
-    process_and_build_dataset
-)
-
-from backend.routes.Research_Routes.Query_Pipeline.query_controller import (
-    query_controller
-)
+from backend.routes.Research_Routes.utils import source_authority_score
+from backend.routes.Research_Routes.contracts import QueryRequest
 
 router = APIRouter()
 
@@ -414,6 +404,10 @@ async def store_sliding_window(data):
                 f"{item['title']}"
             )
 
+            from backend.routes.Research_Routes.Extraction.extractor import (
+                extract_full_document
+            )
+
             full_text = await extract_full_document(
                 item
             )
@@ -434,7 +428,8 @@ async def store_sliding_window(data):
 
             enriched_item = {
                 **item,
-                "content": full_text
+                "content": full_text,
+                "source_score": source_authority_score(item)
             }
 
             score = to_timestamp(
@@ -599,6 +594,10 @@ async def background_ingestion_worker():
                 "Starting processing cycle"
             )
 
+            from backend.routes.Research_Routes.processor import (
+                process_and_build_dataset
+            )
+
             await process_and_build_dataset(
                 redis_client
             )
@@ -620,7 +619,7 @@ async def background_ingestion_worker():
             await asyncio.sleep(5)
 
 
-#@router.on_event("startup")
+@router.on_event("startup")
 async def start_background_services():
 
     print(
@@ -641,9 +640,9 @@ async def start_background_services():
 
 
 @router.post("/query")
-async def submit_query(payload: dict):
+async def submit_query(payload: QueryRequest):
 
-    query = payload.get("query")
+    query = payload.query
 
     if not query:
 
@@ -659,8 +658,13 @@ async def submit_query(payload: dict):
             f"{query}"
         )
 
+        from backend.routes.Research_Routes.Query_Pipeline.query_controller import (
+            query_controller
+        )
+
         response = await query_controller.process(
-            query
+            query,
+            mode=payload.mode
         )
 
         print(

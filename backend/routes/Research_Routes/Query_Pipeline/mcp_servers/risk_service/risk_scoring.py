@@ -1,6 +1,10 @@
+print("RISK-1 BEFORE pair_builder")
 from .pair_builder import pair_builder
-from .risk_cross_encoder import risk_cross_encoder
+print("RISK-1 DONE")
 
+print("RISK-2 BEFORE risk_cross_encoder")
+from .risk_cross_encoder import risk_cross_encoder
+print("RISK-2 DONE")
 
 class RiskService:
 
