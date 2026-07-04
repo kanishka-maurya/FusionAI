@@ -1,24 +1,20 @@
+from backend.routes.Research_Routes.Query_Pipeline.mcp_servers.risk_service.risk_cross_encoder import (
+    risk_cross_encoder
+)
+
+
 class SemanticAlignment:
-
-    def __init__(self):
-        self.model = None
-
-    def _get_model(self):
-        if self.model is None:
-            from sentence_transformers import CrossEncoder
-
-            self.model = CrossEncoder(
-                "cross-encoder/ms-marco-MiniLM-L-6-v2"
-            )
-        return self.model
 
     def compare(self, text1, text2):
 
-        score = self._get_model().predict([
-            [text1, text2]
-        ])
+        print(
+            "\n[SEMANTIC ALIGNMENT] Scoring pair"
+        )
 
-        return float(score[0])
+        return risk_cross_encoder.score(
+            text1,
+            text2
+        )
 
 
 semantic_alignment = SemanticAlignment()

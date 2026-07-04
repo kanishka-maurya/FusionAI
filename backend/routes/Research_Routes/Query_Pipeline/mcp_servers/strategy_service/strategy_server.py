@@ -1,5 +1,6 @@
 from collections import defaultdict
 import ast
+import time
 
 from .topic_cube import topic_cube
 from .temporal_trends import temporal_trend_analyzer
@@ -11,8 +12,20 @@ class StrategyService:
 
     async def process(self, subtrees):
 
+        started_at = time.perf_counter()
+
+        print(
+            "\n[STRATEGY SERVICE] Starting: "
+            f"{len(subtrees)} subtrees"
+        )
+
         cube = topic_cube.build_topic_cube(
             subtrees
+        )
+
+        print(
+            "\n[STRATEGY SERVICE] Topic cube built: "
+            f"{len(cube)} entities"
         )
 
         temporal_trends = (
@@ -21,10 +34,19 @@ class StrategyService:
             )
         )
 
+        print(
+            "\n[STRATEGY SERVICE] Temporal trends analyzed"
+        )
+
         cooccurrence = (
             cooccurrence_analyzer.analyze(
                 subtrees
             )
+        )
+
+        print(
+            "\n[STRATEGY SERVICE] Co-occurrence analyzed: "
+            f"{len(cooccurrence)} pairs"
         )
 
         entity_frequency = defaultdict(int)
@@ -141,6 +163,14 @@ class StrategyService:
                 best_topic,
                 []
             )
+        )
+
+        elapsed = time.perf_counter() - started_at
+
+        print(
+            "\n[STRATEGY SERVICE] Completed in "
+            f"{elapsed:.2f}s with selected topic: "
+            f"{best_topic}"
         )
 
         return {

@@ -23,12 +23,12 @@ export function RoadmapProvider({children}:{children:ReactNode}){
     });
     const setRoadmap = (notebook: RoadmapData) => {
     setcurrentRoadmap(notebook);
-    localStorage.setItem("active_notebook", JSON.stringify(notebook));
+    localStorage.setItem("active_roadmap", JSON.stringify(notebook));
   };
 
   const clearRoadmap = () => {
     setcurrentRoadmap(null);
-    localStorage.removeItem("active_notebook");
+    localStorage.removeItem("active_roadmap");
   };
 
   return (

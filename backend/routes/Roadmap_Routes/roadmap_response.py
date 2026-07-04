@@ -3,7 +3,6 @@ import json
 from fastapi import APIRouter, HTTPException,Request
 from services.roadmap_service.data_models import GenerateRoadmapRequest, RoadmapResponse
 import services.roadmap_service.database as db
-import cache
 from services.roadmap_service.llm_service import generate_roadmap_json, generate_node_content
 
 router = APIRouter()
@@ -18,8 +17,7 @@ async def generate_roadmap(request: GenerateRoadmapRequest, req: Request):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=502,
-                            detail=f"Gemini generation failed: {str(e)}")
-    print(raw)
+                            detail=f"Roadmap generation failed: {str(e)}")
     nodes = raw.get("nodes", [])
     if not nodes:
         raise HTTPException(status_code=500,
@@ -39,7 +37,6 @@ async def generate_roadmap(request: GenerateRoadmapRequest, req: Request):
         "description": raw.get("description", ""),
         "total_nodes": len(nodes),
     })
-    print(nodes)
     db.insert_nodes_bulk(client, roadmap_id, nodes)
 
     response_data = {
@@ -60,6 +57,120 @@ async def get_user_roadmaps(req: Request):
     client.auth.set_session(req.state.token, req.state.token)
     roadmaps = db.get_user_roadmaps(client, req.state.user_id)
     return {"roadmaps": roadmaps}
+
+
+@router.get("/{roadmap_id}")
+async def get_roadmap(roadmap_id: str, req: Request):
+    client = db.get_supabase(req.state.token)
+    client.auth.set_session(req.state.token, req.state.token)
+
+    roadmaps = db.get_roadmap(client, roadmap_id)
+    if not roadmaps:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+
+    roadmap = roadmaps[0]
+    if roadmap.get("user_id") != req.state.user_id:
+        raise HTTPException(status_code=403, detail="Roadmap does not belong to this user")
+
+    nodes = db.get_nodes_for_roadmap(client, roadmap_id)
+    shaped_nodes = [
+        {
+            "node_id": n["node_id"],
+            "roadmap_id": n["roadmap_id"],
+            "title": n["title"],
+            "type": n["type"],
+            "level": n["level"],
+            "status": n["status"],
+            "dependencies": n.get("dependencies") or [],
+            "position_x": n.get("position_x"),
+            "position_y": n.get("position_y"),
+            "content_generated": n.get("content_generated"),
+            "raw_content": n.get("raw_content"),
+            "created_at": n.get("created_at"),
+        }
+        for n in nodes
+    ]
+
+    return {
+        **roadmap,
+        "nodes": shaped_nodes,
+        "total_nodes": roadmap.get("total_nodes") or len(shaped_nodes),
+    }
+
+
+@router.get("/{roadmap_id}/node/{node_id}/content")
+async def get_node_content(roadmap_id: str, node_id: str, req: Request):
+    client = db.get_supabase(req.state.token)
+    client.auth.set_session(req.state.token, req.state.token)
+
+    roadmaps = db.get_roadmap(client, roadmap_id)
+    if not roadmaps:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+
+    roadmap = roadmaps[0]
+    if roadmap.get("user_id") != req.state.user_id:
+        raise HTTPException(status_code=403, detail="Roadmap does not belong to this user")
+
+    node = db.get_node(client, roadmap_id, node_id)
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+
+    if node.get("content_generated") and node.get("raw_content"):
+        content = node["raw_content"]
+        if isinstance(content, str):
+            content = json.loads(content)
+        return {"source": "db", "content": content}
+
+    dep_ids = node.get("dependencies") or []
+    prerequisites = []
+    for dep_id in dep_ids:
+        dep_node = db.get_node(client, roadmap_id, dep_id)
+        if dep_node:
+            prerequisites.append(dep_node["title"])
+
+    try:
+        content = await generate_node_content(
+            node_title=node["title"],
+            roadmap_title=roadmap["title"],
+            level=node["level"],
+            prerequisites=prerequisites,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Content generation failed: {str(e)}")
+
+    db.mark_content_generated(client, roadmap_id, node_id, content)
+    return {"source": "generated", "content": content}
+
+
+@router.patch("/{roadmap_id}/node/{node_id}/status")
+async def update_node_status(roadmap_id: str, node_id: str, status: str, req: Request):
+    valid_statuses = {"done", "completed", "in_progress", "skipped", "unlocked"}
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+
+    client = db.get_supabase(req.state.token)
+    client.auth.set_session(req.state.token, req.state.token)
+
+    roadmaps = db.get_roadmap(client, roadmap_id)
+    if not roadmaps:
+        raise HTTPException(status_code=404, detail="Roadmap not found")
+    if roadmaps[0].get("user_id") != req.state.user_id:
+        raise HTTPException(status_code=403, detail="Roadmap does not belong to this user")
+
+    normalized_status = "done" if status == "completed" else status
+    db.update_node_status(client, roadmap_id, node_id, normalized_status)
+
+    if normalized_status == "done":
+        nodes = db.get_nodes_for_roadmap(client, roadmap_id)
+        node_status_map = {n["node_id"]: n["status"] for n in nodes}
+        for node in nodes:
+            if node["status"] != "locked":
+                continue
+            deps = node.get("dependencies") or []
+            if deps and all(node_status_map.get(dep) in {"done", "completed"} for dep in deps):
+                db.update_node_status(client, roadmap_id, node["node_id"], "unlocked")
+
+    return {"message": f"Node {node_id} updated to '{normalized_status}'"}
 
 # # ─────────────────────────────────────────────────────────────────────────────
 # # GET /api/roadmap/{roadmap_id}

@@ -9,7 +9,9 @@ import xml.etree.ElementTree as ET
 import redis.asyncio as redis
 import os
 from backend.routes.Research_Routes.utils import source_authority_score
-from backend.routes.Research_Routes.contracts import QueryRequest
+from backend.routes.Research_Routes.contracts import (
+    QueryRequest,
+)
 
 router = APIRouter()
 
@@ -35,6 +37,8 @@ SEEN_KEY = "ai:seen_ids"
 
 ACTIVITY_PREFIX = "ai:activity"
 RATE_PREFIX = "ai:rate"
+QUERY_ACTIVE_KEY = "ai:query:active_count"
+QUERY_ACTIVE_TTL_SECONDS = 600
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
@@ -44,6 +48,131 @@ latest_live_data = {
     "papers": [],
     "news": []
 }
+
+active_query_count = 0
+
+
+async def mark_query_started():
+
+    global active_query_count
+
+    active_query_count += 1
+
+    try:
+
+        await redis_client.incr(
+            QUERY_ACTIVE_KEY
+        )
+
+        await redis_client.expire(
+            QUERY_ACTIVE_KEY,
+            QUERY_ACTIVE_TTL_SECONDS
+        )
+
+    except Exception as e:
+
+        print(
+            "\n[QUERY PAUSE FLAG ERROR] "
+            "Could not mark query started:",
+            repr(e)
+        )
+
+
+async def mark_query_finished():
+
+    global active_query_count
+
+    active_query_count = max(
+        active_query_count - 1,
+        0
+    )
+
+    try:
+
+        remaining = await redis_client.decr(
+            QUERY_ACTIVE_KEY
+        )
+
+        if remaining <= 0:
+
+            await redis_client.delete(
+                QUERY_ACTIVE_KEY
+            )
+
+    except Exception as e:
+
+        print(
+            "\n[QUERY PAUSE FLAG ERROR] "
+            "Could not mark query finished:",
+            repr(e)
+        )
+
+
+async def is_query_active():
+
+    if active_query_count > 0:
+        return True
+
+    try:
+
+        value = await redis_client.get(
+            QUERY_ACTIVE_KEY
+        )
+
+        return int(value or 0) > 0
+
+    except Exception as e:
+
+        print(
+            "\n[QUERY PAUSE FLAG ERROR] "
+            "Could not read query flag:",
+            repr(e)
+        )
+
+        return active_query_count > 0
+
+
+async def wait_if_query_active(worker_name):
+
+    paused = False
+
+    while await is_query_active():
+
+        if not paused:
+
+            print(
+                f"\n[{worker_name}] "
+                "Query active; pausing background work"
+            )
+
+            paused = True
+
+        await asyncio.sleep(1)
+
+    if paused:
+
+        print(
+            f"\n[{worker_name}] "
+            "Query finished; resuming background work"
+        )
+
+
+async def interruptible_background_sleep(seconds, worker_name):
+
+    remaining = seconds
+
+    while remaining > 0:
+
+        await wait_if_query_active(worker_name)
+
+        step = min(
+            remaining,
+            1
+        )
+
+        await asyncio.sleep(step)
+
+        remaining -= step
 
 
 def now_iso():
@@ -472,6 +601,10 @@ async def adaptive_fetch(
 
     try:
 
+        await wait_if_query_active(
+            f"SCHEDULER {source.upper()}"
+        )
+
         activity = await get_activity_level(
             source
         )
@@ -489,7 +622,15 @@ async def adaptive_fetch(
 
             return [], interval
 
+        await wait_if_query_active(
+            f"SCHEDULER {source.upper()}"
+        )
+
         data = await fetch_func()
+
+        await wait_if_query_active(
+            f"SCHEDULER {source.upper()}"
+        )
 
         await log_activity(
             source,
@@ -516,6 +657,10 @@ async def adaptive_scheduler():
 
         try:
 
+            await wait_if_query_active(
+                "ADAPTIVE SCHEDULER"
+            )
+
             print(
                 "\n=============================="
             )
@@ -530,18 +675,28 @@ async def adaptive_scheduler():
                 fetch_github
             )
 
-            await asyncio.sleep(3)
+            await interruptible_background_sleep(
+                3,
+                "ADAPTIVE SCHEDULER"
+            )
 
             p_data, p_int = await adaptive_fetch(
                 "papers",
                 fetch_papers
             )
 
-            await asyncio.sleep(3)
+            await interruptible_background_sleep(
+                3,
+                "ADAPTIVE SCHEDULER"
+            )
 
             n_data, n_int = await adaptive_fetch(
                 "news",
                 fetch_news
+            )
+
+            await wait_if_query_active(
+                "ADAPTIVE SCHEDULER"
             )
 
             latest_live_data = {
@@ -569,8 +724,9 @@ async def adaptive_scheduler():
                 f"in {next_interval}s"
             )
 
-            await asyncio.sleep(
-                next_interval
+            await interruptible_background_sleep(
+                next_interval,
+                "ADAPTIVE SCHEDULER"
             )
 
         except Exception as e:
@@ -580,7 +736,10 @@ async def adaptive_scheduler():
                 e
             )
 
-            await asyncio.sleep(60)
+            await interruptible_background_sleep(
+                60,
+                "ADAPTIVE SCHEDULER"
+            )
 
 
 async def background_ingestion_worker():
@@ -588,6 +747,10 @@ async def background_ingestion_worker():
     while True:
 
         try:
+
+            await wait_if_query_active(
+                "INGESTION WORKER"
+            )
 
             print(
                 "\n[INGESTION WORKER] "
@@ -599,7 +762,14 @@ async def background_ingestion_worker():
             )
 
             await process_and_build_dataset(
-                redis_client
+                redis_client,
+                pause_callback=lambda: wait_if_query_active(
+                    "INGESTION PROCESSOR"
+                )
+            )
+
+            await wait_if_query_active(
+                "INGESTION WORKER"
             )
 
             print(
@@ -607,7 +777,10 @@ async def background_ingestion_worker():
                 "Cycle completed"
             )
 
-            await asyncio.sleep(10)
+            await interruptible_background_sleep(
+                10,
+                "INGESTION WORKER"
+            )
 
         except Exception as e:
 
@@ -616,7 +789,10 @@ async def background_ingestion_worker():
                 e
             )
 
-            await asyncio.sleep(5)
+            await interruptible_background_sleep(
+                5,
+                "INGESTION WORKER"
+            )
 
 
 @router.on_event("startup")
@@ -653,6 +829,8 @@ async def submit_query(payload: QueryRequest):
 
     try:
 
+        await mark_query_started()
+
         print(
             f"\n[QUERY RECEIVED] "
             f"{query}"
@@ -660,6 +838,10 @@ async def submit_query(payload: QueryRequest):
 
         from backend.routes.Research_Routes.Query_Pipeline.query_controller import (
             query_controller
+        )
+
+        print(
+            "\n[QUERY CONTROLLER] Starting process"
         )
 
         response = await query_controller.process(
@@ -671,17 +853,42 @@ async def submit_query(payload: QueryRequest):
             "\n[QUERY COMPLETED]"
         )
 
+        evaluation = None
+
+        try:
+
+            from backend.routes.Research_Routes.benchmark_service import (
+                evaluate_query_response
+            )
+
+            evaluation = await evaluate_query_response(
+                query,
+                response
+            )
+
+        except Exception as eval_error:
+
+            print(
+                "\n[QUERY EVALUATION ERROR]",
+                repr(eval_error)
+            )
+
+            evaluation = {
+                "error": repr(eval_error)
+            }
+
         return {
             "success": True,
             "query": query,
-            "response": response
+            "response": response,
+            "evaluation": evaluation
         }
 
     except Exception as e:
 
         print(
             "\n[QUERY ERROR]",
-            e
+            repr(e)
         )
 
         return {
@@ -689,6 +896,9 @@ async def submit_query(payload: QueryRequest):
             "message": str(e)
         }
 
+    finally:
+
+        await mark_query_finished()
 
 @router.get("/get")
 async def get_ai_pulse():

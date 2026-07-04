@@ -27,8 +27,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         auth_header = request.headers.get("Authorization")
         notebook_id = request.headers.get("X-Notebook-Id")
-        print("auth header",auth_header)
-        print("notebook id",notebook_id)
+        print(
+            "auth header present",
+            bool(auth_header)
+        )
+        print(
+            "notebook id present",
+            bool(notebook_id)
+        )
         if not auth_header or not auth_header.startswith("Bearer "):
             return JSONResponse(status_code=401, content={"detail": "Missing token"})
 

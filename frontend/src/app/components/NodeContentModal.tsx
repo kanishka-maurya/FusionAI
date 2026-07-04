@@ -1,355 +1,316 @@
 import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
-import {
-  BookOpen,
-  Clock,
-  Target,
-  CheckCircle,
   AlertCircle,
-  FileText,
-  Video,
+  BookOpen,
+  CheckCircle,
+  Clock,
   Code,
   ExternalLink,
+  FileText,
+  Target,
+  Video,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { supabase } from "../contexts/AuthContext";
 
 interface RoadmapNode {
-  id: string;
+  node_id: string;
   title: string;
-  description: string;
   level: string;
-  status: "locked" | "unlocked" | "completed";
-  dependencies: string[];
-  content_generated: boolean;
+  status: string;
+  dependencies?: string[] | null;
 }
 
 interface NodeContent {
-  overview: string;
-  learning_objectives: string[];
-  key_concepts: Array<{
+  summary: string;
+  estimated_time: string;
+  what_you_will_learn: string[];
+  topics: Array<{
     title: string;
     explanation: string;
+    code_example?: string | null;
+    key_takeaway: string;
   }>;
+  common_misconceptions: string[];
   resources: Array<{
     type: string;
     title: string;
     url?: string;
-    description: string;
   }>;
-  practice_exercises: Array<{
-    title: string;
-    difficulty: string;
-    description: string;
+  practice_questions: Array<{
+    question: string;
+    hint?: string;
+    answer?: string;
   }>;
-  estimated_time: string;
-  prerequisites_summary: string[];
 }
 
 interface NodeContentModalProps {
   node: RoadmapNode;
   roadmapId: string;
   onClose: () => void;
+  onStatusChange?: () => void;
 }
 
-export function NodeContentModal({ node, roadmapId, onClose }: NodeContentModalProps) {
+const API_BASE = "http://localhost:8000";
+
+export function NodeContentModal({
+  node,
+  roadmapId,
+  onClose,
+  onStatusChange,
+}: NodeContentModalProps) {
   const [content, setContent] = useState<NodeContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [source, setSource] = useState<"cache" | "db" | "generated">("cache");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     loadNodeContent();
-  }, [node.id]);
+  }, [node.node_id]);
+
+  const getToken = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session?.access_token;
+  };
 
   const loadNodeContent = async () => {
     setIsLoading(true);
+    setErrorMessage("");
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/roadmap/${roadmapId}/node/${node.id}/content`);
-      // const data = await response.json();
-      // setContent(data.content);
-      // setSource(data.source);
-
-      // Mock data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const mockContent: NodeContent = {
-        overview: `This section covers ${node.title.toLowerCase()}, providing you with essential knowledge and practical skills. You'll learn through a combination of theory, examples, and hands-on exercises designed for ${node.level}-level learners.`,
-        learning_objectives: [
-          `Understand the core principles of ${node.title.toLowerCase()}`,
-          "Apply concepts through practical examples",
-          "Build a solid foundation for advanced topics",
-          "Develop problem-solving skills in this area",
-        ],
-        key_concepts: [
-          {
-            title: "Fundamental Principles",
-            explanation: "Core theoretical foundations and why they matter in real-world applications.",
+      const token = await getToken();
+      const response = await fetch(
+        `${API_BASE}/api/roadmap/${roadmapId}/node/${node.node_id}/content`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          {
-            title: "Practical Applications",
-            explanation: "How these concepts are used in industry and common use cases.",
-          },
-          {
-            title: "Best Practices",
-            explanation: "Recommended approaches and patterns for implementing these concepts.",
-          },
-          {
-            title: "Common Pitfalls",
-            explanation: "Mistakes to avoid and how to troubleshoot common issues.",
-          },
-        ],
-        resources: [
-          {
-            type: "article",
-            title: `Introduction to ${node.title}`,
-            url: "#",
-            description: "A comprehensive guide covering all the basics you need to know.",
-          },
-          {
-            type: "video",
-            title: `${node.title} Explained`,
-            url: "#",
-            description: "Visual walkthrough with practical examples and demonstrations.",
-          },
-          {
-            type: "documentation",
-            title: "Official Documentation",
-            url: "#",
-            description: "Reference material and detailed technical specifications.",
-          },
-          {
-            type: "tutorial",
-            title: "Hands-on Tutorial",
-            url: "#",
-            description: "Step-by-step guide to building your first project.",
-          },
-        ],
-        practice_exercises: [
-          {
-            title: "Basic Exercise",
-            difficulty: "Easy",
-            description: "Practice fundamental concepts with guided examples.",
-          },
-          {
-            title: "Intermediate Challenge",
-            difficulty: "Medium",
-            description: "Apply your knowledge to solve real-world problems.",
-          },
-          {
-            title: "Advanced Project",
-            difficulty: "Hard",
-            description: "Build a complete solution demonstrating mastery.",
-          },
-        ],
-        estimated_time: "4-6 hours",
-        prerequisites_summary: node.dependencies.length > 0
-          ? ["Complete previous topics in the roadmap", "Basic understanding of prerequisite concepts"]
-          : ["No prerequisites required"],
-      };
-
-      setContent(mockContent);
-      setSource("generated");
-    } catch (error) {
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Failed to load node content");
+      setContent(data.content);
+      setSource(data.source);
+    } catch (error: any) {
       console.error("Failed to load node content:", error);
+      setErrorMessage(error.message || "Failed to load content");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getResourceIcon = (type: string) => {
-    switch (type) {
-      case "video":
-        return <Video className="w-4 h-4" />;
-      case "article":
-        return <FileText className="w-4 h-4" />;
-      case "documentation":
-        return <BookOpen className="w-4 h-4" />;
-      case "tutorial":
-        return <Code className="w-4 h-4" />;
-      default:
-        return <FileText className="w-4 h-4" />;
+  const markCompleted = async () => {
+    setIsCompleting(true);
+    setErrorMessage("");
+    try {
+      const token = await getToken();
+      const response = await fetch(
+        `${API_BASE}/api/roadmap/${roadmapId}/node/${node.node_id}/status?status=done`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Failed to update node status");
+      onStatusChange?.();
+      onClose();
+    } catch (error: any) {
+      console.error("Failed to update node status:", error);
+      setErrorMessage(error.message || "Failed to update status");
+    } finally {
+      setIsCompleting(false);
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty.toLowerCase()) {
-      case "easy":
-        return "bg-green-100 text-green-700";
-      case "medium":
-        return "bg-yellow-100 text-yellow-700";
-      case "hard":
-        return "bg-red-100 text-red-700";
+  const getResourceIcon = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case "video":
+        return <Video className="w-4 h-4" />;
+      case "article":
+      case "paper":
+        return <FileText className="w-4 h-4" />;
+      case "code":
+      case "tutorial":
+        return <Code className="w-4 h-4" />;
       default:
-        return "bg-gray-100 text-gray-700";
+        return <BookOpen className="w-4 h-4" />;
     }
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#111322] border border-white/10 text-white">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <BookOpen className="w-6 h-6 text-purple-600" />
+          <DialogTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+            <BookOpen className="w-5 h-5 text-blue-400" />
             {node.title}
           </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
           <div className="py-12 text-center">
-            <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading content...</p>
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Generating...
+            </p>
           </div>
         ) : content ? (
           <div className="space-y-6">
-            {/* Quick Stats */}
+            {errorMessage && (
+              <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+                {errorMessage}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
-                <Clock className="w-5 h-5 text-blue-600" />
+              <div className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <Clock className="w-5 h-5 text-blue-400" />
                 <div>
-                  <p className="text-xs text-blue-600 font-medium">Estimated Time</p>
-                  <p className="text-sm text-blue-900 font-semibold">{content.estimated_time}</p>
+                  <p className="text-[10px] text-blue-300 font-bold uppercase tracking-wider">Time</p>
+                  <p className="text-sm text-white font-semibold">{content.estimated_time}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
-                <Target className="w-5 h-5 text-purple-600" />
+              <div className="flex items-center gap-3 p-4 bg-violet-500/10 border border-violet-500/20 rounded-xl">
+                <Target className="w-5 h-5 text-violet-400" />
                 <div>
-                  <p className="text-xs text-purple-600 font-medium">Level</p>
-                  <p className="text-sm text-purple-900 font-semibold capitalize">{node.level}</p>
+                  <p className="text-[10px] text-violet-300 font-bold uppercase tracking-wider">Level</p>
+                  <p className="text-sm text-white font-semibold capitalize">{node.level}</p>
                 </div>
               </div>
             </div>
 
-            {/* Tabs for Content */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 bg-black/30 border border-white/5">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="concepts">Concepts</TabsTrigger>
+                <TabsTrigger value="topics">Topics</TabsTrigger>
                 <TabsTrigger value="resources">Resources</TabsTrigger>
                 <TabsTrigger value="practice">Practice</TabsTrigger>
               </TabsList>
 
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-4 mt-4">
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Overview</h3>
-                  <p className="text-gray-700 leading-relaxed">{content.overview}</p>
-                </div>
+              <TabsContent value="overview" className="space-y-5 mt-5">
+                <section>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Summary</h3>
+                  <p className="text-sm text-slate-200 leading-relaxed">{content.summary}</p>
+                </section>
 
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Learning Objectives</h3>
+                <section>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    Outcomes
+                  </h3>
                   <ul className="space-y-2">
-                    {content.learning_objectives.map((objective, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{objective}</span>
+                    {content.what_you_will_learn.map((objective, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-slate-300">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <span>{objective}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </section>
 
-                {content.prerequisites_summary.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Prerequisites</h3>
+                {!!content.common_misconceptions?.length && (
+                  <section>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                      Common Misconceptions
+                    </h3>
                     <ul className="space-y-2">
-                      {content.prerequisites_summary.map((prereq, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700">{prereq}</span>
+                      {content.common_misconceptions.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-300">
+                          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </section>
                 )}
               </TabsContent>
 
-              {/* Key Concepts Tab */}
-              <TabsContent value="concepts" className="space-y-4 mt-4">
-                {content.key_concepts.map((concept, idx) => (
-                  <div key={idx} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <h4 className="font-semibold text-gray-900 mb-2">{concept.title}</h4>
-                    <p className="text-gray-700 text-sm">{concept.explanation}</p>
+              <TabsContent value="topics" className="space-y-4 mt-5">
+                {content.topics.map((topic, idx) => (
+                  <div key={idx} className="p-4 bg-black/20 border border-white/5 rounded-xl">
+                    <h4 className="font-bold text-white mb-2">{topic.title}</h4>
+                    <p className="text-sm text-slate-300 leading-relaxed">{topic.explanation}</p>
+                    {topic.code_example && (
+                      <pre className="mt-3 p-3 rounded-lg bg-black/40 border border-white/5 overflow-x-auto text-xs text-cyan-200">
+                        <code>{topic.code_example}</code>
+                      </pre>
+                    )}
+                    <p className="mt-3 text-xs text-blue-300 font-semibold">
+                      {topic.key_takeaway}
+                    </p>
                   </div>
                 ))}
               </TabsContent>
 
-              {/* Resources Tab */}
-              <TabsContent value="resources" className="space-y-3 mt-4">
+              <TabsContent value="resources" className="space-y-3 mt-5">
                 {content.resources.map((resource, idx) => (
-                  <div
+                  <a
                     key={idx}
-                    className="flex items-start gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-md transition-all cursor-pointer"
+                    href={resource.url || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-start gap-3 p-4 bg-black/20 border border-white/5 rounded-xl hover:border-blue-500/30 transition-all"
                   >
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center shrink-0 text-blue-300">
                       {getResourceIcon(resource.type)}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-start justify-between mb-1">
-                        <h4 className="font-semibold text-gray-900">{resource.title}</h4>
-                        <ExternalLink className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-start justify-between mb-1 gap-3">
+                        <h4 className="font-semibold text-white">{resource.title}</h4>
+                        <ExternalLink className="w-4 h-4 text-slate-500 shrink-0" />
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{resource.description}</p>
-                      <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full capitalize">
+                      <span className="inline-block px-2 py-1 bg-white/5 text-slate-300 text-[10px] rounded-lg uppercase tracking-wider">
                         {resource.type}
                       </span>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </TabsContent>
 
-              {/* Practice Tab */}
-              <TabsContent value="practice" className="space-y-3 mt-4">
-                {content.practice_exercises.map((exercise, idx) => (
-                  <div key={idx} className="p-4 bg-white border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{exercise.title}</h4>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exercise.difficulty)}`}>
-                        {exercise.difficulty}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700">{exercise.description}</p>
+              <TabsContent value="practice" className="space-y-3 mt-5">
+                {content.practice_questions.map((question, idx) => (
+                  <div key={idx} className="p-4 bg-black/20 border border-white/5 rounded-xl">
+                    <h4 className="font-semibold text-white mb-2">{question.question}</h4>
+                    {question.hint && (
+                      <p className="text-xs text-amber-300 mb-2">Hint: {question.hint}</p>
+                    )}
+                    {question.answer && (
+                      <p className="text-sm text-slate-300 leading-relaxed">{question.answer}</p>
+                    )}
                   </div>
                 ))}
               </TabsContent>
             </Tabs>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="flex gap-3 pt-4 border-t border-white/5">
               <Button
                 variant="outline"
-                className="flex-1"
+                className="flex-1 bg-transparent border-white/10 text-slate-300 hover:bg-white/5 hover:text-white"
                 onClick={onClose}
               >
                 Close
               </Button>
               <Button
-                className="flex-1 bg-green-600 hover:bg-green-700"
-                onClick={() => {
-                  // TODO: Mark node as completed
-                  console.log("Mark as completed");
-                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                onClick={markCompleted}
+                disabled={isCompleting}
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Mark as Completed
+                {isCompleting ? "Updating..." : "Mark Done"}
               </Button>
             </div>
 
-            {/* Debug Info */}
-            {source && (
-              <div className="text-xs text-gray-500 text-center pt-2 border-t">
-                Content source: {source}
-              </div>
-            )}
           </div>
         ) : (
           <div className="py-12 text-center">
-            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <p className="text-gray-600">Failed to load content</p>
+            <AlertCircle className="w-12 h-12 text-rose-400 mx-auto mb-4" />
+            <p className="text-sm text-slate-400">{errorMessage || "Failed to load content"}</p>
             <Button variant="outline" className="mt-4" onClick={loadNodeContent}>
               Retry
             </Button>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth, supabase } from "../contexts/AuthContext";
 import {
   ArrowLeft,
   CheckCircle,
@@ -8,11 +8,11 @@ import {
   Circle,
   Sparkles,
   BookOpen,
-  Clock,
   Target,
+  Loader2,
+  Route,
 } from "lucide-react";
 import { NodeContentModal } from "./NodeContentModal";
-import { supabase } from "../contexts/AuthContext";
 
 export interface RoadmapNode {
   node_id: string;
@@ -39,184 +39,83 @@ interface RoadmapData {
   created_at?: string;
 }
 
+const API_BASE = "http://localhost:8000";
+
 export function RoadmapViewPage() {
   const navigate = useNavigate();
   const { roadmapId } = useParams();
-  const location = useLocation();
   const { user } = useAuth();
 
   const [roadmapData, setRoadmapData] = useState<RoadmapData | null>(null);
   const [nodes, setNodes] = useState<RoadmapNode[]>([]);
   const [selectedNode, setSelectedNode] = useState<RoadmapNode | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     loadRoadmap();
   }, [roadmapId]);
 
+  const getToken = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session?.access_token;
+  };
+
+  const normalizeDependencies = (value: any): string[] => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value || "[]");
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
   const loadRoadmap = async () => {
     setIsLoading(true);
+    setErrorMessage("");
     try {
-      const { data: roadmapInfo } = await supabase
-        .from("roadmaps")
-        .select("*")
-        .eq("roadmap_id", roadmapId)
-        .single();
+      const token = await getToken();
+      const res = await fetch(`${API_BASE}/api/roadmap/${roadmapId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Failed to load roadmap");
 
-      if (roadmapInfo) setRoadmapData(roadmapInfo);
-      const { data: nodesData } = await supabase
-        .from("nodes")
-        .select("*")
-        .eq("roadmap_id", roadmapId);
+      const normalizedNodes: RoadmapNode[] = (data.nodes || []).map((node: any) => ({
+        node_id: node.node_id,
+        roadmap_id: node.roadmap_id,
+        title: node.title,
+        type: node.type,
+        level: node.level,
+        status: node.status,
+        dependencies: normalizeDependencies(node.dependencies),
+        position_x: Number(node.position_x ?? 400),
+        position_y: Number(node.position_y ?? 50),
+        content_generated: node.content_generated,
+        raw_content: node.raw_content,
+        created_at: node.created_at,
+      }));
 
-      const normalizedNodes: RoadmapNode[] = (nodesData || []).map(
-        (n: any) => ({
-          node_id: n.node_id,
-          roadmap_id: n.roadmap_id,
-          title: n.title,
-          type: n.type,
-          level: n.level,
-          status: n.status,
-          dependencies: Array.isArray(n.dependencies)
-            ? n.dependencies
-            : typeof n.dependencies === "string"
-              ? JSON.parse(n.dependencies || "[]")
-              : [],
-          position_x: Number(n.position_x ?? 50),
-          position_y: Number(n.position_y ?? 50),
-
-          content_generated: n.content_generated,
-          raw_content: n.raw_content,
-          created_at: n.created_at,
-        }),
-      );
-
+      setRoadmapData({
+        roadmap_id: data.roadmap_id,
+        user_id: data.user_id,
+        title: data.title,
+        topic: data.topic,
+        description: data.description,
+        total_nodes: data.total_nodes || normalizedNodes.length,
+        created_at: data.created_at,
+      });
       setNodes(normalizedNodes);
-      // Mock data based on the topic from navigation state
-      const { topic = "Machine Learning", level = "beginner" } =
-        location.state || {};
-
-      const mockRoadmapData: RoadmapData = {
-        roadmap_id: roadmapId || "",
-        user_id: user?.id,
-        title: `${topic} Learning Path`,
-        topic: topic,
-        description: `A comprehensive ${level}-level roadmap to master ${topic}`,
-        total_nodes: 8,
-      };
-
-      const mockNodes: RoadmapNode[] = [
-        {
-          node_id: "node_1",
-          roadmap_id: roadmapId || "",
-          title: "Introduction & Fundamentals",
-          type: "concept",
-          level: "beginner",
-          status: "unlocked",
-          dependencies: [],
-          position_x: 50,
-          position_y: 10,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_2",
-          roadmap_id: roadmapId || "",
-          title: "Mathematical Foundations",
-          type: "concept",
-          level: "beginner",
-          status: "locked",
-          dependencies: ["node_1"],
-          position_x: 25,
-          position_y: 30,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_3",
-          roadmap_id: roadmapId || "",
-          title: "Programming Basics",
-          type: "concept",
-          level: "beginner",
-          status: "locked",
-          dependencies: ["node_1"],
-          position_x: 75,
-          position_y: 30,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_4",
-          roadmap_id: roadmapId || "",
-          title: "Data Preprocessing",
-          type: "skill",
-          level: "intermediate",
-          status: "locked",
-          dependencies: ["node_2", "node_3"],
-          position_x: 35,
-          position_y: 50,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_5",
-          roadmap_id: roadmapId || "",
-          title: "Supervised Learning",
-          type: "concept",
-          level: "intermediate",
-          status: "locked",
-          dependencies: ["node_4"],
-          position_x: 20,
-          position_y: 70,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_6",
-          roadmap_id: roadmapId || "",
-          title: "Unsupervised Learning",
-          type: "concept",
-          level: "intermediate",
-          status: "locked",
-          dependencies: ["node_4"],
-          position_x: 50,
-          position_y: 70,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_7",
-          roadmap_id: roadmapId || "",
-          title: "Neural Networks",
-          type: "concept",
-          level: "advanced",
-          status: "locked",
-          dependencies: ["node_5", "node_6"],
-          position_x: 35,
-          position_y: 90,
-          content_generated: false,
-          raw_content: null,
-        },
-        {
-          node_id: "node_8",
-          roadmap_id: roadmapId || "",
-          title: "Advanced Topics & Projects",
-          type: "project",
-          level: "advanced",
-          status: "locked",
-          dependencies: ["node_7"],
-          position_x: 50,
-          position_y: 110,
-          content_generated: false,
-          raw_content: null,
-        },
-      ];
-
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setRoadmapData(mockRoadmapData);
-      setNodes(mockNodes);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load roadmap:", error);
+      setErrorMessage(error.message || "Roadmap not found");
     } finally {
       setIsLoading(false);
     }
@@ -227,44 +126,37 @@ export function RoadmapViewPage() {
     setSelectedNode(node);
   };
 
+  const isDone = (status: string) => status === "done" || status === "completed";
+
   const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case "unlocked":
-        return <Circle className="w-5 h-5 text-blue-600" />;
-      case "locked":
-        return <Lock className="w-5 h-5 text-gray-400" />;
-      default:
-        return <Circle className="w-5 h-5 text-gray-400" />;
-    }
+    if (isDone(status)) return <CheckCircle className="w-4 h-4 text-emerald-400" />;
+    if (status === "unlocked" || status === "in_progress") return <Circle className="w-4 h-4 text-blue-400" />;
+    return <Lock className="w-4 h-4 text-slate-500" />;
   };
 
-  const getLevelColor = (level: string) => {
-    switch (level.toLowerCase()) {
-      case "beginner":
-        return "bg-green-100 text-green-700 border-green-300";
-      case "intermediate":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "advanced":
-        return "bg-red-100 text-red-700 border-red-300";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-300";
-    }
+  const getNodeTone = (node: RoadmapNode) => {
+    if (node.status === "locked") return "border-white/5 bg-white/[0.02] opacity-60";
+    if (isDone(node.status)) return "border-emerald-500/30 bg-emerald-500/10";
+    return "border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/15";
   };
 
   const stats = {
     total: roadmapData?.total_nodes || nodes.length,
-    unlocked: nodes.filter((n) => n.status === "unlocked").length,
-    completed: nodes.filter((n) => n.status === "completed").length,
+    unlocked: nodes.filter((n) => n.status === "unlocked" || n.status === "in_progress").length,
+    completed: nodes.filter((n) => isDone(n.status)).length,
   };
+  const progress = stats.total ? Math.round((stats.completed / stats.total) * 100) : 0;
+  const maxX = Math.max(900, ...nodes.map((n) => Number(n.position_x || 0) + 220));
+  const maxY = Math.max(640, ...nodes.map((n) => Number(n.position_y || 0) + 180));
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0e1b] flex items-center justify-center text-slate-200">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Generating your roadmap...</p>
+          <Loader2 className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Loading route...
+          </p>
         </div>
       </div>
     );
@@ -272,14 +164,14 @@ export function RoadmapViewPage() {
 
   if (!roadmapData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0e1b] flex items-center justify-center text-slate-200">
         <div className="text-center">
-          <p className="text-gray-600">Roadmap not found</p>
+          <p className="text-sm text-slate-400">{errorMessage || "Roadmap not found"}</p>
           <button
             onClick={() => navigate("/roadmap")}
-            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold"
           >
-            Back to Roadmap
+            Back
           </button>
         </div>
       </div>
@@ -287,189 +179,152 @@ export function RoadmapViewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-[#0d0e1b] text-slate-100 font-sans antialiased overflow-hidden">
+      <header className="bg-[#111322]/60 backdrop-blur-md border-b border-white/5 sticky top-0 z-40">
+        <div className="px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
             <button
               onClick={() => navigate("/roadmap")}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 bg-white/[0.02] border border-white/5 hover:bg-white/5 text-slate-400 hover:text-white rounded-xl transition-all shrink-0"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-3 flex-1">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {roadmapData.title}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {roadmapData.description}
-                </p>
-              </div>
+            <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-violet-500 rounded-xl flex items-center justify-center border border-blue-400/20 shadow-lg shadow-blue-500/10 shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
+            <div className="min-w-0">
+              <h1 className="text-sm font-bold text-white uppercase tracking-wider truncate">
+                {roadmapData.title}
+              </h1>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                {roadmapData.description}
+              </p>
+            </div>
+          </div>
+          <div className="hidden md:block text-right">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider">User</p>
+            <p className="text-xs text-slate-300">{user?.name || user?.email}</p>
           </div>
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-gray-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold text-gray-900">
-                  {stats.total}
-                </span>{" "}
-                Topics
-              </span>
+      <div className="border-b border-white/5 bg-[#111322]/40">
+        <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 items-center">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="inline-flex items-center gap-2 text-xs text-slate-400">
+              <Target className="w-4 h-4 text-blue-400" />
+              <span><b className="text-white">{stats.total}</b> topics</span>
             </div>
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-blue-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold text-blue-600">
-                  {stats.unlocked}
-                </span>{" "}
-                Unlocked
-              </span>
+            <div className="inline-flex items-center gap-2 text-xs text-slate-400">
+              <BookOpen className="w-4 h-4 text-violet-400" />
+              <span><b className="text-white">{stats.unlocked}</b> unlocked</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold text-green-600">
-                  {stats.completed}
-                </span>{" "}
-                Completed
-              </span>
+            <div className="inline-flex items-center gap-2 text-xs text-slate-400">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span><b className="text-white">{stats.completed}</b> completed</span>
             </div>
-            <div className="flex-1">
-              <div className="w-full max-w-md h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-600 to-purple-500 rounded-full transition-all"
-                  style={{ width: `${(stats.completed / stats.total) * 100}%` }}
-                ></div>
-              </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1">
+              <span>Progress</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-600 to-emerald-400 transition-all"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Roadmap Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="relative">
-          {/* SVG for connecting lines */}
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ zIndex: 0 }}
-          >
-            {nodes.map((node) =>
-              node.dependencies?.map((depId) => {
+      {errorMessage && (
+        <div className="mx-6 mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          {errorMessage}
+        </div>
+      )}
+
+      <main className="h-[calc(100vh-145px)] overflow-auto p-6">
+        <div
+          className="relative rounded-2xl border border-white/5 bg-[#111322]/50 shadow-2xl shadow-black/20"
+          style={{ width: maxX, height: maxY }}
+        >
+          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            {nodes.flatMap((node) =>
+              (node.dependencies || []).map((depId) => {
                 const depNode = nodes.find((n) => n.node_id === depId);
-                if (
-                  !depNode ||
-                  !depNode.position_x ||
-                  !depNode.position_y ||
-                  !node.position_x ||
-                  !node.position_y
-                )
-                  return null;
-
-                const x1 = `${depNode.position_x}%`;
-                const y1 = `${depNode.position_y}%`;
-                const x2 = `${node.position_x}%`;
-                const y2 = `${node.position_y}%`;
-
+                if (!depNode) return null;
                 return (
                   <line
                     key={`${depId}-${node.node_id}`}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    stroke="#e5e7eb"
+                    x1={Number(depNode.position_x || 0)}
+                    y1={Number(depNode.position_y || 0)}
+                    x2={Number(node.position_x || 0)}
+                    y2={Number(node.position_y || 0)}
+                    stroke="rgba(148,163,184,0.25)"
                     strokeWidth="2"
-                    strokeDasharray="5,5"
+                    strokeDasharray="6 8"
                   />
                 );
-              }),
+              })
             )}
           </svg>
 
-          {/* Nodes */}
-          <div className="relative" style={{ minHeight: "120vh" }}>
-            {nodes.map((node) => (
-              <div
-                key={node.node_id}
-                className="absolute"
-                style={{
-                  left: `${node.position_x}%`,
-                  top: `${node.position_y}%`,
-                  transform: "translate(-50%, -50%)",
-                  zIndex: 10,
-                }}
-              >
-                <div
-                  onClick={() => handleNodeClick(node)}
-                  className={`
-                    w-64 bg-white rounded-xl border-2 p-5 shadow-lg transition-all cursor-pointer
-                    ${
-                      node.status === "locked"
-                        ? "border-gray-300 opacity-60 cursor-not-allowed"
-                        : node.status === "completed"
-                          ? "border-green-400 hover:shadow-xl hover:scale-105"
-                          : "border-blue-400 hover:shadow-xl hover:scale-105"
-                    }
-                  `}
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {getStatusIcon(node.status)}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {node.title}
-                      </h3>
-                      {node.type && (
-                        <p className="text-xs text-gray-500 capitalize mb-1">
-                          {node.type}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(node.level)}`}
-                    >
+          {nodes.map((node) => (
+            <button
+              key={node.node_id}
+              onClick={() => handleNodeClick(node)}
+              className={`absolute w-64 text-left rounded-2xl border p-4 transition-all ${getNodeTone(node)} ${
+                node.status === "locked" ? "cursor-not-allowed" : "hover:scale-[1.02] hover:border-blue-400/50"
+              }`}
+              style={{
+                left: Number(node.position_x || 0),
+                top: Number(node.position_y || 0),
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">{getStatusIcon(node.status)}</div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">
+                    {node.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-2 mt-3">
+                    <span className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-white/5 text-slate-300 border border-white/5">
                       {node.level}
                     </span>
-                    {node.status === "locked" &&
-                      node.dependencies &&
-                      node.dependencies.length > 0 && (
-                        <span className="text-xs text-gray-500">
-                          {node.dependencies.length} prerequisite
-                          {node.dependencies.length > 1 ? "s" : ""}
-                        </span>
-                      )}
+                    {node.type && (
+                      <span className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                        {node.type}
+                      </span>
+                    )}
                   </div>
+                  {node.status === "locked" && !!node.dependencies?.length && (
+                    <p className="text-[10px] text-slate-500 mt-3">
+                      {node.dependencies.length} prerequisite{node.dependencies.length > 1 ? "s" : ""}
+                    </p>
+                  )}
                 </div>
               </div>
-            ))}
+            </button>
+          ))}
+
+          <div className="absolute left-5 top-5 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-black/20 border border-white/5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <Route className="w-3.5 h-3.5 text-blue-400" />
+            Graph
           </div>
         </div>
       </main>
 
-      {/* Node Content Modal */}
-      {/* {selectedNode && roadmapData && (
+      {selectedNode && roadmapData && (
         <NodeContentModal
           node={selectedNode}
           roadmapId={roadmapData.roadmap_id}
           onClose={() => setSelectedNode(null)}
+          onStatusChange={loadRoadmap}
         />
-      )} */}
+      )}
     </div>
   );
 }

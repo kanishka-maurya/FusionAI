@@ -40,7 +40,8 @@ def generate_id(item):
 
 async def summarize_with_retry(
     chunk,
-    retries=5
+    retries=5,
+    pause_callback=None
 ):
 
     async with semaphore:
@@ -48,6 +49,10 @@ async def summarize_with_retry(
         for attempt in range(retries):
 
             try:
+
+                if pause_callback:
+
+                    await pause_callback()
 
                 summary = await summarize_with_gemini(
                     chunk
@@ -72,14 +77,23 @@ async def summarize_with_retry(
                 f"(attempt {attempt + 1}/{retries})"
             )
 
+            if pause_callback:
+
+                await pause_callback()
+
             await asyncio.sleep(wait_time)
 
     return None
 
 
 async def process_and_build_dataset(
-    redis_client
+    redis_client,
+    pause_callback=None
 ):
+
+    if pause_callback:
+
+        await pause_callback()
 
     data = await redis_client.zrevrange(
         "ai:raw:current",
@@ -94,6 +108,10 @@ async def process_and_build_dataset(
     for raw in data:
 
         try:
+
+            if pause_callback:
+
+                await pause_callback()
 
             item = json.loads(raw)
 
@@ -168,13 +186,18 @@ async def process_and_build_dataset(
 
                 try:
 
+                    if pause_callback:
+
+                        await pause_callback()
+
                     print(
                         f"\nProcessing chunk "
                         f"{idx + 1}/{len(chunks)}"
                     )
 
                     summary_json = await summarize_with_retry(
-                        chunk
+                        chunk,
+                        pause_callback=pause_callback
                     )
 
                     if not summary_json:
@@ -251,6 +274,10 @@ async def process_and_build_dataset(
 
                     try:
 
+                        if pause_callback:
+
+                            await pause_callback()
+
                         node_id = await engine_services.ingest_document(
                             chunk_id=f"{doc_id}_{idx}",
                             content=chunk,
@@ -281,6 +308,10 @@ async def process_and_build_dataset(
                             f"Graph insertion failed: "
                             f"{graph_error}"
                         )
+
+                    if pause_callback:
+
+                        await pause_callback()
 
                     await asyncio.sleep(1)
 

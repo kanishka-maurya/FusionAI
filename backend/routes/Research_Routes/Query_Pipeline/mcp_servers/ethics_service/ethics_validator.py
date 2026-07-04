@@ -1,15 +1,37 @@
 from .semantic_alignment import semantic_alignment
+import asyncio
+import time
 
 
 class EthicsService:
 
     async def process(self, subtrees):
 
+        return await asyncio.to_thread(
+            self._process_sync,
+            subtrees
+        )
+
+    def _process_sync(self, subtrees):
+
+        started_at = time.perf_counter()
+
+        print(
+            "\n[ETHICS SERVICE] Starting: "
+            f"{len(subtrees)} subtrees"
+        )
+
         lowest_alignment = None
 
-        for subtree_bundle in subtrees:
+        for subtree_index, subtree_bundle in enumerate(subtrees, start=1):
 
             nodes = subtree_bundle["subtree"]
+
+            print(
+                "\n[ETHICS SERVICE] Subtree "
+                f"{subtree_index}/{len(subtrees)} has "
+                f"{len(nodes)} nodes"
+            )
 
             if len(nodes) < 2:
                 continue
@@ -25,6 +47,11 @@ class EthicsService:
 
                     n1 = nodes[i]
                     n2 = nodes[j]
+
+                    print(
+                        "\n[ETHICS SERVICE] Scoring subtree "
+                        f"{subtree_index} pair {pair_count + 1}"
+                    )
 
                     attention_score = (
                         semantic_alignment.compare(
@@ -69,6 +96,13 @@ class EthicsService:
                     "lowest_pair":
                         local_lowest
                 }
+
+        elapsed = time.perf_counter() - started_at
+
+        print(
+            "\n[ETHICS SERVICE] Completed in "
+            f"{elapsed:.2f}s"
+        )
 
         return lowest_alignment
 

@@ -16,6 +16,9 @@ import {
   Loader2,
   CheckCircle2,
   Eye,
+  Search,
+  Network,
+  Sparkles,
 } from "lucide-react";
 
 interface IngestedItem {
@@ -128,9 +131,15 @@ export function AINewsPage() {
       const result = await res.json();
 
       if (result.success) {
+        const userView = result.response?.user_view;
+
+        if (!userView) {
+          throw new Error("No user-facing analysis returned.");
+        }
+
         setQueryStatus("success");
         setStatusMessage("FusionAI recursive analysis completed.");
-        setQueryResponse(result.response);
+        setQueryResponse(userView);
       } else {
         setQueryStatus("error");
         setStatusMessage(result.message || "Pipeline execution failed.");
@@ -145,6 +154,17 @@ export function AINewsPage() {
   const newsItems = items.filter((item) => item.source === "news");
   const trendingRepos = items.filter((item) => item.source === "github");
   const researchPapers = items.filter((item) => item.source === "papers");
+  const analysis = queryResponse;
+  const similarTopics = analysis?.similar_topics ?? [];
+  const followUpQuestions =
+    analysis?.follow_up_questions ?? [];
+  const generatedAnswers =
+    analysis?.answers ?? [];
+  const evidence = analysis?.retrieved_evidence ?? [];
+  const topicName =
+    analysis?.topic_name ??
+    analysis?.topic?.topic ??
+    "No dominant topic found";
 
   return (
     <div className="min-h-screen bg-[#0d0e1b] text-slate-100 font-sans antialiased">
@@ -281,64 +301,135 @@ export function AINewsPage() {
             {/* FINAL OUTPUT */}
             {queryResponse && (
               <div className="mt-6 space-y-8">
-                {/* MAIN ANSWER */}
-                <div className="bg-black/30 border border-cyan-500/20 rounded-2xl p-6">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                      <Eye className="w-5 h-5 text-cyan-400" />
+                <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_0.9fr] gap-5">
+                  <div className="bg-black/30 border border-cyan-500/20 rounded-2xl p-6 space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                        <Eye className="w-5 h-5 text-cyan-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider">
+                          Research Insight
+                        </h3>
+                        <p className="text-xs text-slate-500 font-mono">
+                          Dominant topic: {topicName}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider">
-                        Main Recursive Answer
-                      </h3>
-                      <p className="text-xs text-slate-500 font-mono">
-                        Final generated intelligence output
+
+                    <div className="bg-[#0d111c] border border-white/5 rounded-xl p-5">
+                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                        {analysis?.summary || "FusionAI retrieved context for this query, but no final narrative answer was generated."}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="bg-[#0d111c] border border-white/5 rounded-xl p-5">
-                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-                      {queryResponse.main_answer}
-                    </p>
-                  </div>
-                </div>
-
-                {/* FOLLOW UPS */}
-                <div className="bg-black/30 border border-white/5 rounded-2xl p-6">
-                  <h4 className="text-sm font-bold text-cyan-400 uppercase tracking-wide mb-6">
-                    Recursive Follow-Up Exploration
-                  </h4>
-
-                  <div className="space-y-5">
-                    {queryResponse.follow_up_qa?.map(
-                      (item: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className="bg-[#0d111c] border border-white/5 rounded-xl p-5 space-y-5"
-                        >
-                          <div>
-                            <p className="text-xs uppercase tracking-wide text-cyan-400 font-bold mb-2">
-                              Follow-Up Question {idx + 1}
+                    {generatedAnswers.length > 0 && (
+                      <div className="space-y-3">
+                        {generatedAnswers.map((item: any, idx: number) => (
+                          <div key={idx} className="bg-[#0d111c] border border-white/5 rounded-xl p-4">
+                            <p className="text-xs text-cyan-400 font-bold uppercase mb-2">
+                              {item.question || `Generated Answer ${idx + 1}`}
                             </p>
-                            <p className="text-sm font-semibold text-white leading-relaxed">
-                              {item.question}
-                            </p>
-                          </div>
-
-                          <div>
-                            <p className="text-xs uppercase tracking-wide text-cyan-400 font-bold mb-2">
-                              Generated Answer
-                            </p>
-                            <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                            <p className="text-xs text-slate-300 leading-relaxed">
                               {item.answer}
                             </p>
                           </div>
-                        </div>
-                      )
+                        ))}
+                      </div>
                     )}
                   </div>
+
+                  <div className="bg-black/30 border border-white/5 rounded-2xl p-6 space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                        <Network className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-blue-400 uppercase tracking-wider">
+                          You can also search for
+                        </h3>
+                        <p className="text-xs text-slate-500 font-mono">
+                          Related graph topics
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {similarTopics.length === 0 ? (
+                        <p className="text-xs text-slate-500">No related topics were found for this query.</p>
+                      ) : (
+                        similarTopics.map((item: any, idx: number) => {
+                          const topic = item.topic || item;
+                          return (
+                            <button
+                              key={`${topic}-${idx}`}
+                              type="button"
+                              onClick={() => setQueryInput(topic)}
+                              className="px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/30 text-xs text-slate-300 hover:text-cyan-300 transition-all flex items-center gap-2"
+                              title={item.reason || "Search this related topic"}
+                            >
+                              <Search className="w-3.5 h-3.5" />
+                              {topic}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
                 </div>
+
+                {(followUpQuestions.length > 0 || evidence.length > 0) && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {followUpQuestions.length > 0 && (
+                      <div className="bg-black/30 border border-white/5 rounded-2xl p-6">
+                        <h4 className="text-sm font-bold text-cyan-400 uppercase tracking-wide mb-5 flex items-center gap-2">
+                          <Sparkles className="w-4 h-4" />
+                          Follow-up angles
+                        </h4>
+                        <div className="space-y-3">
+                          {followUpQuestions.map((item: any, idx: number) => (
+                            <div key={idx} className="bg-[#0d111c] border border-white/5 rounded-xl p-4">
+                              <p className="text-sm font-semibold text-white leading-relaxed">
+                                {item.question}
+                              </p>
+                              {item.knowledge_gap && (
+                                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                                  {item.knowledge_gap}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {evidence.length > 0 && (
+                      <div className="bg-black/30 border border-white/5 rounded-2xl p-6">
+                        <h4 className="text-sm font-bold text-cyan-400 uppercase tracking-wide mb-5">
+                          Retrieved Evidence
+                        </h4>
+                        <div className="space-y-3">
+                          {evidence.slice(0, 4).map((item: any, idx: number) => (
+                            <div key={idx} className="bg-[#0d111c] border border-white/5 rounded-xl p-4">
+                              <p className="text-xs text-slate-300 leading-relaxed line-clamp-4">
+                                {item.summary || "No summary available."}
+                              </p>
+                              {item.key_points?.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-3">
+                                  {item.key_points.slice(0, 3).map((kp: any, kpIdx: number) => (
+                                    <span key={kpIdx} className="px-2 py-1 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-cyan-300">
+                                      {typeof kp === "string" ? kp : kp.text}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

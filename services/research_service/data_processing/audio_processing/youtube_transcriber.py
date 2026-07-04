@@ -7,6 +7,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from backend.core.exceptions import CustomException
 from backend.core.logging import logging
 import config
+from urllib.parse import parse_qs, urlparse
 
 load_dotenv()
 
@@ -26,10 +27,14 @@ class YoutubeTranscriber:
 
     def _extract_video_id(self, url: str) -> Optional[str]:
         try:
-            if "v=" in url:
-                video_id = url.split("v=")[1].split("&")[0]
-            elif "youtu.be/" in url:
-                video_id = url.split("youtu.be/")[1].split("?")[0]
+            parsed = urlparse(url)
+            if parsed.hostname in {"youtu.be", "www.youtu.be"}:
+                video_id = parsed.path.lstrip("/")
+            elif parsed.hostname and "youtube.com" in parsed.hostname:
+                if parsed.path.startswith("/shorts/") or parsed.path.startswith("/embed/"):
+                    video_id = parsed.path.split("/")[2]
+                else:
+                    video_id = parse_qs(parsed.query).get("v", [None])[0]
             else:
                 video_id = None
             return video_id
@@ -43,7 +48,16 @@ class YoutubeTranscriber:
         if not video_id:
             raise ValueError("Could not extract video ID from URL")
 
-        transcript = self.api.fetch(video_id)
+        try:
+            transcript = self.api.fetch(
+                video_id,
+                languages=("en", "en-US", "en-GB", "hi")
+            )
+        except Exception:
+            transcript_list = self.api.list(video_id)
+            transcript = transcript_list.find_transcript(
+                [t.language_code for t in transcript_list]
+            ).fetch()
 
         text = " ".join([snippet.text for snippet in transcript.snippets])
 
@@ -53,7 +67,8 @@ class YoutubeTranscriber:
     def _chunk_processed_scraped_data(
         self,
         content: TranscriptData,
-        video_id: str)-> List[DocumentChunk]:
+        video_id: str,
+        url: str)-> List[DocumentChunk]:
 
         
         if not content.strip():
@@ -76,14 +91,16 @@ class YoutubeTranscriber:
             chunk_text = text[start:end].strip()
 
             chunk_metadata = {
-                "video_id": video_id
+                "video_id": video_id,
+                "video_url": url,
+                "source_url": url
             }
 
 
             chunk = DocumentChunk(
                     content=chunk_text,
-                    source_file=None,
-                    source_type=None,
+                    source_file=url,
+                    source_type="youtube",
                     page_number=None,
                     chunk_index=chunk_index,
                     start_char=start,
@@ -106,7 +123,7 @@ class YoutubeTranscriber:
             transcript = self._download_transcript(url)
             logging.info("Transcript downloaded.")
 
-            chunks = self._chunk_processed_scraped_data(transcript, video_id)
+            chunks = self._chunk_processed_scraped_data(transcript, video_id, url)
             logging.info("Chunks created.")
 
             return chunks

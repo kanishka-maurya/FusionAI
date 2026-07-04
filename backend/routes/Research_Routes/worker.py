@@ -6,12 +6,16 @@ from backend.routes.Research_Routes.processor import (
     process_and_build_dataset
 )
 
-from backend.routes.Research_Routes.Query_Pipeline.orchestrator import (
-    run_query_pipeline
+from backend.routes.Research_Routes.Query_Pipeline.query_controller import (
+    query_controller
 )
 
 from backend.routes.Research_Routes.get_Latest_Data import (
-    adaptive_scheduler
+    adaptive_scheduler,
+    interruptible_background_sleep,
+    mark_query_finished,
+    mark_query_started,
+    wait_if_query_active,
 )
 redis_client = redis.Redis(
     host="localhost",
@@ -28,13 +32,24 @@ async def background_ingestion_worker():
 
         try:
 
+            await wait_if_query_active(
+                "STANDALONE INGESTION WORKER"
+            )
+
             print(
                 "\n[INGESTION WORKER] "
                 "Starting processing cycle"
             )
 
             await process_and_build_dataset(
-                redis_client
+                redis_client,
+                pause_callback=lambda: wait_if_query_active(
+                    "STANDALONE INGESTION PROCESSOR"
+                )
+            )
+
+            await wait_if_query_active(
+                "STANDALONE INGESTION WORKER"
             )
 
             print(
@@ -42,7 +57,10 @@ async def background_ingestion_worker():
                 "Cycle completed"
             )
 
-            await asyncio.sleep(10)
+            await interruptible_background_sleep(
+                10,
+                "STANDALONE INGESTION WORKER"
+            )
 
         except Exception as e:
 
@@ -51,7 +69,10 @@ async def background_ingestion_worker():
                 e
             )
 
-            await asyncio.sleep(5)
+            await interruptible_background_sleep(
+                5,
+                "STANDALONE INGESTION WORKER"
+            )
 
 
 async def query_worker():
@@ -78,9 +99,21 @@ async def query_worker():
                 f"Received query: {query}"
             )
 
-            response = await run_query_pipeline(
-                query
-            )
+            await mark_query_started()
+
+            try:
+
+                response = await query_controller.process(
+                    query,
+                    mode=payload.get(
+                        "mode",
+                        "deep_research"
+                    )
+                )
+
+            finally:
+
+                await mark_query_finished()
 
             print(
                 "\n[QUERY WORKER] "

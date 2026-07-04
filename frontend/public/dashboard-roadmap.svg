@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-labelledby="title">
+  <title id="title">Pathfinder AI roadmap</title>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.52" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="520" fill="url(#bg)"/>
+  <circle cx="450" cy="92" r="48" fill="#dbeafe" opacity="0.92"/>
+  <circle cx="250" cy="245" r="42" fill="#bfdbfe" opacity="0.86"/>
+  <circle cx="450" cy="245" r="42" fill="#ddd6fe" opacity="0.9"/>
+  <circle cx="650" cy="245" r="42" fill="#c4b5fd" opacity="0.86"/>
+  <circle cx="345" cy="402" r="42" fill="#e0f2fe" opacity="0.86"/>
+  <circle cx="555" cy="402" r="42" fill="#ede9fe" opacity="0.86"/>
+  <path d="M426 132 275 210M474 132 625 210M450 140v62M273 285l55 80M627 285l-55 80M450 287l-78 80M450 287l78 80" stroke="#fff" stroke-width="11" stroke-linecap="round" opacity="0.38"/>
+  <rect x="385" y="79" width="130" height="26" rx="13" fill="#0f172a" opacity="0.34"/>
+  <rect x="190" y="233" width="120" height="22" rx="11" fill="#0f172a" opacity="0.28"/>
+  <rect x="390" y="233" width="120" height="22" rx="11" fill="#0f172a" opacity="0.28"/>
+  <rect x="590" y="233" width="120" height="22" rx="11" fill="#0f172a" opacity="0.28"/>
+  <rect x="288" y="390" width="114" height="22" rx="11" fill="#0f172a" opacity="0.28"/>
+  <rect x="498" y="390" width="114" height="22" rx="11" fill="#0f172a" opacity="0.28"/>
+</svg>

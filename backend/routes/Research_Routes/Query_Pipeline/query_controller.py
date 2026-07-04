@@ -62,9 +62,155 @@ from backend.routes.Research_Routes.graph_maintenance import (
 
 print("QC-9 BEFORE CLASS")
 
+def _topic_label(topic):
+
+    if isinstance(topic, dict):
+        return topic.get("topic") or "No dominant topic found"
+
+    if topic:
+        return str(topic)
+
+    return "No dominant topic found"
+
+
+def _build_user_view(
+    *,
+    query,
+    expanded_queries,
+    retrieved_contexts,
+    retrieval_quality,
+    graph_health,
+    contradictions,
+    gemini_output,
+    groq_output
+):
+
+    selected_topic = groq_output.get(
+        "selected_topic",
+        {}
+    )
+
+    topic_name = _topic_label(
+        selected_topic
+    )
+
+    similar_topics = []
+
+    for item in groq_output.get("similar_topics", [])[:8]:
+
+        if isinstance(item, dict):
+
+            topic = item.get("topic")
+
+            if not topic:
+                continue
+
+            similar_topics.append({
+                "topic": topic,
+                "search_query": topic,
+                "reason": (
+                    "Frequently appears with "
+                    f"{topic_name} in the retrieved graph."
+                ),
+                "co_occurrence_count": item.get(
+                    "co_occurrence_count",
+                    0
+                )
+            })
+
+        elif item:
+
+            similar_topics.append({
+                "topic": str(item),
+                "search_query": str(item),
+                "reason": (
+                    "Related to the selected research topic."
+                ),
+                "co_occurrence_count": 0
+            })
+
+    answers = (
+        groq_output
+        .get("recursive_answers", {})
+        .get("generated_answers", [])
+    )
+
+    followups = (
+        groq_output
+        .get("follow_up_generation", {})
+        .get("follow_up_questions", [])
+    )
+
+    if answers:
+        main_summary = answers[0].get(
+            "answer",
+            ""
+        )
+    else:
+        main_summary = (
+            gemini_output.get("final_conclusion")
+            or groq_output
+            .get("critic_mode_analysis", {})
+            .get("final_intelligence_summary")
+            or (
+                "FusionAI retrieved relevant graph context and related "
+                "topics, but recursive answer generation was unavailable "
+                "for this query."
+            )
+        )
+
+    evidence = []
+
+    for ctx in retrieved_contexts[:5]:
+
+        evidence.append({
+            "query": ctx.get("query", ""),
+            "summary": ctx.get("summary", ""),
+            "key_points": ctx.get("key_points", [])[:4],
+            "provenance": ctx.get("provenance", [])
+        })
+
+    return {
+        "query": query,
+        "topic": selected_topic,
+        "topic_name": topic_name,
+        "summary": main_summary,
+        "similar_topics": similar_topics,
+        "suggested_searches": [
+            item["search_query"]
+            for item in similar_topics
+        ],
+        "follow_up_questions": followups,
+        "answers": answers,
+        "audit_summary": {
+            "overall_assessment": gemini_output.get(
+                "overall_assessment",
+                ""
+            ),
+            "final_conclusion": gemini_output.get(
+                "final_conclusion",
+                ""
+            ),
+            "detected_issues": gemini_output.get(
+                "detected_issues",
+                []
+            )[:5],
+            "retrieval_quality": retrieval_quality,
+            "graph_health": graph_health,
+            "contradictions": contradictions
+        },
+        "retrieved_evidence": evidence,
+        "expanded_queries": expanded_queries[:5]
+    }
+
+
 class QueryController:
 
     async def process(self, query, mode="deep_research"):
+
+        print(
+            "\n[PIPELINE] Starting query expansion"
+        )
 
         expanded = await (
             query_expansion_service.expand_query(
@@ -72,20 +218,52 @@ class QueryController:
             )
         )
 
-        expanded_queries = expanded[
-            "queries"
-        ]
+        expanded_queries = (
+            expanded.get("queries")
+            if isinstance(expanded, dict)
+            else None
+        )
 
-        expanded_entities = expanded[
-            "entities"
-        ]
+        if not expanded_queries:
+
+            expanded_queries = [query]
+
+        expanded_entities = (
+            expanded.get("entities")
+            if isinstance(expanded, dict)
+            else None
+        )
+
+        if not isinstance(expanded_entities, dict):
+
+            expanded_entities = {
+                query: []
+            }
+
+        print(
+            "\n[PIPELINE] Query expansion completed: "
+            f"{len(expanded_queries)} queries"
+        )
+
+        print(
+            "\n[PIPELINE] Starting embedding routing"
+        )
         routed_queries = await (
             embedding_router.route_queries(
                 expanded_queries,
                 expanded_entities
             )
         )
+        print(
+            "\n[PIPELINE] Embedding routing completed: "
+            f"{len(routed_queries)} routed queries"
+        )
+
         selected_parents = []
+
+        print(
+            "\n[PIPELINE] Starting parent selection"
+        )
 
         for routed in routed_queries:
 
@@ -100,7 +278,17 @@ class QueryController:
                 selected_parents.append(
                     selected
                 )
+
+        print(
+            "\n[PIPELINE] Parent selection completed: "
+            f"{len(selected_parents)} selected parents"
+        )
+
         subtrees = []
+
+        print(
+            "\n[PIPELINE] Starting subtree fetch"
+        )
 
         for parent in selected_parents:
 
@@ -115,15 +303,39 @@ class QueryController:
                 subtrees.append(
                     subtree
                 )
+
+        print(
+            "\n[PIPELINE] Subtree fetch completed: "
+            f"{len(subtrees)} subtrees"
+        )
+
+        print(
+            "\n[PIPELINE] Starting orchestration"
+        )
+
         orchestration_output = await (
             mcp_orchestrator.execute(
                 subtrees
             )
         )
+
+        print(
+            "\n[PIPELINE] Orchestration completed"
+        )
+
+        print(
+            "\n[PIPELINE] Building features"
+        )
+
         features = feature_builder.build(
             orchestration_output,
             subtrees
         )
+
+        print(
+            "\n[PIPELINE] Feature building completed"
+        )
+
         strategy = features[
             "strategy_features"
         ]
@@ -191,6 +403,10 @@ class QueryController:
             retrieved_contexts
         )
         if mode == "retrieval_only":
+            print(
+                "\n[PIPELINE] Returning retrieval-only response"
+            )
+
             return {
                 "query": query,
                 "research_mode": mode,
@@ -207,6 +423,11 @@ class QueryController:
                 ],
                 "features": features
             }
+
+        print(
+            "\n[PIPELINE] Starting Gemini conclusion service"
+        )
+
         gemini_output = await (
             gemini_conclusion_service
             .generate_conclusion(
@@ -230,6 +451,11 @@ class QueryController:
         )
 
         print(gemini_output)
+
+        print(
+            "\n[PIPELINE] Starting Groq recursive analysis service"
+        )
+
         groq_output = await (
             groq_recursive_analysis_service
             .generate_recursive_analysis(
@@ -256,6 +482,22 @@ class QueryController:
         )
 
         print(groq_output)
+
+        print(
+            "\n[PIPELINE] Returning deep research response"
+        )
+
+        user_view = _build_user_view(
+            query=query,
+            expanded_queries=expanded_queries,
+            retrieved_contexts=retrieved_contexts,
+            retrieval_quality=retrieval_quality,
+            graph_health=graph_health,
+            contradictions=contradictions,
+            gemini_output=gemini_output,
+            groq_output=groq_output
+        )
+
         return {
 
             "query":
@@ -314,6 +556,8 @@ class QueryController:
             ],
             "gemini_audit":
             gemini_output,
+            "user_view":
+            user_view,
             "features": {
 
                 "graph_features":

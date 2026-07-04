@@ -13,7 +13,7 @@ class DifficultyLevel(str, Enum):
 class GenerateRoadmapRequest(BaseModel):
     topic: str
     level: DifficultyLevel = DifficultyLevel.BEGINNER
-    user_id: str
+    user_id: Optional[str] = None
  
  
 class NodePosition(BaseModel):

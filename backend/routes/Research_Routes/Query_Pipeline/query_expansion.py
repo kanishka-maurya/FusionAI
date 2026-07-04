@@ -11,6 +11,18 @@ client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
+QUERY_EXPANSION_TIMEOUT_SECONDS = 35
+
+
+def _fallback_expansion(query: str):
+
+    return {
+        "queries": [query],
+        "entities": {
+            query: []
+        }
+    }
+
 
 class QueryExpansionService:
 
@@ -48,32 +60,41 @@ Format:
 
         try:
 
-            response = await asyncio.to_thread(
-                client.chat.completions.create,
+            print(
+                "\n[QUERY EXPANSION] Starting Groq expansion"
+            )
 
-                model="llama-3.3-70b-versatile",
+            def call_groq():
 
-                messages=[
-                    {
-                        "role": "system",
-                        "content":
-                        (
-                            "You are a JSON-only "
-                            "query expansion engine. "
-                            "Never return markdown."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
+                return client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+
+                    messages=[
+                        {
+                            "role": "system",
+                            "content":
+                            (
+                                "You are a JSON-only "
+                                "query expansion engine. "
+                                "Never return markdown."
+                            )
+                        },
+                        {
+                            "role": "user",
+                            "content": prompt
+                        }
+                    ],
+
+                    temperature=0.3,
+
+                    response_format={
+                        "type": "json_object"
                     }
-                ],
+                )
 
-                temperature=0.3,
-
-                response_format={
-                    "type": "json_object"
-                }
+            response = await asyncio.wait_for(
+                asyncio.to_thread(call_groq),
+                timeout=QUERY_EXPANSION_TIMEOUT_SECONDS
             )
 
             text = (
@@ -84,7 +105,43 @@ Format:
                 .strip()
             )
 
-            return json.loads(text)
+            expanded = json.loads(text)
+
+            if not isinstance(expanded, dict):
+
+                raise ValueError(
+                    "Query expansion response was not a JSON object"
+                )
+
+            expanded_queries = expanded.get("queries")
+            expanded_entities = expanded.get("entities")
+
+            if (
+                not isinstance(expanded_queries, list)
+                or not expanded_queries
+                or not isinstance(expanded_entities, dict)
+            ):
+
+                raise ValueError(
+                    "Query expansion response missing queries/entities"
+                )
+
+            print(
+                "\n[QUERY EXPANSION] Completed"
+            )
+
+            return expanded
+
+        except asyncio.TimeoutError:
+
+            print(
+                "\n[QUERY EXPANSION TIMEOUT] "
+                f"Groq did not respond within "
+                f"{QUERY_EXPANSION_TIMEOUT_SECONDS}s. "
+                "Continuing with fallback expansion."
+            )
+
+            return _fallback_expansion(query)
 
         except Exception as e:
 
@@ -93,12 +150,7 @@ Format:
                 e
             )
 
-            return {
-                "queries": [query],
-                "entities": {
-                    query: []
-                }
-            }
+            return _fallback_expansion(query)
 
 
 query_expansion_service = (

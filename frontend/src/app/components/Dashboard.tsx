@@ -12,7 +12,7 @@ export function Dashboard() {
       title: "Fusion Notebook",
       description: "AI-powered research assistant with document analysis and chat interface",
       icon: BookOpen,
-      image: "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcQfq2m4VKCgaIffEPZ75LziLRskUE0fUyfvH0RysF9V5WqhGuRJiEFsfAz_eutzhQgwhJqP1_uZLVrN-zM",
+      image: "/dashboard-notebook.svg",
       color: "from-cyan-600/90 to-blue-600/90",
       path: "/notebook",
       features: [
@@ -27,7 +27,7 @@ export function Dashboard() {
       title: "Pathfinder AI",
       description: "Personalized learning paths with courses, quizzes, and guidance",
       icon: GraduationCap,
-      image: "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTZsliZ34xLCEyBUJponwdDVUArH5mty0bZWe2G1gYAf6nZZBnehWeR911025-84r8e-YKz-82hPkcIUXQ",
+      image: "/dashboard-roadmap.svg",
       color: "from-blue-600/90 to-purple-600/90",
       path: "/roadmap",
       features: [
@@ -42,7 +42,7 @@ export function Dashboard() {
       title: "Intelligence Feed",
       description: "Daily curated AI news, research papers, and trending repositories",
       icon: Newspaper,
-      image: "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcS-Z31YqNlrgE12mVixXHnoF-TCEhx2maBBhqbTLylfGZx7kWVbbzdf2Flrg92R0UJgQSHRctBiub-2vCE",
+      image: "/dashboard-intelligence.svg",
       color: "from-purple-600/90 to-pink-600/90",
       path: "/ai-news",
       features: [
@@ -216,38 +216,6 @@ export function Dashboard() {
               );
             })}
           </div>
-
-          {/* Quick Stats Grid */}
-          <div className="mt-10 pt-10 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 shadow-sm hover:border-cyan-500/30 transition-colors flex items-center gap-4">
-              <div className="w-11 h-11 bg-cyan-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <BookOpen className="w-5 h-5 text-cyan-400" />
-              </div>
-              <div>
-                <p className="text-xl font-black text-white">0</p>
-                <p className="text-xs font-semibold text-slate-400">Notebooks Syncing</p>
-              </div>
-            </div>
-            <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 shadow-sm hover:border-blue-500/30 transition-colors flex items-center gap-4">
-              <div className="w-11 h-11 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <GraduationCap className="w-5 h-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-xl font-black text-white">0%</p>
-                <p className="text-xs font-semibold text-slate-400">Learning Milestone</p>
-              </div>
-            </div>
-            <div className="bg-slate-900/40 rounded-2xl p-5 border border-white/5 shadow-sm hover:border-purple-500/30 transition-colors flex items-center gap-4">
-              <div className="w-11 h-11 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Newspaper className="w-5 h-5 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-xl font-black text-white">0</p>
-                <p className="text-xs font-semibold text-slate-400">Articles Cataloged</p>
-              </div>
-            </div>
-          </div>
-
         </div>
       </main>
     </div>

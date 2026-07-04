@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -9,8 +10,198 @@ client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
+GROQ_RECURSIVE_TIMEOUT_SECONDS = 45
+
+MAX_CONTEXTS = 5
+MAX_SUMMARY_CHARS = 500
+MAX_KEYPOINTS = 5
+MAX_QUERIES = 5
+
+def _truncate(text, limit):
+
+    if not text:
+        return ""
+
+    text = str(text)
+
+    if len(text) <= limit:
+        return text
+
+    return text[:limit] + "..."
+
+
+def _strip_json_markdown(text):
+
+    text = text.strip()
+
+    if text.startswith("```json"):
+
+        text = (
+            text
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
+    return text
+
 
 class GroqRecursiveAnalysisService:
+
+    async def _call_json(
+        self,
+        *,
+        label,
+        prompt,
+        system_message,
+        temperature,
+        fallback
+    ):
+
+        print(
+            f"\n[GROQ RECURSIVE] Starting {label}"
+        )
+
+        def call_groq():
+
+            return client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_message
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=temperature,
+                response_format={
+                    "type": "json_object"
+                }
+            )
+
+        try:
+
+            response = await asyncio.wait_for(
+                asyncio.to_thread(call_groq),
+                timeout=GROQ_RECURSIVE_TIMEOUT_SECONDS
+            )
+
+            text = (
+                response
+                .choices[0]
+                .message.content
+                .strip()
+            )
+
+            print(
+                f"\n[GROQ RECURSIVE] Completed {label}"
+            )
+
+            return json.loads(
+                _strip_json_markdown(text)
+            )
+
+        except asyncio.TimeoutError:
+
+            print(
+                f"\n[GROQ RECURSIVE TIMEOUT] {label} "
+                f"timed out."
+            )
+
+            return fallback
+
+        except Exception as e:
+
+            print(
+                f"\n[GROQ RECURSIVE ERROR] {label}",
+                repr(e)
+            )
+
+            return fallback
+
+    def _compress_contexts(
+        self,
+        retrieved_contexts
+    ):
+
+        compressed = []
+
+        for ctx in retrieved_contexts[:MAX_CONTEXTS]:
+
+            compressed.append({
+
+                "query":
+                ctx.get(
+                    "query",
+                    ""
+                ),
+
+                "summary":
+                (
+                    ctx.get(
+                        "summary",
+                        ""
+                    )[:MAX_SUMMARY_CHARS]
+                ),
+
+                "key_points":
+                (
+                    ctx.get(
+                        "key_points",
+                        []
+                    )[:MAX_KEYPOINTS]
+                )
+
+            })
+
+        return compressed
+
+    def _compress_queries(
+        self,
+        expanded_queries
+    ):
+
+        if isinstance(
+            expanded_queries,
+            list
+        ):
+
+            return expanded_queries[:MAX_QUERIES]
+
+        return []
+
+    def _clean_temporal_trend(
+        self,
+        temporal_trend
+    ):
+
+        if not temporal_trend:
+
+            return None
+
+        if not isinstance(
+            temporal_trend,
+            list
+        ):
+
+            return temporal_trend
+
+        cleaned = [
+
+            x
+            for x in temporal_trend
+            if x is not None
+
+        ]
+
+        if len(cleaned) == 0:
+
+            return None
+
+        return cleaned
 
     async def generate_recursive_analysis(
         self,
@@ -20,294 +211,200 @@ class GroqRecursiveAnalysisService:
         retrieved_contexts,
         related_topics
     ):
+        contexts = []
 
-        """
-        retrieved_contexts format:
+        for ctx in retrieved_contexts[:5]:
 
-        [
-            {
-                "query": "...",
-                "summary": "...",
-                "key_points": [...]
-            }
-        ]
-        """
+            contexts.append(
+                {
+                    "query":
+                    ctx.get("query", ""),
+
+                    "summary":
+                    (ctx.get("summary", "")[:500]),
+
+                    "key_points":
+                    ctx.get("key_points", [])[:3]
+                }
+            )
+
+        queries = expanded_queries[:5]
+
+        has_temporal = (
+            temporal_trend
+            and any(x is not None for x in temporal_trend)
+        )
+
+        trend_block = ""
+
+        if has_temporal:
+
+            trend_block = (
+                "\nTemporal Trend:\n"
+                + json.dumps(temporal_trend)
+            )
 
         stage1_prompt = f"""
-You are an Explainable Recursive RAG Engine.
+                      Topic:
+                      {selected_topic}
 
-The retrieval pipeline already selected the BEST
-parent node for each query using semantic retrieval.
+                      {trend_block}
 
-You are given:
-1. Best selected topic
-2. Temporal trend of that topic
-3. Five generated analytical queries
-4. Best retrieved summary node for each query
-5. Key points extracted from those nodes
+                      Queries:
+                      {json.dumps(queries)}
 
-Your task:
-Generate intelligent follow-up questions
-that deepen the user's understanding.
+                      Retrieved Context:
+                      {json.dumps(contexts)}
 
-You MUST:
-- explain WHY each question was generated
-- explain WHICH summary/key point triggered it
-- explain WHAT knowledge gap was detected
-- explain HOW the temporal trend influenced it
+                      Generate 3 follow-up questions.
 
-------------------------------------------------
-BEST SELECTED TOPIC
-------------------------------------------------
+                      Return JSON:
 
-{selected_topic}
+                      {{
+                       "topic_understanding":"",
+                       "follow_up_questions":[
+                             {{
+                              "question":"",
+                              "why_generated":"",
+                              "knowledge_gap":""
+                             }}
+                            ]
+                      }}
+                   """
 
-------------------------------------------------
-TEMPORAL TREND
-------------------------------------------------
+        followup_output = await self._call_json(
+            label="follow-up generation",
+            prompt=stage1_prompt,
+            system_message="You generate recursive follow-up questions.",
+            temperature=0.3,
+            fallback={
+                "topic_understanding":
+                "Follow-up generation unavailable.",
+                "follow_up_questions":[]
+            }
+        )
 
-{json.dumps(temporal_trend, indent=2)}
-
-------------------------------------------------
-EXPANDED QUERIES
-------------------------------------------------
-
-{json.dumps(expanded_queries, indent=2)}
-
-------------------------------------------------
-BEST RETRIEVED CONTEXTS
-------------------------------------------------
-
-{json.dumps(retrieved_contexts, indent=2)}
-
-------------------------------------------------
-RETURN STRICT JSON
-------------------------------------------------
-
-{{
-    "topic_understanding": "",
-    "follow_up_questions": [
-        {{
-            "question": "",
-            "why_generated": "",
-            "triggered_by": "",
-            "knowledge_gap": "",
-            "temporal_reasoning": ""
-        }}
-    ]
-}}
-"""
-
-        stage1_response = (
-            client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are an explainable "
-                            "recursive RAG engine."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": stage1_prompt
-                    }
-                ],
-                temperature=0.4
+        follow_up_questions = (
+            followup_output.get(
+                "follow_up_questions",
+                []
             )
+            if isinstance(followup_output, dict)
+            else []
         )
 
-        stage1_text = (
-            stage1_response
-            .choices[0]
-            .message.content
-            .strip()
-        )
+        if not follow_up_questions:
 
-        if stage1_text.startswith("```json"):
+            return {
 
-            stage1_text = (
-                stage1_text
-                .replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
+                "selected_topic":
+                selected_topic,
 
-        followup_output = json.loads(
-            stage1_text
-        )
+                "similar_topics":
+                related_topics[:10],
+
+                "topic_temporal_trend":
+                temporal_trend if has_temporal else None,
+
+                "follow_up_generation":
+                followup_output,
+
+                "recursive_answers": {
+                    "generated_answers": []
+                },
+
+                "critic_mode_analysis": {
+                    "self_evaluation": (
+                        "Recursive follow-up analysis was not generated."
+                    ),
+                    "reasoning_weaknesses": [],
+                    "hallucination_risks": [],
+                    "improvement_plan": [],
+                    "final_intelligence_summary": (
+                        "The retrieved topic and related topic suggestions "
+                        "are available, but recursive follow-up answers were "
+                        "skipped because no follow-up questions were produced."
+                    )
+                }
+            }
 
         stage2_prompt = f"""
-You previously generated follow-up questions.
+                        Topic:
+                        {selected_topic}
 
-Now answer them deeply using:
-- the retrieved summaries
-- key points
-- temporal trends
-- topic relationships
+                        Questions:
+                        {json.dumps(follow_up_questions)}
 
-------------------------------------------------
-TOPIC
-------------------------------------------------
+                        Context:
+                        {json.dumps(contexts)}
 
-{selected_topic}
+                        Answer every question.
 
-------------------------------------------------
-FOLLOW UP QUESTIONS
-------------------------------------------------
+                        Return JSON
 
-{json.dumps(followup_output, indent=2)}
+                        {{
+                        "generated_answers":[
+                        {{
+                           "question":"",
+                           "answer":"",
+                           "supporting_summary":""
+                        }}
+                        ]
+                        }}
+                        """
 
-------------------------------------------------
-RETRIEVED CONTEXTS
-------------------------------------------------
-
-{json.dumps(retrieved_contexts, indent=2)}
-
-------------------------------------------------
-RETURN STRICT JSON
-------------------------------------------------
-
-{{
-    "generated_answers": [
-        {{
-            "question": "",
-            "answer": "",
-            "supporting_summary": "",
-            "supporting_keypoints": []
-        }}
-    ]
-}}
-"""
-
-        stage2_response = (
-            client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a recursive "
-                            "reasoning engine."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": stage2_prompt
-                    }
-                ],
-                temperature=0.3
-            )
-        )
-
-        stage2_text = (
-            stage2_response
-            .choices[0]
-            .message.content
-            .strip()
-        )
-
-        if stage2_text.startswith("```json"):
-
-            stage2_text = (
-                stage2_text
-                .replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
-
-        answer_output = json.loads(
-            stage2_text
+        answer_output = await self._call_json(
+            label="recursive answers",
+            prompt=stage2_prompt,
+            system_message="Answer only using provided context.",
+            temperature=0.2,
+            fallback={
+                "generated_answers":[]
+            }
         )
 
         stage3_prompt = f"""
-You are now operating in CRITIC MODE.
+                        Evaluate these answers.
 
-You generated:
-1. Follow-up questions
-2. Answers to those questions
+                        Questions:
+                        {json.dumps(
+                          followup_output.get(
+                          "follow_up_questions",
+                           []
+                         )
+                        )}
 
-Now self-evaluate yourself.
+                        Answers:
+                        {json.dumps(
+                          answer_output.get(
+                          "generated_answers",
+                           []
+                          )
+                        )}
 
-Analyze:
-- reasoning quality
-- missing knowledge
-- hallucination risks
-- weak reasoning chains
-- missing context
-- retrieval limitations
-- possible improvements
+                        Return JSON
 
-Explain:
-- how you would improve yourself
-- what additional retrieval could help
-- what deeper questions should exist
+                        {{
+                        "self_evaluation":"",
+                        "reasoning_weaknesses":[],
+                        "hallucination_risks":[],
+                        "improvement_plan":[],
+                        "final_intelligence_summary":""
+                        }}
+                        """
 
-------------------------------------------------
-FOLLOW UP QUESTIONS
-------------------------------------------------
-
-{json.dumps(followup_output, indent=2)}
-
-------------------------------------------------
-GENERATED ANSWERS
-------------------------------------------------
-
-{json.dumps(answer_output, indent=2)}
-
-------------------------------------------------
-RETURN STRICT JSON
-------------------------------------------------
-
-{{
-    "self_evaluation": "",
-    "reasoning_weaknesses": [],
-    "hallucination_risks": [],
-    "missing_knowledge": [],
-    "improvement_plan": [],
-    "final_intelligence_summary": ""
-}}
-"""
-
-        stage3_response = (
-            client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a self-evaluating "
-                            "critic reasoning engine."
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": stage3_prompt
-                    }
-                ],
-                temperature=0.2
-            )
-        )
-
-        stage3_text = (
-            stage3_response
-            .choices[0]
-            .message.content
-            .strip()
-        )
-
-        if stage3_text.startswith("```json"):
-
-            stage3_text = (
-                stage3_text
-                .replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
-
-        critic_output = json.loads(
-            stage3_text
+        critic_output = await self._call_json(
+            label="critic analysis",
+            prompt=stage3_prompt,
+            system_message="Critique reasoning quality.",
+            temperature=0.2,
+            fallback={
+                "self_evaluation":"Skipped.",
+                "reasoning_weaknesses":[],
+                "hallucination_risks":[],
+                "improvement_plan":[],
+                "final_intelligence_summary":"Unavailable."
+            }
         )
 
         return {
@@ -316,10 +413,10 @@ RETURN STRICT JSON
             selected_topic,
 
             "similar_topics":
-            related_topics,
+            related_topics[:10],
 
             "topic_temporal_trend":
-            temporal_trend,
+            temporal_trend if has_temporal else None,
 
             "follow_up_generation":
             followup_output,

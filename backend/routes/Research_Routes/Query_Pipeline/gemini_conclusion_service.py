@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from google import genai
 from dotenv import load_dotenv
 
@@ -8,6 +9,24 @@ load_dotenv()
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
+
+GEMINI_TIMEOUT_SECONDS = 45
+
+
+def _fallback_conclusion(reason):
+
+    return {
+        "overall_assessment": (
+            "Gemini audit was skipped because the conclusion "
+            f"service did not complete: {reason}"
+        ),
+        "detected_issues": [],
+        "system_improvements": [],
+        "retrieval_improvements": [],
+        "clustering_improvements": [],
+        "summarization_improvements": [],
+        "final_conclusion": "The retrieval pipeline continued with fallback audit output."
+    }
 
 
 class GeminiConclusionService:
@@ -80,21 +99,53 @@ Return STRICT JSON:
 }}
 """
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        try:
 
-        text = response.text.strip()
-
-        if text.startswith("```json"):
-            text = (
-                text.replace("```json", "")
-                .replace("```", "")
-                .strip()
+            print(
+                "\n[GEMINI CONCLUSION] Starting"
             )
-    
-        return json.loads(text)
+
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    client.models.generate_content,
+                    model="gemini-2.5-flash",
+                    contents=prompt
+                ),
+                timeout=GEMINI_TIMEOUT_SECONDS
+            )
+
+            text = response.text.strip()
+
+            if text.startswith("```json"):
+                text = (
+                    text.replace("```json", "")
+                    .replace("```", "")
+                    .strip()
+                )
+
+            print(
+                "\n[GEMINI CONCLUSION] Completed"
+            )
+
+            return json.loads(text)
+
+        except asyncio.TimeoutError:
+
+            print(
+                "\n[GEMINI CONCLUSION TIMEOUT] "
+                f"Gemini did not respond within {GEMINI_TIMEOUT_SECONDS}s"
+            )
+
+            return _fallback_conclusion("timeout")
+
+        except Exception as e:
+
+            print(
+                "\n[GEMINI CONCLUSION ERROR]",
+                repr(e)
+            )
+
+            return _fallback_conclusion(repr(e))
 
 
 gemini_conclusion_service = (

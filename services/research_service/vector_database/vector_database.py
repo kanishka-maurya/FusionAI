@@ -210,36 +210,52 @@ class ChromaVectorDatabase:
         for metadata in metadatas:
             # 1. Get the session ID from metadata
             nb_id = metadata.get("session_id")
-            s_type = metadata.get("source_type", "text")
+            s_type = metadata.get("source_type") or "text"
             s_file = metadata.get("source_file")
-            if s_file=="audio_source":
-                print("anything inserted",nb_id)
+            source_url = (
+                metadata.get("source_url")
+                or metadata.get("video_url")
+                or metadata.get("original_url")
+                or metadata.get("url_fragment")
+            )
+            if source_url and "#chunk-" in str(source_url):
+                source_url = str(source_url).split("#chunk-")[0]
             # 2. Safety Check: Convert both to strings to avoid mismatch
             if str(nb_id) != str(session_id):
                 continue
 
-            # 3. Initialize source_file from metadata
-
-            # 4. Handle Audio naming specifically
+            display_type = self._map_source_type(s_type)
             display_name = s_file
-            if s_type == "audio_source":
-                # Use headline if available, otherwise use source_file
-                headline = metadata.get('headline')
+
+            if s_type == "youtube":
+                display_name = source_url or s_file or "YouTube Video"
+            elif s_type == "web":
+                display_name = (
+                    metadata.get("title")
+                    or s_file
+                    or source_url
+                    or "Web Page"
+                )
+            elif s_type == "audio":
+                headline = metadata.get("headline")
                 if headline:
-                    display_name = f"Audio: {headline[:20]}..."
+                    display_name = f"Audio: {headline[:48]}..."
                 elif not s_file or s_file == "audio_source":
                     display_name = "Audio Recording"
+            elif s_type in {"pdf", "txt", "text"}:
+                display_name = s_file or metadata.get("title")
             
-            # 5. Final fallback for name
             if not display_name:
                 display_name = "Untitled Source"
 
-            # 6. Add to result list
             if display_name not in unique_sources:
                 unique_sources[display_name] = {
                     "id": display_name, 
                     "name": display_name,
-                    "type": s_type 
+                    "type": display_type,
+                    "rawType": s_type,
+                    "url": source_url,
+                    "pages": metadata.get("total_pages")
                 }
 
         print(f"Final sources list: {list(unique_sources.values())}")
@@ -290,9 +306,16 @@ class ChromaVectorDatabase:
         ids_to_delete = []
 
         for doc_id, metadata in zip(ids, metadatas):
+            source_values = {
+                str(metadata.get("source_file") or ""),
+                str(metadata.get("source_url") or ""),
+                str(metadata.get("video_url") or ""),
+                str(metadata.get("original_url") or ""),
+                str(metadata.get("url_fragment") or "").split("#chunk-")[0],
+            }
             if (
                 str(metadata.get("session_id")) == str(session_id)
-                and metadata.get("source_file") == source_name
+                and source_name in source_values
             ):
                 ids_to_delete.append(doc_id)
 
@@ -312,7 +335,7 @@ class ChromaVectorDatabase:
         return "Audio File"
       elif source_type == "web":
         return "Web URL"
-      elif source_type == "text":
+      elif source_type in {"text", "txt", "md"}:
         return "Copied Text"
       return "Unknown"
 
