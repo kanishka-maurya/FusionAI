@@ -52,8 +52,30 @@ except Exception as e:
     print("QC-8 ERROR:", repr(e))
     raise
 
+try:
+    print("QC-8B BEFORE groq_final_answer_service")
+    from backend.routes.Research_Routes.Query_Pipeline.groq_final_answer_service import (
+        groq_final_answer_service
+    )
+    print("QC-8B DONE")
+except Exception as e:
+    print("QC-8B ERROR:", repr(e))
+    raise
+
+try:
+    print("QC-8C BEFORE web_evidence_service")
+    from backend.routes.Research_Routes.Query_Pipeline.web_evidence_service import (
+        web_evidence_service
+    )
+    print("QC-8C DONE")
+except Exception as e:
+    print("QC-8C ERROR:", repr(e))
+    raise
+
 from backend.routes.Research_Routes.utils import (
     detect_contradictions,
+    lexical_overlap,
+    node_text,
     retrieval_quality_report,
 )
 from backend.routes.Research_Routes.graph_maintenance import (
@@ -61,6 +83,24 @@ from backend.routes.Research_Routes.graph_maintenance import (
 )
 
 print("QC-9 BEFORE CLASS")
+
+MIN_RELEVANCE_SCORE = 0.28
+MIN_LEXICAL_OVERLAP = 0.20
+MIN_KEYWORD_SCORE = 0.20
+MIN_STRONG_QUERY_COVERAGE = 0.45
+MIN_STRONG_AVERAGE_RELEVANCE = 0.40
+PIPELINE_DIAGNOSTIC_TERMS = [
+    "pipeline",
+    "audit",
+    "diagnostic",
+    "retrieval quality",
+    "risk features",
+    "ethics features",
+    "summary-keypoint",
+    "system developers",
+    "feature builder",
+]
+
 
 def _topic_label(topic):
 
@@ -73,6 +113,177 @@ def _topic_label(topic):
     return "No dominant topic found"
 
 
+def _looks_like_pipeline_diagnostic(text):
+
+    lowered = str(text or "").lower()
+
+    return any(
+        term in lowered
+        for term in PIPELINE_DIAGNOSTIC_TERMS
+    )
+
+
+def _evidence_based_answer(query, retrieved_contexts):
+
+    evidence_lines = []
+
+    for index, ctx in enumerate(retrieved_contexts[:4], start=1):
+
+        summary = str(ctx.get("summary") or "").strip()
+
+        if not summary:
+            continue
+
+        evidence_lines.append(
+            f"[Evidence {index}] {summary}"
+        )
+
+    if not evidence_lines:
+
+        return (
+            "FusionAI could not retrieve enough relevant evidence to answer "
+            f"'{query}' confidently. Try a more specific AI-news query or "
+            "refresh the intelligence feed before asking again."
+        )
+
+    return (
+        f"For '{query}', FusionAI retrieved the following relevant evidence: "
+        + " ".join(evidence_lines)
+    )
+
+
+def _needs_web_reinforcement(query, retrieval_quality, retrieved_contexts):
+
+    normalized_query = str(query or "").strip().lower()
+
+    broad_intent_markers = [
+        "what is",
+        "tell me about",
+        "explain",
+        "difference between",
+        "compare",
+        "vs",
+        "versus",
+        "latest",
+        "updates",
+        "recent",
+    ]
+
+    has_broad_intent = any(
+        marker in normalized_query
+        for marker in broad_intent_markers
+    )
+
+    weak_coverage = (
+        float(retrieval_quality.get("query_coverage") or 0.0)
+        < MIN_STRONG_QUERY_COVERAGE
+    )
+
+    weak_relevance = (
+        float(retrieval_quality.get("average_relevance_score") or 0.0)
+        < MIN_STRONG_AVERAGE_RELEVANCE
+    )
+
+    sparse_context = len(retrieved_contexts) < 3
+
+    direct_miss = any(
+        "not directly" in str(ctx.get("summary") or "").lower()
+        or "not clearly" in str(ctx.get("summary") or "").lower()
+        for ctx in retrieved_contexts
+    )
+
+    return (
+        has_broad_intent
+        or weak_coverage
+        or weak_relevance
+        or sparse_context
+        or direct_miss
+    )
+
+
+def _passes_relevance_gate(subtree):
+
+    score_details = subtree.get("score_details", {})
+    relevance_score = float(
+        subtree.get("relevance_score")
+        or score_details.get("hybrid_score")
+        or 0.0
+    )
+    lexical_score = float(
+        score_details.get("lexical_score")
+        or 0.0
+    )
+    keyword_score = float(
+        score_details.get("keyword_score")
+        or 0.0
+    )
+    entity_score = float(
+        score_details.get("entity_score")
+        or 0.0
+    )
+
+    text_overlap = lexical_overlap(
+        subtree.get("query", ""),
+        node_text(subtree.get("root_node", {}))
+    )
+
+    return (
+        relevance_score >= MIN_RELEVANCE_SCORE
+        and (
+            lexical_score >= MIN_LEXICAL_OVERLAP
+            or keyword_score >= MIN_KEYWORD_SCORE
+            or entity_score > 0
+            or text_overlap >= MIN_LEXICAL_OVERLAP
+        )
+    )
+
+
+def _filter_relevant_subtrees(subtrees):
+
+    if not subtrees:
+        return [], []
+
+    relevant = []
+    rejected = []
+
+    for subtree in subtrees:
+
+        if _passes_relevance_gate(subtree):
+            relevant.append(subtree)
+        else:
+            rejected.append({
+                "query": subtree.get("query", ""),
+                "root_id": (
+                    subtree
+                    .get("root_node", {})
+                    .get("node_id")
+                ),
+                "summary": (
+                    subtree
+                    .get("root_node", {})
+                    .get("summary", "")
+                )[:220],
+                "score_details": subtree.get(
+                    "score_details",
+                    {}
+                )
+            })
+
+    if relevant:
+        return relevant, rejected
+
+    best_subtree = max(
+        subtrees,
+        key=lambda item: float(
+            item.get("relevance_score")
+            or item.get("score_details", {}).get("hybrid_score")
+            or 0.0
+        )
+    )
+
+    return [best_subtree], rejected
+
+
 def _build_user_view(
     *,
     query,
@@ -82,7 +293,8 @@ def _build_user_view(
     graph_health,
     contradictions,
     gemini_output,
-    groq_output
+    groq_output,
+    final_answer_output=None
 ):
 
     selected_topic = groq_output.get(
@@ -141,22 +353,33 @@ def _build_user_view(
         .get("follow_up_questions", [])
     )
 
-    if answers:
+    final_answer_output = final_answer_output or {}
+
+    final_answer = final_answer_output.get("answer")
+
+    if (
+        final_answer
+        and not _looks_like_pipeline_diagnostic(final_answer)
+    ):
+        main_summary = final_answer_output.get(
+            "answer",
+            ""
+        )
+    elif (
+        answers
+        and answers[0].get("answer")
+        and not _looks_like_pipeline_diagnostic(
+            answers[0].get("answer", "")
+        )
+    ):
         main_summary = answers[0].get(
             "answer",
             ""
         )
     else:
-        main_summary = (
-            gemini_output.get("final_conclusion")
-            or groq_output
-            .get("critic_mode_analysis", {})
-            .get("final_intelligence_summary")
-            or (
-                "FusionAI retrieved relevant graph context and related "
-                "topics, but recursive answer generation was unavailable "
-                "for this query."
-            )
+        main_summary = _evidence_based_answer(
+            query,
+            retrieved_contexts
         )
 
     evidence = []
@@ -180,6 +403,25 @@ def _build_user_view(
             item["search_query"]
             for item in similar_topics
         ],
+        "recommended_searches": (
+            final_answer_output.get("recommended_searches")
+            or [
+                item["search_query"]
+                for item in similar_topics
+            ]
+        ),
+        "key_findings": final_answer_output.get(
+            "key_findings",
+            []
+        ),
+        "evidence_used": final_answer_output.get(
+            "evidence_used",
+            []
+        ),
+        "limitations": final_answer_output.get(
+            "limitations",
+            []
+        ),
         "follow_up_questions": followups,
         "answers": answers,
         "audit_summary": {
@@ -309,6 +551,16 @@ class QueryController:
             f"{len(subtrees)} subtrees"
         )
 
+        subtrees, rejected_subtrees = _filter_relevant_subtrees(
+            subtrees
+        )
+
+        print(
+            "\n[PIPELINE] Relevance gate kept "
+            f"{len(subtrees)} subtrees and rejected "
+            f"{len(rejected_subtrees)} low-signal subtrees"
+        )
+
         print(
             "\n[PIPELINE] Starting orchestration"
         )
@@ -402,6 +654,62 @@ class QueryController:
         contradictions = detect_contradictions(
             retrieved_contexts
         )
+
+        web_evidence = []
+
+        if _needs_web_reinforcement(
+            query,
+            retrieval_quality,
+            retrieved_contexts
+        ):
+
+            print(
+                "\n[PIPELINE] Retrieval needs live web reinforcement"
+            )
+
+            web_evidence = await web_evidence_service.search(
+                query
+            )
+
+            if web_evidence:
+
+                retrieved_contexts = (
+                    web_evidence
+                    + retrieved_contexts
+                )
+
+                retrieval_quality = retrieval_quality_report(
+                    query,
+                    expanded_queries,
+                    [
+                        *[
+                            {
+                                "root_node": {
+                                    "summary": ctx.get("summary", ""),
+                                    "key_points": ctx.get("key_points", [])
+                                },
+                                "relevance_score": (
+                                    ctx
+                                    .get("score_details", {})
+                                    .get("hybrid_score", 0.0)
+                                ),
+                                "fallback_used": False
+                            }
+                            for ctx in web_evidence
+                        ],
+                        *subtrees
+                    ]
+                )
+
+                contradictions = detect_contradictions(
+                    retrieved_contexts
+                )
+
+                print(
+                    "\n[PIPELINE] Live web evidence injected: "
+                    f"{len(web_evidence)} items"
+                )
+
         if mode == "retrieval_only":
             print(
                 "\n[PIPELINE] Returning retrieval-only response"
@@ -417,6 +725,8 @@ class QueryController:
                 "retrieval_quality": retrieval_quality,
                 "graph_health": graph_health,
                 "contradiction_scan": contradictions,
+                "web_evidence_count": len(web_evidence),
+                "rejected_subtrees": rejected_subtrees,
                 "provenance": [
                     subtree.get("provenance", [])
                     for subtree in subtrees
@@ -484,6 +794,45 @@ class QueryController:
         print(groq_output)
 
         print(
+            "\n[PIPELINE] Starting final answer synthesis"
+        )
+
+        final_answer_output = await (
+            groq_final_answer_service
+            .generate_answer(
+                query=query,
+                selected_topic=selected_topic,
+                related_topics=groq_output.get(
+                    "similar_topics",
+                    related_topics
+                ),
+                expanded_queries=expanded_queries,
+                retrieved_contexts=retrieved_contexts,
+                audit_summary={
+                    "overall_assessment": gemini_output.get(
+                        "overall_assessment",
+                        ""
+                    ),
+                    "final_conclusion": gemini_output.get(
+                        "final_conclusion",
+                        ""
+                    ),
+                    "detected_issues": gemini_output.get(
+                        "detected_issues",
+                        []
+                    )[:3],
+                    "retrieval_quality": retrieval_quality,
+                    "graph_health": graph_health,
+                    "contradictions": contradictions
+                }
+            )
+        )
+
+        print(
+            "\n[PIPELINE] Final answer synthesis completed"
+        )
+
+        print(
             "\n[PIPELINE] Returning deep research response"
         )
 
@@ -495,7 +844,8 @@ class QueryController:
             graph_health=graph_health,
             contradictions=contradictions,
             gemini_output=gemini_output,
-            groq_output=groq_output
+            groq_output=groq_output,
+            final_answer_output=final_answer_output
         )
 
         return {
@@ -521,6 +871,10 @@ class QueryController:
             graph_health,
             "contradiction_scan":
             contradictions,
+            "web_evidence_count":
+            len(web_evidence),
+            "rejected_subtrees":
+            rejected_subtrees,
             "provenance":
             [
                 subtree.get("provenance", [])
@@ -554,6 +908,8 @@ class QueryController:
             groq_output[
                 "critic_mode_analysis"
             ],
+            "final_answer":
+            final_answer_output,
             "gemini_audit":
             gemini_output,
             "user_view":

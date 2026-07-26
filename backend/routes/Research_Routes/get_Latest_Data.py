@@ -205,6 +205,64 @@ def to_timestamp(dt_str):
     )
 
 
+async def load_sliding_window_items():
+
+    try:
+
+        raw_items = await redis_client.zrevrange(
+            ZSET_KEY,
+            0,
+            199
+        )
+
+    except Exception as e:
+
+        print(
+            "\n[AI NEWS GET] Redis fallback unavailable:",
+            repr(e)
+        )
+
+        return []
+
+    items = []
+
+    for raw in raw_items:
+
+        try:
+
+            item = json.loads(raw)
+
+            if isinstance(item, dict):
+                items.append(item)
+
+        except Exception as e:
+
+            print(
+                "\n[AI NEWS GET] Skipping malformed cached item:",
+                repr(e)
+            )
+
+    return items
+
+
+def group_items_by_source(items):
+
+    grouped = {
+        "github": [],
+        "papers": [],
+        "news": []
+    }
+
+    for item in items:
+
+        source = item.get("source")
+
+        if source in grouped:
+            grouped[source].append(item)
+
+    return grouped
+
+
 async def fetch_github():
 
     headers = {
@@ -912,18 +970,51 @@ async def get_ai_pulse():
     combined = (
         live_data
     )
-    print(combined)
+
+    source_counts = {
+        "github": len(latest_live_data["github"]),
+        "papers": len(latest_live_data["papers"]),
+        "news": len(latest_live_data["news"])
+    }
+
+    if not combined:
+
+        cached_items = await load_sliding_window_items()
+        cached_grouped = group_items_by_source(
+            cached_items
+        )
+
+        if cached_items:
+
+            combined = cached_items
+            source_counts = {
+                "github": len(cached_grouped["github"]),
+                "papers": len(cached_grouped["papers"]),
+                "news": len(cached_grouped["news"])
+            }
+
+            print(
+                "\n[AI NEWS GET] Served from Redis sliding window: "
+                f"{len(combined)} items"
+            )
+
+        else:
+
+            print(
+                "\n[AI NEWS GET] No in-memory or Redis live data available"
+            )
+
     return {
         "data": combined,
         "live_counts": {
             "github":
-            len(latest_live_data["github"]),
+            source_counts["github"],
 
             "papers":
-            len(latest_live_data["papers"]),
+            source_counts["papers"],
 
             "news":
-            len(latest_live_data["news"])
+            source_counts["news"]
         },
         "last_updated": now_iso()
     }

@@ -344,6 +344,59 @@ def _extract_fusion_answer(fusion_response):
         or ""
     )
 
+    answer_parts = [
+        _text(answer)
+    ]
+
+    key_findings = user_view.get(
+        "key_findings",
+        []
+    )
+
+    if key_findings:
+        answer_parts.append(
+            "Key findings: "
+            + "; ".join(
+                _text(item, 300)
+                for item in key_findings[:5]
+            )
+        )
+
+    recommended_searches = (
+        user_view.get("recommended_searches")
+        or user_view.get("suggested_searches")
+        or []
+    )
+
+    if recommended_searches:
+        answer_parts.append(
+            "Related follow-up searches: "
+            + "; ".join(
+                _text(item, 160)
+                for item in recommended_searches[:6]
+            )
+        )
+
+    limitations = user_view.get(
+        "limitations",
+        []
+    )
+
+    if limitations:
+        answer_parts.append(
+            "Limitations: "
+            + "; ".join(
+                _text(item, 220)
+                for item in limitations[:3]
+            )
+        )
+
+    benchmark_answer = "\n\n".join(
+        part
+        for part in answer_parts
+        if part
+    )
+
     evidence_texts = []
 
     for ctx in user_view.get("retrieved_evidence", [])[:MAX_EVIDENCE_ITEMS]:
@@ -375,7 +428,10 @@ def _extract_fusion_answer(fusion_response):
         })
 
     return {
-        "answer_text": _text(answer),
+        "answer_text": _text(
+            benchmark_answer,
+            1800
+        ),
         "topic_text": _text(
             user_view.get("topic_name"),
             300

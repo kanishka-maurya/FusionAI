@@ -35,6 +35,23 @@ interface IngestedItem {
   };
 }
 
+const PIPELINE_DIAGNOSTIC_TERMS = [
+  "pipeline",
+  "audit",
+  "diagnostic",
+  "retrieval quality",
+  "risk features",
+  "ethics features",
+  "summary-keypoint",
+  "system developers",
+  "feature builder",
+];
+
+const isPipelineDiagnosticText = (value?: string) => {
+  const text = (value || "").toLowerCase();
+  return PIPELINE_DIAGNOSTIC_TERMS.some((term) => text.includes(term));
+};
+
 export function AINewsPage() {
   const [items, setItems] = useState<IngestedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +155,7 @@ export function AINewsPage() {
         }
 
         setQueryStatus("success");
-        setStatusMessage("FusionAI recursive analysis completed.");
+        setStatusMessage("FusionAI research answer generated.");
         setQueryResponse(userView);
       } else {
         setQueryStatus("error");
@@ -158,8 +175,9 @@ export function AINewsPage() {
   const similarTopics = analysis?.similar_topics ?? [];
   const followUpQuestions =
     analysis?.follow_up_questions ?? [];
-  const generatedAnswers =
-    analysis?.answers ?? [];
+  const generatedAnswers = (analysis?.answers ?? []).filter((item: any) => {
+    return !isPipelineDiagnosticText(item?.answer);
+  });
   const evidence = analysis?.retrieved_evidence ?? [];
   const topicName =
     analysis?.topic_name ??

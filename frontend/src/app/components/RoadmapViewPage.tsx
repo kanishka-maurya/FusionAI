@@ -122,7 +122,11 @@ export function RoadmapViewPage() {
   };
 
   const handleNodeClick = (node: RoadmapNode) => {
-    if (node.status === "locked") return;
+    if (node.status === "locked") {
+      setErrorMessage("Complete this topic's prerequisites before opening it.");
+      return;
+    }
+    setErrorMessage("");
     setSelectedNode(node);
   };
 

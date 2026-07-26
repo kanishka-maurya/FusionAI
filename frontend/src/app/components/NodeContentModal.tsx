@@ -55,6 +55,87 @@ interface NodeContentModalProps {
 
 const API_BASE = "http://localhost:8000";
 
+const normalizeList = (value: any): string[] => {
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return [];
+};
+
+const normalizeContent = (value: any, nodeTitle: string): NodeContent => {
+  let parsed = value;
+
+  if (typeof parsed === "string") {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      parsed = { summary: parsed };
+    }
+  }
+
+  const source = parsed && typeof parsed === "object" ? parsed : {};
+  const topics = Array.isArray(source.topics) ? source.topics : [];
+  const resources = Array.isArray(source.resources) ? source.resources : [];
+  const practiceQuestions = Array.isArray(source.practice_questions)
+    ? source.practice_questions
+    : [];
+
+  return {
+    summary:
+      source.summary ||
+      `Learn the core concepts behind ${nodeTitle} and how it fits into this roadmap.`,
+    estimated_time: source.estimated_time || "1 week",
+    what_you_will_learn:
+      normalizeList(source.what_you_will_learn).length > 0
+        ? normalizeList(source.what_you_will_learn)
+        : [
+            `Understand ${nodeTitle}`,
+            "Connect this topic to the roadmap goal",
+            "Practice the concept with focused questions",
+          ],
+    topics:
+      topics.length > 0
+        ? topics.map((topic: any, idx: number) => ({
+            title: topic?.title || `Concept ${idx + 1}`,
+            explanation: topic?.explanation || topic?.summary || String(topic || ""),
+            code_example: topic?.code_example ?? null,
+            key_takeaway: topic?.key_takeaway || "",
+          }))
+        : [
+            {
+              title: nodeTitle,
+              explanation:
+                source.summary ||
+                `This topic introduces the essential ideas needed before moving to dependent roadmap nodes.`,
+              code_example: null,
+              key_takeaway: `Build a clear mental model of ${nodeTitle}.`,
+            },
+          ],
+    common_misconceptions: normalizeList(source.common_misconceptions),
+    resources:
+      resources.length > 0
+        ? resources.map((resource: any) => ({
+            type: resource?.type || "article",
+            title: resource?.title || "Learning resource",
+            url: resource?.url || "#",
+          }))
+        : [{ type: "article", title: `Search: ${nodeTitle}`, url: "#" }],
+    practice_questions:
+      practiceQuestions.length > 0
+        ? practiceQuestions.map((question: any, idx: number) => ({
+            question: question?.question || String(question || `Practice question ${idx + 1}`),
+            hint: question?.hint || "",
+            answer: question?.answer || "",
+          }))
+        : [
+            {
+              question: `How would you explain ${nodeTitle} in your own words?`,
+              hint: "Use one definition, one example, and one reason it matters.",
+              answer: "",
+            },
+          ],
+  };
+};
+
 export function NodeContentModal({
   node,
   roadmapId,
@@ -93,7 +174,7 @@ export function NodeContentModal({
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Failed to load node content");
-      setContent(data.content);
+      setContent(normalizeContent(data.content, node.title));
       setSource(data.source);
     } catch (error: any) {
       console.error("Failed to load node content:", error);

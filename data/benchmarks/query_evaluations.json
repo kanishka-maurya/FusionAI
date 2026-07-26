@@ -1,6 +1,6 @@
 {
   "created_at": "2026-07-03T16:59:11.713404",
-  "updated_at": "2026-07-03T16:59:11.713488",
+  "updated_at": "2026-07-26T14:44:25.383464",
   "judge_llm": "groq/llama-3.3-70b-versatile",
   "metrics": {
     "positive_higher_is_better": [
@@ -149,64 +149,728 @@
         "citation_coverage": "tavily",
         "hallucination_risk": "tavily"
       }
+    },
+    {
+      "evaluation_id": "20260706_180802_20350cd7",
+      "created_at": "2026-07-06T18:08:02.419282",
+      "question": "agentic ai updates",
+      "tavily_answer": {
+        "answer_text": "Agentic AI refers to autonomous systems that can perform tasks independently, leveraging large language models and real-time data. Recent developments include new tools and platforms for financial guidance and compliance. These advancements highlight the growing role of AI agents in operational infrastructure.",
+        "top_result_text": "ByMelody Brue,\n\nContributor\n\n### HPE Updates Hardware, Private Cloud And Networking For Agentic AI Era\n\nByMaribel Lopez,\n\nContributor\n\nPowered by Adelaide, Forbes AI\n\n## What You Need To Know\n\nBite-sized updates on Agentic AI's most important trends—stay informed in seconds.\n\nImage 10: The Rise of Agentic AI\n\n### The Rise of Agentic AI\n\nAgentic AI is evolving from a tool into an autonomous partner. This new paradigm is reshaping industries, creating new opportunities and unforeseen risks.\n\nView Brief\n\nImage 11: The New AI Workforce\n\n### The New AI Workforce\n\nAgentic AI is no longer just a tool; it's becoming an autonomous colleague. This shift is reshaping roles in HR, customer service, and beyond.\n\nView Brief\n\nImage 12: Investing in the Agentic Layer\n\n### Investing in the Agentic Layer [...] Contributor\n\nImage 22: article image\n\nJun 28, 2026\n\n### Work, Skills, And AI: Human Resources Angles On The Agentic Future\n\nAI agents can automate routine HR work, but human leadership, mentoring, and adaptability remain essential for success.\n\nByJohn Werner,\n\nContributor\n\nImage 23: article image\n\nJun 26, 2026\n\n### The Learning System: How Agentic AI Can Compound Its Own Advantage\n\nMost AI tra...",
+        "source_title": "Latest Agentic AI News Today | Trends, Predictions, & Analysis",
+        "source_url": "https://www.forbes.com/topics/agentic-ai",
+        "supporting_texts": [
+          {
+            "title": "Latest Agentic AI News Today | Trends, Predictions, & Analysis",
+            "text": "ByMelody Brue,\n\nContributor\n\n### HPE Updates Hardware, Private Cloud And Networking For Agentic AI Era\n\nByMaribel Lopez,\n\nContributor\n\nPowered by Adelaide, Forbes AI\n\n## What You Need To Know\n\nBite-sized updates on Agentic AI's most important trends—stay informed in seconds.\n\nImage 10: The Rise of Agentic AI\n\n### The Rise of Agentic AI\n\nAgentic AI is evolving from a tool into an autonomous partner. This new paradigm is reshaping industries, creating new opportunities and unforeseen risks.\n\nView Brief\n\nImage 11: The New AI Workforce\n\n### The New AI Workforce\n\nAgentic AI is no longer just a tool; it's becoming an autonomous colleague. This shift is reshaping roles in HR, customer service, and beyond.\n\nView Brief\n\nImage 12: Investing in the Agentic Layer\n\n### Investing in the Agentic Layer [...] Contributor\n\nImage 22: article image\n\nJun 28, 2026\n\n### Work, Skills, And AI: Human Resources Angles On The Agentic Future\n\nAI agents can automate routine HR work, but human leadership, mentoring, and adaptability remain essential for success.\n\nByJohn Werner,\n\nContributor\n\nImage 23: article image\n\nJun 26, 2026\n\n### The Learning System: How Agentic AI Can Compound Its Own Advantage\n\nMost AI tra..."
+          },
+          {
+            "title": "Agentic AI News — July 2026 Launches, Models & Research",
+            "text": "Agentic.ai\n\nList Your Tool\n\nUpdated daily from Agentic News monitoring agents\n\n# Agentic AI News\n\nThe latest agentic AI launches, model releases, and research — curated weekly. Already in the directory? Click through to the full listing and agenticness score.\n\n## Week of Jun 29–Jul 5(56 stories)\n\n LaunchJul 4, 2026·Barchart.com\n\n  ### TIN Comply Launches AI Connections: AP, Tax, and Compliance Teams Can Now Run TIN Matching, Sanctions Screening, and EIN Lookups Through Claude, ChatGPT, and Other AI Assistants\n\n  TIN Comply\n LaunchJul 4, 2026·coininsider.com\n\n  ### Microsoft Launches $2.5 Billion Frontier Company for AI Deployment\n\n  Microsoft's $2.5 billion Frontier Company launched Thursday with 6,000 experts embedded inside customers, but one detail matters most. [...] Allegrow launched its Email Verification API on June 28, 2026, from New York, giving developers a real-time way to validate email addresses. The tool is built to plug into CRMs, sales engagement platforms, and data infrastructure systems. For those tracking AI for sales and marketing, this points to a new push to clean lead data before bad emails hurt outreach. The key question is whether it can catch errors only a..."
+          },
+          {
+            "title": "Agentic AI recent news | AI Business",
+            "text": "May 12, 2026\n\n|\n\n1 Min Read\n\nPicture of Scarlett Evans\n\nbyScarlett Evans,Contributing Writer\n\nImage of agentic infrastructure\n\nAgentic AI\n\nPrompt: AI Agents Are Becoming Operational Infrastructure\n\nPrompt: AI Agents Are Becoming Operational Infrastructure\n\nMay 8, 2026\n\n|\n\n3 Min Read\n\nPicture of Liz Hughes\n\nbyLiz Hughes,Contributing Writer\n\nGraphic showing agentic payment process\n\nAgentic AI\n\nAWS Launches Agentic AI Payment Capabilities\n\nAWS Launches Agentic AI Payment Capabilities\n\nMay 7, 2026\n\n|\n\n2 Min Read\n\nPicture of Scarlett Evans\n\nbyScarlett Evans,Contributing Writer\n\nAnthropic symbol\n\nAgentic AI\n\nAnthropic Finance Agents Pose Threat to Established Service Providers\n\nAnthropic Finance Agents Pose Threat to Established Service Providers\n\nMay 6, 2026\n\n|\n\n4 Min Read [...] Jun 16, 2026\n\n|\n\n2 Min Read\n\nPicture of Esther Shittu\n\nbyEsther Shittu,News Writer, AI Business\n\nCohere symbol\n\nAgentic AI\n\nCohere North Mini Code Gives AI Developers More Control\n\nCohere North Mini Code Gives AI Developers More Control\n\nJun 15, 2026\n\n|\n\n3 Min Read\n\nPicture of Esther Shittu\n\nbyEsther Shittu,News Writer, AI Business\n\nIllustration of stock indexes\n\nGenerative AI\n\nPrompt: Anthropic's IPO Filing Sig..."
+          },
+          {
+            "title": "Agentic AI: 4 reasons why it's the next big thing in AI research - IBM",
+            "text": "Agentic AI can be designed to search the web, called application programming interfaces (APIs) or query databases. Agents can fetch real-time information, retrieve updates or pull specific data points that are critical for decision-making. Agents can initiate and manage tasks such as data logging, real-time monitoring and trend analysis. They can proactively track and collect data streams from IoT devices, social media feeds or other systems, providing LLMs with fresh inputs for more informed decision-making and contextual responses. [...] Agentic AI can use feedback loops where it actively seeks out new data to refine its models or decision-making processes. This might involve periodically querying new sources, collecting user feedback or analyzing real-world outcomes to update and improve its understanding or strategies. This way, the LLM can achieve optimization over time from richer, continually evolving data.\n\n### 3. Autonomous\n\nWith the big brains of LLMs and the targeted capabilities of agents, agentic AI can operate independently and autonomously perform specific tasks without the need for constant human oversight. This enables continuous operation in environments where hum..."
+          },
+          {
+            "title": "agentic ai News & Articles - IEEE Spectrum",
+            "text": "Provides an introduction to LLM-based AI Agents\n\n18 May 2026\n\n1 min read\n\nA CGI image of a translucent padlock filled with 0s and 1s. One spot is broken, and the numbers are spraying out of that spot.\n\nAI Computing Guest Article Consumer Electronics\n\n## What Anthropic’s Mythos Means for the Future of Cybersecurity\n\nThe new reality rewards systems that can be tested and patched continuously\n\n23 Apr 2026\n\n3 min read\n\nA graphic design system plot of a RISC-V CPU core. It resembles a square grid covered in colorful vertical and horizontal scratches.\n\nSemiconductors AI News Computing\n\n## AI Agent Designs a RISC-V CPU Core From Scratch\n\nStartup Verkor.io’s agentic AI orchestrated the entire design process from a 219-word prompt\n\n22 Apr 2026\n\n4 min read [...] 22 Apr 2026\n\n4 min read\n\nIllustrated close-up side view of a snake waiting to strike someone's hand as they type on a laptop keyboard.\n\nAI News\n\n## An AI Agent Blackmailed a Developer. Now What?\n\nA real-world attack by an OpenClaw agent opens a new can of worms\n\n10 Mar 2026\n\n4 min read\n\n## Robotics News in your inbox, weekly\n\nSubscribe to IEEE Spectrum’s newsletter on robots, drones, and automation.\n\nSubscribe\n\nPlease enter a valid e..."
+          }
+        ],
+        "error": null
+      },
+      "fusionai_answer": {
+        "answer_text": "Agentic AI updates include the integration of personal finance capabilities by AI platforms like ChatGPT and Perplexity, allowing users to connect financial accounts via Plaid for spending analysis and financial management [Evidence 1]. Additionally, there's a focus on Human-understandable Chain of Thought (CoT) for AI safety and transparency [Evidence 5].",
+        "topic_text": "ChatGPT",
+        "similar_topic_texts": [
+          "AI",
+          "Perplexity",
+          "Plaid",
+          "account information",
+          "financial accounts",
+          "financial management",
+          "spending analysis",
+          "transaction activity"
+        ],
+        "evidence_texts": [
+          {
+            "query": "agentic ai updates",
+            "summary": "AI platforms, including ChatGPT and Perplexity, are integrating personal finance capabilities. Users can now connect financial accounts like checking, credit cards, and loans via Plaid to these platforms. This enables them to receive responses and insights grounded in their transaction activity and account information for spending analysis and financial management.",
+            "key_points": [
+              "ChatGPT has launched personal finance capabilities allowing users to connect financial accounts via Plaid.",
+              "Perplexity expanded its partnership with Plaid to enable users to link various financial accounts for spending analysis.",
+              "These developments facilitate AI-driven financial management and insights based on real transaction data."
+            ]
+          },
+          {
+            "query": "agentic ai recent advancements",
+            "summary": "Public education faces declining readiness and civic understanding, with 80% believing readiness has dropped. The text advocates for a new, pluralistic public system focused on democratic purpose, trust, civil rights, and preparing youth for work and life, moving beyond past reforms. It critiques the 'reform era' for failing to improve achievement, evidenced by recent national test scores showing the worst reading scores since 1992 and lowest math scores since 2005.",
+            "key_points": [
+              "80% believe workforce readiness has declined, and civic learning is poor among lower-performing students.",
+              "A new era of public education should be a pluralistic system focused on democratic purpose, trust, civil rights, and preparing youth for work and life.",
+              "The 'reform era' failed to deliver on promises of higher achievement.",
+              "Recent national results show twelfth-graders posted the worst reading scores since 1992 and lowest math scores since 2005."
+            ]
+          },
+          {
+            "query": "latest developments in agentic artificial intelligence",
+            "summary": "AI platforms, including ChatGPT and Perplexity, are integrating personal finance capabilities. Users can now connect financial accounts like checking, credit cards, and loans via Plaid to these platforms. This enables them to receive responses and insights grounded in their transaction activity and account information for spending analysis and financial management.",
+            "key_points": [
+              "ChatGPT has launched personal finance capabilities allowing users to connect financial accounts via Plaid.",
+              "Perplexity expanded its partnership with Plaid to enable users to link various financial accounts for spending analysis.",
+              "These developments facilitate AI-driven financial management and insights based on real transaction data."
+            ]
+          },
+          {
+            "query": "agentic ai technology news",
+            "summary": "The Qianhai Shenzhen-Hong Kong Youth Innovation and Entrepreneur Hub (Ehub) made its debut at Viva Technology (VivaTech) Paris 2026, marking its first participation in Europe's leading startup event. This debut underscores Ehub's growing role as a gateway connecting the Guangdong-Hong Kong-Macao Greater Bay Area (GBA) with the global tech ecosystem, expanding opportunities for startups to build international partnerships and access overseas markets.",
+            "key_points": [
+              "Ehub debuted at Viva Technology Paris 2026.",
+              "This was Ehub's first participation in Europe's leading startup event.",
+              "Ehub acts as a gateway connecting the GBA with the global tech ecosystem.",
+              "Ehub aims to expand opportunities for startups in international partnerships and market access."
+            ]
+          },
+          {
+            "query": "current trends in agentic ai research",
+            "summary": "Human-understandable Chain of Thought (CoT) is critical for current autoregressive AI systems. CoT transparency helps detect model misbehavior like reward hacking and prompt injections, significantly improves monitorability, and allows for understanding reasoning processes. This transparency is especially vital for AI safety, enabling other models to identify signs of misuse and misalignment.",
+            "key_points": [
+              "Frontier AI systems are autoregressive reasoning models that reason via Chain of Thought (CoT).",
+              "Human-understandable CoT is crucial for detecting model misbehavior such as reward hacking and prompt injections.",
+              "Monitors with CoT access strongly outperform those without in monitorability evaluations.",
+              "CoT transparency is vital for AI safety, enabling other models to detect misuse and misalignment."
+            ]
+          }
+        ]
+      },
+      "judge": {
+        "tavily_scores": {
+          "correctness": 8,
+          "completeness": 7,
+          "context_coverage": 8,
+          "reasoning_depth": 6,
+          "actionability": 5,
+          "information_gain": 6,
+          "citation_coverage": 9,
+          "hallucination_risk": 4
+        },
+        "fusionai_scores": {
+          "correctness": 9,
+          "completeness": 8,
+          "context_coverage": 7,
+          "reasoning_depth": 7,
+          "actionability": 8,
+          "information_gain": 8,
+          "citation_coverage": 8,
+          "hallucination_risk": 3
+        },
+        "overall_winner": "fusionai",
+        "rationale": "FusionAI's answer demonstrates higher correctness, completeness, and actionability, with a lower hallucination risk. While Tavily's answer provides broad context coverage and high citation coverage, FusionAI's answer offers more specific and actionable information, making it more useful for the user."
+      },
+      "metric_winners": {
+        "correctness": "fusionai",
+        "completeness": "fusionai",
+        "context_coverage": "tavily",
+        "reasoning_depth": "fusionai",
+        "actionability": "fusionai",
+        "information_gain": "fusionai",
+        "citation_coverage": "tavily",
+        "hallucination_risk": "fusionai"
+      }
+    },
+    {
+      "evaluation_id": "20260726_075640_ef73e8f3",
+      "created_at": "2026-07-26T07:56:40.958735",
+      "question": "tell me about agentic ai",
+      "tavily_answer": {
+        "answer_text": "Agentic AI refers to autonomous systems using agents to perform tasks independently, adapting and learning from their environment. It enhances efficiency and personalization in business processes. Agentic AI sets goals and executes tasks with minimal human intervention.",
+        "top_result_text": "## What is Agentic AI?\n\nAgentic AI refers to a system architecture that employs autonomous software agents to carry out distinct tasks within a coordinated workflow, a concept advanced by AI researcher Andrew Ng. Each agent is purpose-built for a specific role, such as retrieving data, executing models, applying logic, or interacting with external tools, working in sequence or in parallel as the situation demands.\n\nThe core structure relies on an orchestration layer that directs task flow and manages communication between agents. When new data enters the system, agents don’t restart from scratch; they revise earlier steps based on updated inputs. This makes the architecture adaptable and state-aware. [...] ## How Agentic AI Supports Enterprise Operations\n\nAgentic AI systems represent a major shift in how enterprises can automate and optimize complex workflows. Unlike traditional automation, which follows rigid, rule-based scripts, agentic systems can plan, reason, and adapt as conditions change.\n\nThese systems typically include multiple agents — each responsible for a focused task, such as retrieving data, running analyses, or summarizing findings — all coordinated through an orche...",
+        "source_title": "Agentic AI Explained: A Guide for the Enterprise",
+        "source_url": "https://c3.ai/blog/agentic-ai-explained",
+        "supporting_texts": [
+          {
+            "title": "Agentic AI Explained: A Guide for the Enterprise",
+            "text": "## What is Agentic AI?\n\nAgentic AI refers to a system architecture that employs autonomous software agents to carry out distinct tasks within a coordinated workflow, a concept advanced by AI researcher Andrew Ng. Each agent is purpose-built for a specific role, such as retrieving data, executing models, applying logic, or interacting with external tools, working in sequence or in parallel as the situation demands.\n\nThe core structure relies on an orchestration layer that directs task flow and manages communication between agents. When new data enters the system, agents don’t restart from scratch; they revise earlier steps based on updated inputs. This makes the architecture adaptable and state-aware. [...] ## How Agentic AI Supports Enterprise Operations\n\nAgentic AI systems represent a major shift in how enterprises can automate and optimize complex workflows. Unlike traditional automation, which follows rigid, rule-based scripts, agentic systems can plan, reason, and adapt as conditions change.\n\nThese systems typically include multiple agents — each responsible for a focused task, such as retrieving data, running analyses, or summarizing findings — all coordinated through an orche..."
+          },
+          {
+            "title": "What is Agentic AI?",
+            "text": "## What is Agentic AI?\n\nAgentic AI is an autonomous AI system that can act independently to achieve pre-determined goals. Traditional software follows pre-defined rules, and traditional artificial intelligence also requires prompting and step-by-step guidance. However, agentic AI is proactive and can perform complex tasks without constant human oversight. \"Agentic\" indicates agency — the ability of these systems to act independently, but in a goal-driven manner.\n\nAI agents can communicate with each other and other software systems to automate existing business processes. But beyond static automation, they make independent contextual decisions. They learn from their environment and adapt to changing conditions, enabling them to perform sophisticated workflows with accuracy. [...] ### Increased efficiency\n\nAgentic artificial intelligence enables businesses to simplify the complexity of various challenging or specialized tasks through automation. Instead of relying on human-driven manual practices, using agentic AI can automate tedious processes, freeing up time for your employees. Your employees can use the extra time that agentic AI saves them on more demanding tasks, such as proble..."
+          },
+          {
+            "title": "What is Agentic AI?",
+            "text": "## Agentic AI, defined\n\nAgentic AI is the technology that powers AI agents so they can operate autonomously without constant human oversight. It functions as a comprehensive platform that facilitates seamless interaction between AI agents and humans, fostering a collaborative environment. This platform includes a suite of tools and services to help AI agents learn, adapt, and collaborate to efficiently handle complex, dynamic tasks. It is the next frontier of AI known for its ability to operate independently by setting goals, reasoning, making decisions, and adapting to dynamic situations. [...] Share the story\n\n# What is Agentic AI?\n\nAgentic AI is an intelligent system that can act autonomously, reason through multi-step problems, and adapt its actions in real-time to achieve a specific business goal with minimal human supervision.\n\nShare the story\n\nBy Silvio Savarese, Executive Vice President and Chief Scientist, Salesforce AI Research [...] ## Agentic AI and Data Platforms: A Fundamental Partnership\n\nTo move beyond the conceptual \"what\" and into the practical \"how,\" businesses must understand that an AI agent is only as good as the data it can access and the platform it runs on...."
+          },
+          {
+            "title": "What is agentic AI? Definition and differentiators",
+            "text": "# What is agentic AI?\n\nAgentic AI is an advanced form of artificial intelligence focused on autonomous decision-making and action. Unlike traditional AI, which primarily responds to commands or analyzes data, agentic AI can set goals, plan, and execute tasks with minimal human intervention. This emerging technology has the potential to revolutionize various industries by automating complex processes and optimizing workflows.\n\nVideo about agentic AI for developers\n\n## Key concepts of agentic AI\n\nAgentic AI systems are designed to operate with a higher degree of autonomy. It works by using AI agents, which are essentially autonomous entities designed to perform specific tasks. At its core, this technology is built on several key components: [...] Generative AI, as its name suggests, is focused on the creation of new content, such as text, images, code, or music, based on input prompts. The LLM is at the heart of generative AI, and the value is generated by what the model can do and simple extensions of the LLM's capabilities. For example, you can generate or edit content, and even perform simple function calling and chain together various options.\n\nAgentic AI is a subset of generativ..."
+          },
+          {
+            "title": "AI Insights: Agentic AI (HTML)",
+            "text": "This publication is available at \n\n## What is agentic AI?\n\nArtificial intelligence (AI) agents are small, specialised pieces of software that can make decisions and operate cooperatively or independently to achieve system objectives. Agentic AI refers to AI systems composed of agents that can behave and interact autonomously in order to achieve their objectives.\n\nRecent advances in agentic artificial intelligence (AI) have driven remarkable growth in both its popularity and capabilities. This progress is due to the integration of large language models (LLMs) with agent-based systems. By providing reasoning and discovery abilities, LLMs enhance an agent’s autonomy. This enables the agent to determine the most appropriate course of action to meet system objectives. [...] ## Conclusion\n\nAgentic AI represents a significant evolution in how we build software systems, offering new levels of flexibility and autonomy. However, it is important to recognise that these systems are still information systems like the vast majority of our current software systems estate.\n\nMost of what makes a successful agentic AI system has little to do with AI directly. Instead, fundamental to it is testing, m..."
+          }
+        ],
+        "error": null
+      },
+      "fusionai_answer": {
+        "answer_text": "Agentic AI is not directly defined in the provided evidence, but [Evidence 4] and [Evidence 5] discuss the importance of Chain of Thought (CoT) transparency in autoregressive AI systems for detecting model misbehavior and ensuring AI safety. This suggests that agentic AI may relate to AI systems capable of autonomous decision-making and action, but the exact nature and applications of agentic AI are not clearly outlined in the retrieved evidence.",
+        "topic_text": "Chain of Thought (CoT)",
+        "similar_topic_texts": [
+          "AI safety",
+          "AI systems",
+          "Autoregressive reasoning models",
+          "Misalignment",
+          "Misuse",
+          "Monitorability",
+          "Prompt injections",
+          "Reward hacking"
+        ],
+        "evidence_texts": [
+          {
+            "query": "tell me about agentic ai",
+            "summary": "Lithuania actively influences NATO discussions on defense spending and preparedness, signaling a redistribution of influence within the Alliance. Globally, geoeconomic competition is intensifying, with India's growing tech ecosystem and US innovation policy highlighting technology's strategic importance. Australia's focus on AI governance underscores the need for ethical oversight in emerging technologies, making technological leadership central to strategic rivalry.",
+            "key_points": [
+              "Lithuania plays an active role in NATO, advocating for increased defense spending and collective preparedness.",
+              "Developments suggest a redistribution of influence within NATO rather than a weakening of the Alliance.",
+              "India is an increasingly important geoeconomic actor due to its expanding technology ecosystem and foreign investment.",
+              "The United States emphasizes innovation as a strategic instrument of national power."
+            ]
+          },
+          {
+            "query": "what are the applications of agentic ai in robotics",
+            "summary": "The Artificial Intelligence (AI) market is rapidly becoming a \"race to the bottom\" for users, who can easily switch between various AI applications like ChatGPT, Gemini, Perplexity, and Claude. This trend suggests that AI models are on a path to becoming commoditized.",
+            "key_points": [
+              "The AI market is characterized as a \"race to the bottom\" for users.",
+              "Users can easily switch between different AI applications.",
+              "AI models are expected to become commodities.",
+              "Examples of AI applications include ChatGPT, Gemini, Perplexity, and Claude."
+            ]
+          },
+          {
+            "query": "how does agentic ai differ from traditional artificial intelligence",
+            "summary": "Artificial intelligence has fundamentally transformed higher education, leading to widespread student misuse and exposing the unpreparedness of universities and faculty. Even elite liberal-arts colleges are grappling with AI's potential for cheating. This technological shift has illuminated pre-existing systemic issues within higher education, including bureaucratic structures, transactional student approaches, overburdened faculty, and a culture overly focused on achievement, revealing a crisis rooted in accumulated compromises.",
+            "key_points": [
+              "AI has significantly impacted college students and high school education.",
+              "Early AI adoption in colleges resulted in student misuse and institutional unpreparedness.",
+              "Elite liberal-arts colleges like Amherst and Vassar are struggling with AI's cheating capabilities.",
+              "AI has exposed long-standing systemic problems in higher education, such as bureaucracy and faculty overload."
+            ]
+          },
+          {
+            "query": "what are the potential risks and benefits of developing agentic ai systems",
+            "summary": "Human-understandable Chain of Thought (CoT) is critical for current autoregressive AI systems. CoT transparency helps detect model misbehavior like reward hacking and prompt injections, significantly improves monitorability, and allows for understanding reasoning processes. This transparency is especially vital for AI safety, enabling other models to identify signs of misuse and misalignment.",
+            "key_points": [
+              "Frontier AI systems are autoregressive reasoning models that reason via Chain of Thought (CoT).",
+              "Human-understandable CoT is crucial for detecting model misbehavior such as reward hacking and prompt injections.",
+              "Monitors with CoT access strongly outperform those without in monitorability evaluations.",
+              "CoT transparency is vital for AI safety, enabling other models to detect misuse and misalignment."
+            ]
+          },
+          {
+            "query": "can agentic ai be used for autonomous decision making in complex environments",
+            "summary": "Human-understandable Chain of Thought (CoT) is critical for current autoregressive AI systems. CoT transparency helps detect model misbehavior like reward hacking and prompt injections, significantly improves monitorability, and allows for understanding reasoning processes. This transparency is especially vital for AI safety, enabling other models to identify signs of misuse and misalignment.",
+            "key_points": [
+              "Frontier AI systems are autoregressive reasoning models that reason via Chain of Thought (CoT).",
+              "Human-understandable CoT is crucial for detecting model misbehavior such as reward hacking and prompt injections.",
+              "Monitors with CoT access strongly outperform those without in monitorability evaluations.",
+              "CoT transparency is vital for AI safety, enabling other models to detect misuse and misalignment."
+            ]
+          }
+        ]
+      },
+      "judge": {
+        "tavily_scores": {
+          "correctness": 8,
+          "completeness": 9,
+          "context_coverage": 8,
+          "reasoning_depth": 7,
+          "actionability": 8,
+          "information_gain": 8,
+          "citation_coverage": 9,
+          "hallucination_risk": 2
+        },
+        "fusionai_scores": {
+          "correctness": 2,
+          "completeness": 2,
+          "context_coverage": 1,
+          "reasoning_depth": 1,
+          "actionability": 1,
+          "information_gain": 1,
+          "citation_coverage": 1,
+          "hallucination_risk": 8
+        },
+        "overall_winner": "tavily",
+        "rationale": "Tavily's answer demonstrates a clear understanding of agentic AI, providing detailed explanations and examples. The evidence provided is relevant and well-integrated, showcasing a strong grasp of the topic. In contrast, FusionAI's answer lacks clarity and relevance, failing to provide a direct definition or explanation of agentic AI. The evidence provided is largely unrelated to the topic, resulting in a low score for correctness, completeness, and context coverage."
+      },
+      "metric_winners": {
+        "correctness": "tavily",
+        "completeness": "tavily",
+        "context_coverage": "tavily",
+        "reasoning_depth": "tavily",
+        "actionability": "tavily",
+        "information_gain": "tavily",
+        "citation_coverage": "tavily",
+        "hallucination_risk": "tavily"
+      }
+    },
+    {
+      "evaluation_id": "20260726_100822_3ca42bd9",
+      "created_at": "2026-07-26T10:08:22.280600",
+      "question": "tell me about agentic ai ",
+      "tavily_answer": {
+        "answer_text": "Agentic AI refers to autonomous systems that can independently achieve goals, using AI agents to perform tasks with minimal human intervention. It combines large language models with agent-based systems for enhanced decision-making. Agentic AI improves efficiency and personalization in various applications.",
+        "top_result_text": "## What is Agentic AI?\n\nAgentic AI is an autonomous AI system that can act independently to achieve pre-determined goals. Traditional software follows pre-defined rules, and traditional artificial intelligence also requires prompting and step-by-step guidance. However, agentic AI is proactive and can perform complex tasks without constant human oversight. \"Agentic\" indicates agency — the ability of these systems to act independently, but in a goal-driven manner.\n\nAI agents can communicate with each other and other software systems to automate existing business processes. But beyond static automation, they make independent contextual decisions. They learn from their environment and adapt to changing conditions, enabling them to perform sophisticated workflows with accuracy. [...] ### Increased efficiency\n\nAgentic artificial intelligence enables businesses to simplify the complexity of various challenging or specialized tasks through automation. Instead of relying on human-driven manual practices, using agentic AI can automate tedious processes, freeing up time for your employees. Your employees can use the extra time that agentic AI saves them on more demanding tasks, such as proble...",
+        "source_title": "What is Agentic AI?",
+        "source_url": "https://aws.amazon.com/what-is/agentic-ai",
+        "supporting_texts": [
+          {
+            "title": "What is Agentic AI?",
+            "text": "## What is Agentic AI?\n\nAgentic AI is an autonomous AI system that can act independently to achieve pre-determined goals. Traditional software follows pre-defined rules, and traditional artificial intelligence also requires prompting and step-by-step guidance. However, agentic AI is proactive and can perform complex tasks without constant human oversight. \"Agentic\" indicates agency — the ability of these systems to act independently, but in a goal-driven manner.\n\nAI agents can communicate with each other and other software systems to automate existing business processes. But beyond static automation, they make independent contextual decisions. They learn from their environment and adapt to changing conditions, enabling them to perform sophisticated workflows with accuracy. [...] ### Increased efficiency\n\nAgentic artificial intelligence enables businesses to simplify the complexity of various challenging or specialized tasks through automation. Instead of relying on human-driven manual practices, using agentic AI can automate tedious processes, freeing up time for your employees. Your employees can use the extra time that agentic AI saves them on more demanding tasks, such as proble..."
+          },
+          {
+            "title": "Agentic AI Explained: A Guide for the Enterprise | C3 AI",
+            "text": "## What is Agentic AI?\n\nAgentic AI refers to a system architecture that employs autonomous software agents to carry out distinct tasks within a coordinated workflow, a concept advanced by AI researcher Andrew Ng. Each agent is purpose-built for a specific role, such as retrieving data, executing models, applying logic, or interacting with external tools, working in sequence or in parallel as the situation demands.\n\nThe core structure relies on an orchestration layer that directs task flow and manages communication between agents. When new data enters the system, agents don’t restart from scratch; they revise earlier steps based on updated inputs. This makes the architecture adaptable and state-aware. [...] ## How Agentic AI Supports Enterprise Operations\n\nAgentic AI systems represent a major shift in how enterprises can automate and optimize complex workflows. Unlike traditional automation, which follows rigid, rule-based scripts, agentic systems can plan, reason, and adapt as conditions change.\n\nThese systems typically include multiple agents — each responsible for a focused task, such as retrieving data, running analyses, or summarizing findings — all coordinated through an orche..."
+          },
+          {
+            "title": "What is agentic AI? Definition and differentiators",
+            "text": "# What is agentic AI?\n\nAgentic AI is an advanced form of artificial intelligence focused on autonomous decision-making and action. Unlike traditional AI, which primarily responds to commands or analyzes data, agentic AI can set goals, plan, and execute tasks with minimal human intervention. This emerging technology has the potential to revolutionize various industries by automating complex processes and optimizing workflows.\n\nVideo about agentic AI for developers\n\n## Key concepts of agentic AI\n\nAgentic AI systems are designed to operate with a higher degree of autonomy. It works by using AI agents, which are essentially autonomous entities designed to perform specific tasks. At its core, this technology is built on several key components: [...] Generative AI, as its name suggests, is focused on the creation of new content, such as text, images, code, or music, based on input prompts. The LLM is at the heart of generative AI, and the value is generated by what the model can do and simple extensions of the LLM's capabilities. For example, you can generate or edit content, and even perform simple function calling and chain together various options.\n\nAgentic AI is a subset of generativ..."
+          },
+          {
+            "title": "Agentic AI vs. Generative AI | IBM",
+            "text": "Agentic AI describes AI systems that are designed to autonomously make decisions and act, with the ability to pursue complex goals with limited supervision. It brings together the flexible characteristics of large language models (LLMs) with the accuracy of traditional programming. This type of AI acts autonomously to achieve a goal by using technologies like natural language processing (NLPs), machine learning, reinforcement learning and knowledge representation. It’s a proactive AI-powered approach, whereas gen AI is reactive to the users input. Agentic AI can adapt to different or changing situations and has “agency” to make decisions based on context. It is used in various applications that can benefit from independent operation, such as robotics, complex analysis, and virtual [...] ### Agentic AI and AI agents\n\nIt’s important to differentiate between agentic AI and AI agents. Essentially, agentic AI is the framework; AI agents are the building blocks within the framework.\n\nAgentic AI is the broader concept of solving issues with limited supervision, whereas an AI agent is a specific component within that system that is designed to handle tasks and processes with a degree of au..."
+          },
+          {
+            "title": "AI Insights: Agentic AI (HTML)",
+            "text": "This publication is available at \n\n## What is agentic AI?\n\nArtificial intelligence (AI) agents are small, specialised pieces of software that can make decisions and operate cooperatively or independently to achieve system objectives. Agentic AI refers to AI systems composed of agents that can behave and interact autonomously in order to achieve their objectives.\n\nRecent advances in agentic artificial intelligence (AI) have driven remarkable growth in both its popularity and capabilities. This progress is due to the integration of large language models (LLMs) with agent-based systems. By providing reasoning and discovery abilities, LLMs enhance an agent’s autonomy. This enables the agent to determine the most appropriate course of action to meet system objectives. [...] ## Conclusion\n\nAgentic AI represents a significant evolution in how we build software systems, offering new levels of flexibility and autonomy. However, it is important to recognise that these systems are still information systems like the vast majority of our current software systems estate.\n\nMost of what makes a successful agentic AI system has little to do with AI directly. Instead, fundamental to it is testing, m..."
+          }
+        ],
+        "error": null
+      },
+      "fusionai_answer": {
+        "answer_text": "Agentic AI is not directly defined in the provided evidence, but it can be inferred that AI in general has significant impacts on various sectors, including education [Evidence 3] and geopolitics [Evidence 1]. However, the specific characteristics, applications, and implications of agentic AI are not clearly outlined in the retrieved evidence.",
+        "topic_text": "AI",
+        "similar_topic_texts": [
+          "Amherst",
+          "College Students",
+          "Faculty",
+          "High School",
+          "Higher Education",
+          "Lila Shroff",
+          "Universities",
+          "Vassar"
+        ],
+        "evidence_texts": [
+          {
+            "query": "tell me about agentic ai",
+            "summary": "Lithuania actively influences NATO discussions on defense spending and preparedness, signaling a redistribution of influence within the Alliance. Globally, geoeconomic competition is intensifying, with India's growing tech ecosystem and US innovation policy highlighting technology's strategic importance. Australia's focus on AI governance underscores the need for ethical oversight in emerging technologies, making technological leadership central to strategic rivalry.",
+            "key_points": [
+              "Lithuania plays an active role in NATO, advocating for increased defense spending and collective preparedness.",
+              "Developments suggest a redistribution of influence within NATO rather than a weakening of the Alliance.",
+              "India is an increasingly important geoeconomic actor due to its expanding technology ecosystem and foreign investment.",
+              "The United States emphasizes innovation as a strategic instrument of national power."
+            ]
+          },
+          {
+            "query": "what are the applications of agentic ai in robotics",
+            "summary": "The Artificial Intelligence (AI) market is rapidly becoming a \"race to the bottom\" for users, who can easily switch between various AI applications like ChatGPT, Gemini, Perplexity, and Claude. This trend suggests that AI models are on a path to becoming commoditized.",
+            "key_points": [
+              "The AI market is characterized as a \"race to the bottom\" for users.",
+              "Users can easily switch between different AI applications.",
+              "AI models are expected to become commodities.",
+              "Examples of AI applications include ChatGPT, Gemini, Perplexity, and Claude."
+            ]
+          },
+          {
+            "query": "how does agentic ai differ from traditional artificial intelligence",
+            "summary": "Artificial intelligence has fundamentally transformed higher education, leading to widespread student misuse and exposing the unpreparedness of universities and faculty. Even elite liberal-arts colleges are grappling with AI's potential for cheating. This technological shift has illuminated pre-existing systemic issues within higher education, including bureaucratic structures, transactional student approaches, overburdened faculty, and a culture overly focused on achievement, revealing a crisis rooted in accumulated compromises.",
+            "key_points": [
+              "AI has significantly impacted college students and high school education.",
+              "Early AI adoption in colleges resulted in student misuse and institutional unpreparedness.",
+              "Elite liberal-arts colleges like Amherst and Vassar are struggling with AI's cheating capabilities.",
+              "AI has exposed long-standing systemic problems in higher education, such as bureaucracy and faculty overload."
+            ]
+          },
+          {
+            "query": "what are the potential risks and benefits of developing agentic ai",
+            "summary": "Artificial intelligence has fundamentally transformed higher education, leading to widespread student misuse and exposing the unpreparedness of universities and faculty. Even elite liberal-arts colleges are grappling with AI's potential for cheating. This technological shift has illuminated pre-existing systemic issues within higher education, including bureaucratic structures, transactional student approaches, overburdened faculty, and a culture overly focused on achievement, revealing a crisis rooted in accumulated compromises.",
+            "key_points": [
+              "AI has significantly impacted college students and high school education.",
+              "Early AI adoption in colleges resulted in student misuse and institutional unpreparedness.",
+              "Elite liberal-arts colleges like Amherst and Vassar are struggling with AI's cheating capabilities.",
+              "AI has exposed long-standing systemic problems in higher education, such as bureaucracy and faculty overload."
+            ]
+          },
+          {
+            "query": "can agentic ai be used for autonomous decision making in complex systems",
+            "summary": "Human-understandable Chain of Thought (CoT) is critical for current autoregressive AI systems. CoT transparency helps detect model misbehavior like reward hacking and prompt injections, significantly improves monitorability, and allows for understanding reasoning processes. This transparency is especially vital for AI safety, enabling other models to identify signs of misuse and misalignment.",
+            "key_points": [
+              "Frontier AI systems are autoregressive reasoning models that reason via Chain of Thought (CoT).",
+              "Human-understandable CoT is crucial for detecting model misbehavior such as reward hacking and prompt injections.",
+              "Monitors with CoT access strongly outperform those without in monitorability evaluations.",
+              "CoT transparency is vital for AI safety, enabling other models to detect misuse and misalignment."
+            ]
+          }
+        ]
+      },
+      "judge": {
+        "tavily_scores": {
+          "correctness": 8,
+          "completeness": 9,
+          "context_coverage": 8,
+          "reasoning_depth": 7,
+          "actionability": 6,
+          "information_gain": 8,
+          "citation_coverage": 9,
+          "hallucination_risk": 2
+        },
+        "fusionai_scores": {
+          "correctness": 2,
+          "completeness": 2,
+          "context_coverage": 1,
+          "reasoning_depth": 1,
+          "actionability": 1,
+          "information_gain": 1,
+          "citation_coverage": 1,
+          "hallucination_risk": 8
+        },
+        "overall_winner": "tavily",
+        "rationale": "Tavily's answer demonstrates a clear understanding of agentic AI, providing detailed explanations and examples from various sources. In contrast, FusionAI's answer lacks direct relevance to agentic AI, instead discussing general AI topics and failing to provide meaningful insights or evidence related to the query."
+      },
+      "metric_winners": {
+        "correctness": "tavily",
+        "completeness": "tavily",
+        "context_coverage": "tavily",
+        "reasoning_depth": "tavily",
+        "actionability": "tavily",
+        "information_gain": "tavily",
+        "citation_coverage": "tavily",
+        "hallucination_risk": "tavily"
+      }
+    },
+    {
+      "evaluation_id": "20260726_103230_849e45b4",
+      "created_at": "2026-07-26T10:32:30.632058",
+      "question": "difference between generative ai and agentic ai",
+      "tavily_answer": {
+        "answer_text": "Generative AI creates specific content from prompts; agentic AI autonomously manages complex workflows and decisions. Agentic AI is proactive, while generative AI is reactive.",
+        "top_result_text": "## Core differences between GenAI and agentic AI\n\nGenerative AI excels at producing specific content based on direct, specific, step-by-step prompts. Agentic AI, on the other hand, excels with an initial set of instructions to autonomously manage multistep processes to achieve a larger objective with less human intervention. Agentic AI makes decisions and takes action to keep a process going, while GenAI reacts to input and creates output.  \n   \n Simply stated, agentic AI specializes in workflow automation and independent problem-solving, while GenAI’s sweet spot is content creation. [...] ## Preparing for the future of AI\n\nThe differences between generative AI and agentic AI represent fundamentally different approaches to how AI can serve organizations, and the most powerful applications use them in conjunction with the other tools and initiatives. While many businesses recognize that AI will be central to their future operations, there remains a significant gap between acknowledging its importance and implementing effective AI strategies with clear training programs and return on investment metrics. This implementation gap creates substantial risk in today's rapidly evolving tech...",
+        "source_title": "Agentic AI vs. generative AI: The core differences | Thomson Reuters",
+        "source_url": "https://www.thomsonreuters.com/en/insights/articles/agentic-ai-vs-generative-ai-the-core-differences",
+        "supporting_texts": [
+          {
+            "title": "Agentic AI vs. generative AI: The core differences | Thomson Reuters",
+            "text": "## Core differences between GenAI and agentic AI\n\nGenerative AI excels at producing specific content based on direct, specific, step-by-step prompts. Agentic AI, on the other hand, excels with an initial set of instructions to autonomously manage multistep processes to achieve a larger objective with less human intervention. Agentic AI makes decisions and takes action to keep a process going, while GenAI reacts to input and creates output.  \n   \n Simply stated, agentic AI specializes in workflow automation and independent problem-solving, while GenAI’s sweet spot is content creation. [...] ## Preparing for the future of AI\n\nThe differences between generative AI and agentic AI represent fundamentally different approaches to how AI can serve organizations, and the most powerful applications use them in conjunction with the other tools and initiatives. While many businesses recognize that AI will be central to their future operations, there remains a significant gap between acknowledging its importance and implementing effective AI strategies with clear training programs and return on investment metrics. This implementation gap creates substantial risk in today's rapidly evolving tech..."
+          },
+          {
+            "title": "Agentic AI vs. Generative AI: 5 Key Differences",
+            "text": "Key differences:\n\n Workflow automation: Agentic AI is well-suited for automating workflows and simplifying processes, while generative AI is more focused on content creation..\n Autonomy: Agentic AI is designed to operate with more autonomy than generative AI, which typically relies on prompts.\n Goal orientation: Agentic AI is inherently goal-oriented, whereas generative AI is content-creation oriented.\n Decision making: Agentic AI makes decisions and takes actions, while generative AI primarily focuses on content generation.\n\n## Generative AI Is the Foundation for Agentic AI [...] ### 3. Autonomy\n\nGenerative AI has low autonomy. It is passive and depends entirely on the user to drive interactions. Every action it takes is triggered by a prompt, and it doesn’t retain context between different tasks unless explicitly designed to do so within a session. It doesn’t initiate tasks or modify its behavior unless retrained.\n\nAgentic AI exhibits high autonomy. Once given an overarching goal, it can independently plan and carry out actions, using feedback from its environment or outputs to inform the next steps. It uses its own decision-making process to stay on track and complete objectives..."
+          },
+          {
+            "title": "Agentic AI vs Generative AI: Key Differences Explained | Salesforce",
+            "text": "## FAQs generative AI vs. agentic AI\n\n### What is the main difference between generative AI and agentic AI?\n\nThe main difference is their core function and behavior. Generative AI is a reactive content creator that produces a single output in response to a prompt. Agentic AI is a proactive system that can independently plan and execute a series of steps to achieve a multi-step objective.\n\n### Can an AI agent use a large language model (LLM)?\n\nYes, absolutely. A large language model (LLM) is a type of generative AI model that an AI agent can use as a tool within its broader, multi-step workflow. For example, an agent might use an LLM to generate a personalized email or summarize a document as part of a larger task.\n\n### How is generative AI used within an agentic AI system? [...] Generative AI is a master of content creation, acting as a reactive partner that crafts text, images, and code. In contrast, Agentic AI is an autonomous, proactive system designed to execute complex, multi-step tasks. The main thing to know is this: Generative AI is reactive and agentic AI is proactive. Understanding these two types of AI is key to figuring out how they can help your business.\n\n## What is G..."
+          },
+          {
+            "title": "Agentic AI vs Generative AI: Detailed Breakdown",
+            "text": "Neither paradigm is inherently superior; each serves different purposes optimally. Generative AI excels at creative tasks requiring human judgment: content creation, brainstorming, analysis, and communication. It's ideal when flexibility, creativity, and human oversight are paramount. Agentic AI dominates in goal-oriented scenarios requiring autonomous operation: process automation, continuous monitoring, and complex orchestration. Most organizations benefit from both paradigms. Use generative AI to enhance human creativity and productivity. Deploy agentic AI to achieve scale through autonomous operation. Virtuoso QA demonstrates this synergy, using generative capabilities for test creation while leveraging agentic AI for execution and maintenance. [...] ## Agentic AI vs Generative AI - The Key Differences\n\nAgentic AI marks a paradigm shift and is now AI’s third wave. Unlike Generative AI, which creates content based on prompts, Agentic AI is autonomous. Where Generative AI is reactive, Agentic AI is proactive and can solve complex problems independently.\n\nHere is a table to break it down:\n\n### 1. Core Purpose\n\n#### Generative AI\n\nGenerative AI exists to create. Its fundamental pur..."
+          },
+          {
+            "title": "Agentic AI vs Generative AI: Comparing Autonomy, Workflows, ...",
+            "text": "by  Databricks Staff\n\n Generative AI produces content reactively in response to prompts; agentic AI autonomously manages multi-step workflows, maintains memory across steps, and calls external tools to complete tasks with minimal human intervention\n The two are most powerful in combination — generative AI handles bounded content generation at each step while agentic AI orchestrates sequencing, state, and execution across multiple systems\n Governance requirements diverge sharply: generative AI poses informational risk through hallucinations and bias, while agentic AI introduces operational risk through autonomous actions on live systems — requiring human-in-the-loop thresholds, provenance logging, and strict tool access controls from the outset [...] The boundary between agentic AI and generative AI is narrowing. Generative AI models are increasingly embedded within agentic AI frameworks as reasoning engines, while agentic AI handles orchestration and memory management that makes complex workflows possible. This convergence is becoming the dominant enterprise AI architecture.\n\nModel specialization is accelerating alongside convergence. Rather than relying on a single gen AI model, o..."
+          }
+        ],
+        "error": null
+      },
+      "fusionai_answer": {
+        "answer_text": "The difference between generative AI and agentic AI is not directly addressed in the provided evidence [Evidence 1]. However, generative AI, specifically Generative Recommendation (GR), is discussed in the context of industrial recommender systems, utilizing large language models (LLMs) to predict user interactions [Evidence 1]. Agentic AI is not explicitly mentioned, but the challenges in integrating complex user-behavioral and item-semantic contexts are highlighted as a key issue in GR models [Evidence 3, Evidence 4, Evidence 5].",
+        "topic_text": "Item tokenization",
+        "similar_topic_texts": [
+          "Content streaming",
+          "E-commerce",
+          "GR (Generative Recommendation)",
+          "Industrial recommender systems",
+          "Item-semantic contexts",
+          "Large language model (LLM)",
+          "Online advertising",
+          "User behavior"
+        ],
+        "evidence_texts": [
+          {
+            "query": "difference between generative ai and agentic ai",
+            "summary": "Generative Recommendation (GR) is an emerging paradigm in industrial recommender systems, utilizing large language models (LLMs) to predict user interactions from historical contexts for personalized experiences. Applied across e-commerce and content streaming, GR relies on item tokenization to bridge item semantics. A key challenge remains in simultaneously integrating complex user-behavioral and item-semantic contexts.",
+            "key_points": [
+              "GR is a promising paradigm in industrial recommender systems.",
+              "It leverages LLM architectures to predict user interactions based on historical contexts.",
+              "GR aims to provide personalized and responsive user experiences in various scenarios like e-commerce and content streaming.",
+              "Item tokenization is crucial for bridging item semantics with GR models."
+            ]
+          },
+          {
+            "query": "what are the key differences between generative and agentic ai models",
+            "summary": "Artificial intelligence has fundamentally transformed higher education, leading to widespread student misuse and exposing the unpreparedness of universities and faculty. Even elite liberal-arts colleges are grappling with AI's potential for cheating. This technological shift has illuminated pre-existing systemic issues within higher education, including bureaucratic structures, transactional student approaches, overburdened faculty, and a culture overly focused on achievement, revealing a crisis rooted in accumulated compromises.",
+            "key_points": [
+              "AI has significantly impacted college students and high school education.",
+              "Early AI adoption in colleges resulted in student misuse and institutional unpreparedness.",
+              "Elite liberal-arts colleges like Amherst and Vassar are struggling with AI's cheating capabilities.",
+              "AI has exposed long-standing systemic problems in higher education, such as bureaucracy and faculty overload."
+            ]
+          },
+          {
+            "query": "how do generative ai and agentic ai approaches impact decision making",
+            "summary": "This paper proposes a method for structuring and tokenizing distributed user interest context to improve generative recommendation systems. It tackles the challenge of effectively integrating complex user-behavioral and item-semantic contexts into recommendation models simultaneously, a known limitation of current item tokenization approaches. The authors, affiliated with the University of Illinois Urbana-Champaign and Meta MRS, note that existing graph-based integration methods often suffer from scalability issues or only utilize local graph information.",
+            "key_points": [
+              "Generative recommendation is an emerging paradigm for predicting user interactions.",
+              "Item tokenization is central to bridging item semantics and recommendation models.",
+              "Existing methods struggle to simultaneously integrate complex user-behavioral and item-semantic contexts.",
+              "Current graph-based integration methods face scalability issues or exploit only local graph information."
+            ]
+          },
+          {
+            "query": "comparison of generative ai and agentic ai in terms of autonomy and learning",
+            "summary": "Existing Generative Recommendation (GR) models struggle to simultaneously incorporate complex user-behavioral and item-semantic contexts. Graph integration methods, such as graph serialization and GNNs, face scalability issues or only utilize local graph information, hindering industry-scale application. Additionally, semantic tokenization methods rely on heuristic learning objectives and lack adequate supervision signals for their semantic tokens.",
+            "key_points": [
+              "GR models struggle with simultaneous integration of user-behavioral and item-semantic contexts.",
+              "Graph integration methods (e.g., graph serialization, GNNs) suffer from scalability or limited holistic graph utilization.",
+              "Graph serialization incurs expensive computation for LLMs due to long sequences.",
+              "GNNs typically perceive only small subgraphs, failing to exploit holistic graph information."
+            ]
+          },
+          {
+            "query": "evaluating the role of generative ai versus agentic ai in complex problem solving",
+            "summary": "Existing Generative Recommendation (GR) models struggle to simultaneously incorporate complex user-behavioral and item-semantic contexts. Graph integration methods, such as graph serialization and GNNs, face scalability issues or only utilize local graph information, hindering industry-scale application. Additionally, semantic tokenization methods rely on heuristic learning objectives and lack adequate supervision signals for their semantic tokens.",
+            "key_points": [
+              "GR models struggle with simultaneous integration of user-behavioral and item-semantic contexts.",
+              "Graph integration methods (e.g., graph serialization, GNNs) suffer from scalability or limited holistic graph utilization.",
+              "Graph serialization incurs expensive computation for LLMs due to long sequences.",
+              "GNNs typically perceive only small subgraphs, failing to exploit holistic graph information."
+            ]
+          }
+        ]
+      },
+      "judge": {
+        "tavily_scores": {
+          "correctness": 9,
+          "completeness": 9,
+          "context_coverage": 9,
+          "reasoning_depth": 8,
+          "actionability": 8,
+          "information_gain": 8,
+          "citation_coverage": 9,
+          "hallucination_risk": 2
+        },
+        "fusionai_scores": {
+          "correctness": 2,
+          "completeness": 2,
+          "context_coverage": 2,
+          "reasoning_depth": 2,
+          "actionability": 2,
+          "information_gain": 2,
+          "citation_coverage": 2,
+          "hallucination_risk": 6
+        },
+        "overall_winner": "tavily",
+        "rationale": "Tavily's answer directly addresses the question, providing clear and concise information about the differences between generative AI and agentic AI, supported by multiple sources. FusionAI's answer does not directly address the question and lacks relevant information, relying on unrelated topics and lacking clear evidence to support its claims."
+      },
+      "metric_winners": {
+        "correctness": "tavily",
+        "completeness": "tavily",
+        "context_coverage": "tavily",
+        "reasoning_depth": "tavily",
+        "actionability": "tavily",
+        "information_gain": "tavily",
+        "citation_coverage": "tavily",
+        "hallucination_risk": "tavily"
+      }
+    },
+    {
+      "evaluation_id": "20260726_144425_6c55f80f",
+      "created_at": "2026-07-26T14:44:25.383147",
+      "question": "tell me about trends in ai ",
+      "tavily_answer": {
+        "answer_text": "In 2026, AI trends include increased GenAI integration, enhanced workplace productivity, and amplified collaboration between humans and AI. AI is also transforming healthcare and scientific research.",
+        "top_result_text": "Share\n\nTwitter Facebook Linkedin  Copy Link\n\n \n\nCarolyn Geason-Beissel/MIT SMR | Getty Images\n\nSummary: \n\nMIT SMR columnists Thomas H. Davenport and Randy Bean see five AI trends to pay attention to in 2026: deflation of the AI bubble and subsequent hits to the economy; growth of the “factory” infrastructure for all-in AI adapters; greater focus on generative AI as an organizational resource rather than an individual one; continued progression toward value from agentic AI, despite the hype; and ongoing questions around who should manage data and AI. [...] Here are the emerging 2026 AI trends that leaders should understand and be prepared to act on.\n\n### 1. The AI bubble will deflate, and the economy will suffer.\n\nLast year, the elephant in the AI room was the rise of agentic AI (and it’s still clomping around; see below). This year, it’s the AI bubble that has monopolized discussion: Is there one? If so, when will it burst? Will the money rush out quickly or slowly? And what are the implications for the broader economy and the ongoing use of AI? [...] MIT Sloan Management Review Logo\n\nAI in Action\n\n# Five Trends in AI and Data Science for 2026\n\n## From the AI bubble to GenAI’s rise...",
+        "source_title": "Five Trends in AI and Data Science for 2026",
+        "source_url": "https://sloanreview.mit.edu/article/five-trends-in-ai-and-data-science-for-2026",
+        "supporting_texts": [
+          {
+            "title": "Five Trends in AI and Data Science for 2026",
+            "text": "Share\n\nTwitter Facebook Linkedin  Copy Link\n\n \n\nCarolyn Geason-Beissel/MIT SMR | Getty Images\n\nSummary: \n\nMIT SMR columnists Thomas H. Davenport and Randy Bean see five AI trends to pay attention to in 2026: deflation of the AI bubble and subsequent hits to the economy; growth of the “factory” infrastructure for all-in AI adapters; greater focus on generative AI as an organizational resource rather than an individual one; continued progression toward value from agentic AI, despite the hype; and ongoing questions around who should manage data and AI. [...] Here are the emerging 2026 AI trends that leaders should understand and be prepared to act on.\n\n### 1. The AI bubble will deflate, and the economy will suffer.\n\nLast year, the elephant in the AI room was the rise of agentic AI (and it’s still clomping around; see below). This year, it’s the AI bubble that has monopolized discussion: Is there one? If so, when will it burst? Will the money rush out quickly or slowly? And what are the implications for the broader economy and the ongoing use of AI? [...] MIT Sloan Management Review Logo\n\nAI in Action\n\n# Five Trends in AI and Data Science for 2026\n\n## From the AI bubble to GenAI’s rise..."
+          },
+          {
+            "title": "12+ AI Trends Businesses Must Watch in 2026",
+            "text": "As AI does not seem to stop its growing prevalence in near future, several key trends are emerging to reinforce AI’s capabilities and redefine business goals. Thus, for businesses in 2025 and beyond, it becomes imperative to stay abreast of the latest and emerging AI and machine learning trends to gain a competitive edge. With that said, let’s discuss each of the important AI trends in detail below:\n\n### Conversational AI\n\nConversational AI applications have significantly evolved from basic chatbots to sophisticated, context-aware assistants that not only help automate more complex, repetitive, and rule-based tasks but also understand intent, tone, and emotion. This helps enhance customer experience and improve productivity. [...] We are ready to embed AI in your organization. Are you ready to lead the way in AI trends? Contact us today to see how Appinventiv’s AI services can drive your business forward.\n\n#### Let’s Build the Future Together.\n\n## FAQs\n\n### Q. What are the current trends in AI?\n\nA. The current trends  in artificial intelligence  are:\n\n Conversational AI\n Predictive Analytics\n AI Democratization (Low-code/No-code)\n Ethical and Explainable AI\n Multi-Modal AI\n Digital..."
+          },
+          {
+            "title": "Top 5 AI Trends to Watch in 2026",
+            "text": "# Top 5 AI Trends to Watch in 2026\n\nWritten by Coursera Staff • Updated on\n\nGet to know some of the top trends in artificial intelligence in 2026.\n\n![[Featured Image] A nurse is using AI to facilitate their work while adding records to a computer in their office.\n](\n\n## Key takeaways\n\nArtificial intelligence (AI) trends include increased adoption of GenAI, AI-enhanced scientific research, and intensified AI regulations.\n\n AI use is increasing in the workplace, with Deloitte’s 2025 Tech Value Survey revealing that 74 percent of surveyed businesses are prioritizing tech spending on AI and GenAI, which was almost 20 percent higher than the next most popular budgeted areas of data management, cloud platforms, Internet of Things, and enterprise resource planning technologies . [...] ## 5 AI trends to consider leveraging\n\nArtificial intelligence is quickly transforming how we live and the business landscape in which we work. Wondering what some of the potential impacts of this exciting technology might be?\n\nHere are five of the AI trends you can expect to see.\n\n### 1. More GenAI app integration\n\nGenerative AI has arguably been the biggest trend in AI over the last several years. When Cha..."
+          },
+          {
+            "title": "What's next in AI: 7 trends to watch in 2026",
+            "text": "## What’s next in AI:7 trends to watch in 2026\n\nby Susanna Ray\n\nAI is entering a new phase, one defined by real-world impact.\n\nAfter several years of experimentation, 2026 is shaping up to be the year AI evolves from instrument to partner, transforming how we work, create and solve problems. Across industries, AI is moving beyond answering questions to collaborating with people and amplifying their expertise.\n\nThis transformation is visible everywhere. In medicine, AI is helping close gaps in care. In software development, it’s learning not just code but the context behind it. In scientific research, it’s becoming a true lab assistant. In quantum computing, new hybrid approaches are heralding breakthroughs once thought impossible. [...] As AI agents become digital colleagues and take on specific tasks at human direction, organizations are strengthening security to keep pace with new risks. The infrastructure powering these advances is also maturing, with smarter, more efficient systems.\n\nThese seven trends to watch in 2026 show what’s possible when people join forces with AI.\n\nImage 4\n\n## AI will amplify what people can achieve together\n\nAparna Chennapragada, Microsoft’s chief prod..."
+          },
+          {
+            "title": "What’s Next for AI? Trends and Predictions for the Next Decade",
+            "text": "Another emerging trend is the growing collaboration between humans and AI systems. Rather than replacing human workers, many AI technologies are designed to augment human capabilities. AI can process enormous amounts of data, identify patterns, and generate insights that support better decision-making. Humans, on the other hand, provide creativity, judgment, and contextual understanding. In many industries, the most effective solutions will involve collaboration between human expertise and AI-powered analysis. [...] Artificial intelligence is gradually becoming one of the foundational technologies of the digital age, comparable to the impact of the internet or mobile computing. Its applications already extend across healthcare, transportation, education, finance, entertainment, and scientific research. As AI systems become more capable, they will likely open new opportunities for innovation, productivity, and discovery.\n\nUltimately, the future of AI trends and predictions is not determined solely by technology but also by the choices made by researchers, companies, governments, and users. Responsible development, thoughtful regulation, and widespread education will all play importa..."
+          }
+        ],
+        "error": null
+      },
+      "fusionai_answer": {
+        "answer_text": "Current trends in AI include multi-modal AI, autonomous agents, and ethical AI development, with a focus on edge computing, AI democratization, and real-time decision-making [Evidence 1]. These trends are expected to continue in 2026, with an increased focus on explainable and ethical AI, as well as the integration of AI in wearables and smart devices [Evidence 3]. Additionally, conversational AI is becoming more sophisticated, with context-aware assistants that can understand intent, tone, and emotion, enhancing customer experience and productivity [Evidence 2]. The rise of customized models is also a key trend, with organizations using proprietary datasets to train AI tailored to their specific needs, and companies investing in data quality assurance to maintain AI performance and ethical robustness [Evidence 4]. Furthermore, AI is being used in various industries, including gaming, where it is being used to create more immersive and engaging experiences [Evidence 7]. However, there are also concerns about the impact of AI on society, with some people embracing AI and others being more skeptical [Evidence 5].\n\nKey findings: Multi-modal AI, autonomous agents, and ethical AI development are key trends in AI; Conversational AI is becoming more sophisticated and context-aware; Customized models are on the rise, with organizations using proprietary datasets to train AI; AI is being used in various industries, including gaming; There are concerns about the impact of AI on society\n\nRelated follow-up searches: AI systems; Anthropic; Arnav et al.; Baker et al.; DiffusionGemma; Emmons et al.\n\nLimitations: The evidence is limited to 2026 and may not reflect future trends; The evidence is focused on specific industries and may not be generalizable to all industries",
+        "topic_text": "CoT",
+        "similar_topic_texts": [
+          "AI systems",
+          "Anthropic",
+          "Arnav et al.",
+          "Baker et al.",
+          "DiffusionGemma",
+          "Emmons et al.",
+          "Google DeepMind",
+          "Guan et al."
+        ],
+        "evidence_texts": [
+          {
+            "query": "tell me about trends in ai ",
+            "summary": "Key AI trends in 2026 include multi-modal AI, autonomous agents, and ethical AI development. Edge computing and AI democratization via no-code/low-code platforms are also prominent. AI is increasingly used for sustainability and real-time decision-making.",
+            "key_points": [
+              "Key AI trends in 2026 include multi-modal AI, autonomous agents, and ethical AI development.",
+              "Edge computing and AI democratization via no-code/low-code platforms are also prominent.",
+              "AI is increasingly used for sustainability and real-time decision-making."
+            ]
+          },
+          {
+            "query": "tell me about trends in ai ",
+            "summary": "As AI does not seem to stop its growing prevalence in near future, several key trends are emerging to reinforce AI’s capabilities and redefine business goals. Thus, for businesses in 2025 and beyond, it becomes imperative to stay abreast of the latest and emerging AI and machine learning trends to gain a competitive edge. With that said, let’s discuss each of the important AI trends in detail below:\n\n### Conversational AI\n\nConversational AI applications have significantly evolved from basic chatbots to sophisticated, context-aware assistants that not only help automate more complex, repetitive, and rule-based tasks but also understand intent, tone, and emotion. This helps enhance customer experience and improve productivity. [...] We are ready to embed AI in your organization. Are you ready to lead the way in AI trends? Contact us today to see how Appinventiv’s AI services can drive your...",
+            "key_points": [
+              "As AI does not seem to stop its growing prevalence in near future, several key trends are emerging to reinforce AI’s capabilities and redefine business goals.",
+              "Thus, for businesses in 2025 and beyond, it becomes imperative to stay abreast of the latest and emerging AI and machine learning trends to gain a competitive edge.",
+              "With that said, let’s discuss each of the important AI trends in detail below:  ### Conversational AI  Conversational AI applications have significantly evolved from basic chatbots to sophisticated, context-aware assistants that not only help automate more complex, repetitive, and rule-based tasks but also understand intent, tone, and emotion."
+            ]
+          },
+          {
+            "query": "tell me about trends in ai ",
+            "summary": "## FAQ\n\n### What are the most important AI trends in 2026?\n\nKey AI trends in 2026 include multi-modal AI, autonomous agents, and responsible AI development. Personalization and privacy are priorities, along with AI integration in wearables and smart devices. Real-time decision-making, edge computing, and no-code/low-code platforms are expanding AI accessibility across industries.\n\n### What industries are leading AI adoption in 2026? [...] Multimodal AI is expected to develop significantly in 2026. The integration of different data modalities will expand the capabilities of AI systems, allowing them to process and interpret complex information more efficiently.\n\nKey trends include: \n\n### 6. Explainable and Ethical AI\n\nOne of the key trends in AI development in 2026 is an increased focus on ethics. As Artificial Intelligence becomes more powerful and integrated into various areas of societ...",
+            "key_points": [
+              "## FAQ  ### What are the most important AI trends in 2026?  Key AI trends in 2026 include multi-modal AI, autonomous agents, and responsible AI development.",
+              "Personalization and privacy are priorities, along with AI integration in wearables and smart devices.",
+              "Real-time decision-making, edge computing, and no-code/low-code platforms are expanding AI accessibility across industries."
+            ]
+          },
+          {
+            "query": "tell me about trends in ai ",
+            "summary": "The rise of customized models will be a key AI trend, with organizations using proprietary datasets to train AI tailored to their specific needs. These models, designed for content generation, customer interaction and process optimization, can outperform general-purpose LLMs by aligning closely with an organization's unique data and context. Companies will invest in data quality assurance so both real and synthetic data meet high standards of reliability, accuracy, and diversity, maintaining AI performance and ethical robustness.\n\nThe challenge of \"shadow AI\"—unauthorized AI tools used by employees—will push organizations to implement stricter data governance, guaranteeing that only approved AI systems access sensitive, proprietary data.\n\nThink Keynotes [...] ### Beyond the binary\n\nBitnet models use ternary parameters, a base-3 system with 3 digits to represent information. This approach...",
+            "key_points": [
+              "The rise of customized models will be a key AI trend, with organizations using proprietary datasets to train AI tailored to their specific needs.",
+              "These models, designed for content generation, customer interaction and process optimization, can outperform general-purpose LLMs by aligning closely with an organization's unique data and context.",
+              "Companies will invest in data quality assurance so both real and synthetic data meet high standards of reliability, accuracy, and diversity, maintaining AI performance and ethical robustness."
+            ]
+          },
+          {
+            "query": "tell me about trends in ai",
+            "summary": "The text explores the narrative of an 'American Rebellion Against AI' among young people, exemplified by boos directed at Eric Schmidt. While media interpretations suggest students loathe AI for stealing their future, the author, a university professor, counters this view, asserting that new graduates largely embrace and love AI, which has already profoundly impacted education.",
+            "key_points": [
+              "The concept of an 'American Rebellion Against AI' is discussed, focusing on student reactions.",
+              "Media outlets interpret student boos against Eric Schmidt as widespread hatred for AI.",
+              "The author, a university professor, argues that new graduates generally love AI.",
+              "AI has significantly changed college students and high school education."
+            ]
+          }
+        ]
+      },
+      "judge": {
+        "tavily_scores": {
+          "correctness": 8,
+          "completeness": 7,
+          "context_coverage": 8,
+          "reasoning_depth": 6,
+          "actionability": 5,
+          "information_gain": 6,
+          "citation_coverage": 9,
+          "hallucination_risk": 4
+        },
+        "fusionai_scores": {
+          "correctness": 9,
+          "completeness": 8,
+          "context_coverage": 9,
+          "reasoning_depth": 7,
+          "actionability": 6,
+          "information_gain": 8,
+          "citation_coverage": 8,
+          "hallucination_risk": 3
+        },
+        "overall_winner": "fusionai",
+        "rationale": "FusionAI's answer demonstrated a higher level of correctness, completeness, and context coverage. It also showed a deeper reasoning depth and provided more actionable information. Additionally, FusionAI's answer had a lower hallucination risk and provided more information gain. While Tavily's answer had better citation coverage, FusionAI's overall performance was stronger."
+      },
+      "metric_winners": {
+        "correctness": "fusionai",
+        "completeness": "fusionai",
+        "context_coverage": "fusionai",
+        "reasoning_depth": "fusionai",
+        "actionability": "fusionai",
+        "information_gain": "fusionai",
+        "citation_coverage": "tavily",
+        "hallucination_risk": "fusionai"
+      }
     }
   ],
   "final_dominance": {
     "correctness": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "completeness": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "context_coverage": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 1,
+      "tavily": 5,
       "tie": 0,
       "leader": "tavily"
     },
     "reasoning_depth": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "actionability": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "information_gain": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "citation_coverage": {
       "fusionai": 0,
-      "tavily": 1,
+      "tavily": 6,
       "tie": 0,
       "leader": "tavily"
     },
     "hallucination_risk": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     },
     "overall_winner": {
-      "fusionai": 0,
-      "tavily": 1,
+      "fusionai": 2,
+      "tavily": 4,
       "tie": 0,
       "leader": "tavily"
     }
   },
-  "total_evaluations": 1,
+  "total_evaluations": 6,
   "json_path": "data\\benchmarks\\query_evaluations.json"
 }

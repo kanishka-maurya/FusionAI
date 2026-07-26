@@ -7,6 +7,133 @@ from services.roadmap_service.llm_service import generate_roadmap_json, generate
 
 router = APIRouter()
 
+
+def normalize_node_content(content, node_title="", roadmap_title=""):
+
+    if isinstance(content, str):
+
+        try:
+            content = json.loads(content)
+        except Exception:
+            content = {
+                "summary": content
+            }
+
+    if not isinstance(content, dict):
+        content = {}
+
+    topics = content.get("topics")
+    if not isinstance(topics, list):
+        topics = []
+
+    normalized_topics = []
+    for index, topic in enumerate(topics[:5], start=1):
+        if isinstance(topic, dict):
+            normalized_topics.append({
+                "title": topic.get("title") or f"Concept {index}",
+                "explanation": topic.get("explanation") or topic.get("summary") or "",
+                "code_example": topic.get("code_example"),
+                "key_takeaway": topic.get("key_takeaway") or ""
+            })
+        elif topic:
+            normalized_topics.append({
+                "title": f"Concept {index}",
+                "explanation": str(topic),
+                "code_example": None,
+                "key_takeaway": ""
+            })
+
+    if not normalized_topics:
+        normalized_topics = [{
+            "title": node_title or "Topic overview",
+            "explanation": (
+                content.get("summary")
+                or f"This section introduces {node_title or 'the selected topic'} "
+                f"within {roadmap_title or 'the roadmap'}."
+            ),
+            "code_example": None,
+            "key_takeaway": (
+                f"Understand the role of {node_title or 'this topic'} before "
+                "moving to dependent roadmap nodes."
+            )
+        }]
+
+    def list_or_default(value, fallback):
+        if isinstance(value, list):
+            return [str(item) for item in value if item]
+        if isinstance(value, str) and value.strip():
+            return [value.strip()]
+        return fallback
+
+    resources = content.get("resources")
+    if not isinstance(resources, list):
+        resources = []
+
+    normalized_resources = []
+    for resource in resources[:5]:
+        if isinstance(resource, dict):
+            normalized_resources.append({
+                "type": resource.get("type") or "article",
+                "title": resource.get("title") or "Learning resource",
+                "url": resource.get("url") or "#"
+            })
+
+    if not normalized_resources:
+        normalized_resources = [{
+            "type": "article",
+            "title": f"Search: {node_title}",
+            "url": "#"
+        }]
+
+    practice_questions = content.get("practice_questions")
+    if not isinstance(practice_questions, list):
+        practice_questions = []
+
+    normalized_questions = []
+    for index, question in enumerate(practice_questions[:4], start=1):
+        if isinstance(question, dict):
+            normalized_questions.append({
+                "question": question.get("question") or f"Practice question {index}",
+                "hint": question.get("hint") or "",
+                "answer": question.get("answer") or ""
+            })
+        elif question:
+            normalized_questions.append({
+                "question": str(question),
+                "hint": "",
+                "answer": ""
+            })
+
+    if not normalized_questions:
+        normalized_questions = [{
+            "question": f"How would you explain {node_title or 'this topic'} in your own words?",
+            "hint": "Focus on the goal, core idea, and one concrete example.",
+            "answer": ""
+        }]
+
+    return {
+        "summary": (
+            content.get("summary")
+            or f"Learn the core ideas behind {node_title or 'this roadmap topic'}."
+        ),
+        "estimated_time": content.get("estimated_time") or "1 week",
+        "what_you_will_learn": list_or_default(
+            content.get("what_you_will_learn"),
+            [
+                f"Understand {node_title or 'the topic'} conceptually",
+                "Identify where it fits in the roadmap",
+                "Apply the idea through practice"
+            ]
+        ),
+        "topics": normalized_topics,
+        "common_misconceptions": list_or_default(
+            content.get("common_misconceptions"),
+            []
+        ),
+        "resources": normalized_resources,
+        "practice_questions": normalized_questions
+    }
+
 @router.post("/generate", response_model=RoadmapResponse)
 async def generate_roadmap(request: GenerateRoadmapRequest, req: Request):
 
@@ -116,9 +243,11 @@ async def get_node_content(roadmap_id: str, node_id: str, req: Request):
         raise HTTPException(status_code=404, detail="Node not found")
 
     if node.get("content_generated") and node.get("raw_content"):
-        content = node["raw_content"]
-        if isinstance(content, str):
-            content = json.loads(content)
+        content = normalize_node_content(
+            node["raw_content"],
+            node.get("title", ""),
+            roadmap.get("title", "")
+        )
         return {"source": "db", "content": content}
 
     dep_ids = node.get("dependencies") or []
@@ -137,6 +266,12 @@ async def get_node_content(roadmap_id: str, node_id: str, req: Request):
         )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Content generation failed: {str(e)}")
+
+    content = normalize_node_content(
+        content,
+        node.get("title", ""),
+        roadmap.get("title", "")
+    )
 
     db.mark_content_generated(client, roadmap_id, node_id, content)
     return {"source": "generated", "content": content}

@@ -1,142 +1,125 @@
-# FusionAI AI News Research Pipeline: A Graph-RAG and Agentic Evaluation Framework for Live AI Intelligence
+# FusionAI AI News Research Pipeline: An End-to-End Graph-RAG, Agentic Synthesis, and Automatic Evaluation Framework
 
 ## Abstract
 
-FusionAI's AI News research pipeline is a full-stack intelligence system designed to collect, structure, retrieve, synthesize, and evaluate fast-moving artificial intelligence information from live web sources. Unlike a conventional search interface that returns ranked links, the pipeline converts AI news, GitHub repositories, and arXiv papers into a persistent graph-based retrieval substrate, then performs query expansion, hybrid retrieval, subtree selection, multi-service orchestration, recursive synthesis, and automatic answer evaluation. The system combines live ingestion, semantic chunking, LLM-based summarization, entity-aware graph construction, hybrid ranking, risk and audit services, and Groq-based evaluation against a Tavily search baseline. This document presents the design as a research-paper-style technical specification, covering system architecture, ingestion, graph construction, query processing, evaluation methodology, observed engineering trade-offs, and future extensions.
+FusionAI's AI News research pipeline is a full-stack research intelligence system that collects fast-moving artificial intelligence information, converts it into a persistent Graph-RAG substrate, retrieves evidence through entity-aware hybrid ranking, synthesizes direct answers with an LLM, and evaluates each query against a Tavily search baseline. The system is designed for higher information gain than ordinary search: instead of only returning links or short snippets, it builds a structured understanding of AI news, GitHub repositories, and arXiv papers, then produces evidence-grounded answers, related topic suggestions, follow-up angles, and backend-only quality evaluations. This document describes the pipeline end to end, including ingestion, semantic chunking, graph construction, query processing, relevance filtering, agentic orchestration, Groq final-answer synthesis, evaluation metrics, observed results, limitations, and future research directions.
 
 ## 1. Introduction
 
-Modern AI research changes quickly across papers, repositories, product releases, and news coverage. A basic search engine can retrieve fresh documents, but it often leaves users with fragmented results and little explanation of how multiple sources relate. FusionAI's AI News component addresses this gap by treating incoming AI information as an evolving research graph rather than a flat list of search results.
+AI research and product development move across several channels at once: papers, repositories, technical blogs, product launches, and news coverage. A normal search interface can surface recent documents, but it often does not explain relationships between sources, preserve prior context, or evaluate whether the final answer is better than a search result.
 
-The main goal of the system is to maximize information gain for the user. Instead of only answering "what was found?", the pipeline attempts to answer:
-
-- What is the dominant topic behind the query?
-- Which related topics should the user investigate next?
-- What retrieved evidence supports the answer?
-- How reliable, complete, and actionable is the synthesized response?
-- Does FusionAI produce more useful research output than a basic Tavily search baseline?
-
-The pipeline is implemented primarily under:
+FusionAI's AI News component approaches this as a research intelligence problem. It maintains a continuously updated graph of AI-related information and uses that graph during query time to answer user questions with retrieved evidence. The pipeline is implemented primarily under:
 
 ```text
 backend/routes/Research_Routes/
 ```
 
-The API is exposed through:
+The user-facing query endpoint is:
 
 ```text
-/ai-news/get
 /ai-news/query
 ```
 
-The frontend AI News interface consumes only user-facing analysis from `response.user_view`, while backend evaluation artifacts are written separately to JSON.
+The backend automatically evaluates each query response and saves the benchmark data to:
 
-## 2. System Contributions
+```text
+data/benchmarks/query_evaluations.json
+data/benchmarks/latest_query_evaluation.json
+```
 
-The AI News research pipeline contributes five major capabilities:
+## 2. Research Objectives
 
-1. Live AI intelligence ingestion from GitHub, arXiv, and news sources with rate-aware scheduling and Redis-backed freshness control.
-2. Semantic document processing that converts raw source content into sentence-aware chunks, summaries, key points, and entities.
-3. A graph-based RAG substrate that merges related information into entity-indexed parent/leaf node structures.
-4. A query-time agentic orchestration pipeline for expansion, routing, subtree retrieval, risk analysis, ethics checks, audit checks, and recursive synthesis.
-5. Automatic per-query evaluation against Tavily using Groq as an LLM judge, saved as text-only JSON evaluation artifacts.
+The pipeline is designed around five objectives:
 
-## 3. High-Level Architecture
+1. Convert raw AI updates into a reusable graph memory instead of treating each query as a stateless search.
+2. Retrieve evidence using semantic, lexical, entity, freshness, and graph signals.
+3. Generate direct user-facing answers from retrieved evidence rather than exposing internal pipeline diagnostics.
+4. Recommend related topics that expand the user's research direction.
+5. Evaluate every query against Tavily using an independent Groq LLM judge and store cumulative results.
 
-The AI News pipeline has two major planes: an ingestion plane and a query plane.
+## 3. System Overview
+
+The system has two planes: an ingestion plane and a query plane.
 
 ```mermaid
 flowchart TD
-    A["GitHub / arXiv / News"] --> B["Adaptive Scheduler"]
-    B --> C["Redis Sliding Window"]
-    C --> D["Background Processor"]
+    A["GitHub, arXiv, AI News"] --> B["Source Fetching"]
+    B --> C["Redis Deduplication and Rate Control"]
+    C --> D["Full Text Extraction"]
     D --> E["Semantic Chunking"]
     E --> F["Gemini Summarization"]
-    F --> G["Graph Node Ingestion"]
-    G --> H["Entity Index + Supabase Graph"]
+    F --> G["Entity and Key Point Extraction"]
+    G --> H["Graph-RAG Storage in Supabase"]
 
     Q["User Query"] --> I["Query Expansion"]
     I --> J["Embedding Router"]
-    J --> K["Parent Selector"]
-    K --> L["Subtree Fetcher"]
-    L --> M["Orchestrator"]
-    M --> N["Feature Builder"]
-    N --> O["Gemini Audit"]
-    N --> P["Groq Recursive Analysis"]
-    O --> R["User View"]
-    P --> R
-    R --> S["Frontend Answer"]
-    R --> T["Groq Judge Evaluation"]
-    U["Tavily Baseline"] --> T
-    T --> V["Text-only Evaluation JSON"]
+    J --> K["Parent Selection"]
+    K --> L["Subtree Fetch"]
+    L --> M["Relevance Gate"]
+    M --> N["Agentic Orchestration"]
+    N --> O["Feature Builder"]
+    O --> P["Gemini Audit"]
+    O --> R["Groq Recursive Analysis"]
+    P --> S["Groq Final Answer Synthesis"]
+    R --> S
+    S --> T["User View"]
+    T --> U["Frontend"]
+    T --> V["Groq Judge Evaluation"]
+    W["Tavily Baseline"] --> V
+    V --> X["Text-only Evaluation JSON"]
 ```
 
-## 4. Data Ingestion Methodology
+## 4. Ingestion Pipeline
 
 ### 4.1 Source Collection
 
-The ingestion layer is implemented in `get_Latest_Data.py`. It collects three source families:
+The ingestion layer collects information from three source families:
 
-- GitHub repositories through the GitHub search API.
-- arXiv AI papers through the arXiv Atom feed.
-- AI news through NewsAPI.
+- GitHub repositories
+- arXiv AI papers
+- AI news sources
 
-Each source item is normalized into a shared record containing:
+Each item is normalized into a shared structure with fields such as title, URL, source type, creation time, fetch time, and metadata. This makes later processing source-agnostic.
 
-```json
-{
-  "title": "...",
-  "url": "...",
-  "source": "github | papers | news",
-  "created_at": "...",
-  "fetched_at": "...",
-  "meta": {}
-}
-```
+### 4.2 Deduplication and Rate Awareness
 
-The system filters obviously unsafe source titles using blocked terms such as malware, stealer, phishing, exploit, and related terms.
+Redis is used to reduce duplicate ingestion and control source activity:
 
-### 4.2 Adaptive Scheduling
+- `ai:seen_ids` prevents duplicate items from being processed repeatedly.
+- `ai:raw:current` stores the current sliding window of raw AI intelligence.
+- `ai:rate:<source>` tracks request pressure per source.
+- `ai:activity:<source>` tracks source freshness and activity.
 
-The scheduler tracks source activity in Redis and dynamically adjusts fetch intervals. It also uses rate windows to avoid excessive API usage.
+This design improves scalability because the pipeline does not repeatedly summarize or embed the same content.
 
-Core mechanisms:
+### 4.3 Query Priority Control
 
-- `ai:activity:<source>` records recent source activity.
-- `ai:rate:<source>` tracks request rate.
-- `ai:raw:current` stores the current seven-day sliding source window.
-- `ai:seen_ids` prevents duplicate ingestion.
-
-The scheduler pauses when a query is active through the Redis-backed query-active flag:
+Foreground query execution is prioritized over background ingestion. A Redis query-active counter is used:
 
 ```text
 ai:query:active_count
 ```
 
-This prevents background ingestion and source fetching from competing with live query execution.
+When a query is running, background source fetching and processing can pause at checkpoints. This helps the user-facing query pipeline receive more compute and LLM bandwidth.
 
-### 4.3 Full Document Extraction
-
-After a source enters the sliding window, the extraction layer attempts to obtain full text from the source. The processor only continues if meaningful content is extracted. This reduces low-value graph nodes and avoids inserting empty or shallow source records.
-
-## 5. Document Processing and Dataset Construction
-
-The processing layer is implemented in `processor.py`.
+## 5. Document Processing
 
 ### 5.1 Semantic Chunking
 
-The chunker calls `semantic_chunk_text()` through `chunker.py`, using defaults:
+Raw extracted text is split through a semantic chunking layer instead of simple fixed-size slicing. The goal is to preserve sentence boundaries and local context, producing chunks that are cleaner for summarization and embedding.
 
-```python
+Typical chunking parameters are:
+
+```text
 chunk_size = 1200
 overlap = 180
 ```
 
-Instead of arbitrary fixed-length splitting, the semantic chunker attempts to preserve sentence and context boundaries. This improves embedding quality and reduces fragmented summaries.
+This improves retrieval quality because each embedding represents a coherent topic segment rather than arbitrary text fragments.
 
-### 5.2 LLM Summarization
+### 5.2 Structured Summarization
 
-Each chunk is summarized with Gemini through `summarize_with_gemini()`. The summarizer returns structured fields:
+Each chunk is summarized by Gemini into a structured representation:
 
 ```json
 {
@@ -146,43 +129,25 @@ Each chunk is summarized with Gemini through `summarize_with_gemini()`. The summ
 }
 ```
 
-The processor validates that all required fields exist before inserting the chunk into the graph. It also uses a semaphore to limit concurrent summarization:
+The processor validates these fields before inserting data into the graph. This validation prevents weak or malformed chunks from corrupting the retrieval layer.
 
-```python
-semaphore = asyncio.Semaphore(3)
-```
+### 5.3 Dataset Generation
 
-This protects the pipeline from flooding the LLM provider.
+Processed chunk-summary examples are saved into the dataset builder flow. This creates a reusable supervised dataset for later evaluation or fine-tuning experiments. The dataset is useful because it captures source text paired with generated summaries, key points, and extracted entities.
 
-### 5.3 Dataset Logging
+## 6. Graph-RAG Storage Layer
 
-Processed chunk-summary pairs are saved through `dataset_builder.save_sample()`. This creates a growing supervised dataset that can later be used for evaluation, fine-tuning, or synthetic training workflows.
-
-### 5.4 Novelty Scoring
-
-Each chunk receives a novelty score against previous chunks from the same document. This helps preserve diverse information and reduce redundant graph insertion.
-
-## 6. Graph-RAG Storage Model
-
-The graph backend is implemented under:
+The graph layer is implemented under:
 
 ```text
 backend/routes/Research_Routes/Nexus_Graph_DB/
 ```
 
-The graph is persisted in Supabase using two major tables:
+The graph stores structured research memory in Supabase, mainly through graph nodes and an entity index.
 
-- `graph_nodes`
-- `entity_index`
+### 6.1 Graph Nodes
 
-### 6.1 Node Types
-
-The system represents content as graph nodes:
-
-- Leaf nodes: directly produced from document chunks.
-- Parent nodes: produced by merging semantically similar roots.
-
-A graph node contains:
+Each graph node can represent either a leaf chunk or a merged parent topic:
 
 ```json
 {
@@ -198,141 +163,138 @@ A graph node contains:
 }
 ```
 
+Leaf nodes are created from document chunks. Parent nodes are created when related content is merged into a higher-level topic summary.
+
 ### 6.2 Entity Index
 
-The entity index maps entities to active root nodes. This allows query-time routing to begin from relevant graph regions instead of scanning the entire graph.
+The entity index maps extracted entities to active root nodes:
 
 ```text
-entity -> active root node
+entity -> active graph root
 ```
 
-### 6.3 Dynamic Merge Threshold
+At query time, this allows the system to route queries into relevant graph regions instead of blindly scanning all nodes.
 
-When a new leaf node is inserted, the graph engine compares it to active roots for each entity. The merge threshold is dynamically adjusted according to cluster size:
+### 6.3 Dynamic Graph Merging
+
+When a new node is inserted, the graph engine compares it against active roots. If the new node is similar enough to an existing root, the system creates a merged parent summary using an LLM. This gives the graph a hierarchical structure:
 
 ```text
-tau = 1 - sqrt((2 log(cluster_size)) / embedding_dim) * (1 - alpha)
+parent topic
+  -> previous active root
+  -> new leaf node
 ```
 
-Where `alpha` increases with cluster size but remains bounded. This prevents overly aggressive merging in small clusters while allowing larger clusters to consolidate related information.
+The merge threshold is dynamic, so larger clusters can absorb related content while small clusters remain more selective.
 
-### 6.4 LLM-Based Parent Node Creation
+## 7. Query Pipeline
 
-If a new node is sufficiently similar to an active root, the system calls Groq to merge the two nodes into a new parent summary and parent key points. The new parent is promoted as the active root for that entity.
-
-This gives the graph a hierarchical structure:
-
-```text
-parent summary
-  ├── child root
-  └── new leaf
-```
-
-## 7. Query Processing Pipeline
-
-The query pipeline is implemented in:
+The live query pipeline is implemented in:
 
 ```text
 backend/routes/Research_Routes/Query_Pipeline/query_controller.py
 ```
 
-The runtime stages are:
+The current end-to-end query path is:
 
-1. Query expansion
-2. Embedding routing
-3. Parent selection
-4. Subtree fetching
-5. Orchestration
-6. Feature building
-7. Gemini audit
-8. Groq recursive analysis
-9. User-view construction
-10. Automatic evaluation
+```text
+User query
+-> Query expansion
+-> Embedding routing
+-> Parent selection
+-> Subtree fetching
+-> Relevance gate
+-> Agentic orchestration
+-> Feature building
+-> Gemini audit
+-> Groq recursive analysis
+-> Groq final answer synthesis
+-> User view construction
+-> Automatic benchmark evaluation
+```
 
 ### 7.1 Query Expansion
 
-The query expansion service uses Groq to produce related analytical queries and entities. It returns:
+Groq expands the original user query into multiple related search queries and extracts entities. For example, a query like:
 
-```json
-{
-  "queries": ["original", "expanded 1", "..."],
-  "entities": {
-    "query text": ["entity1", "entity2"]
-  }
-}
+```text
+agentic ai updates
 ```
 
-The service includes timeout and fallback behavior. If Groq does not respond, the pipeline continues with the original query.
+can expand into related query forms about recent advancements, autonomous agents, safety, workflows, and current trends. This improves recall because one short user query may not match the graph vocabulary exactly.
 
-### 7.2 Embedding Router
+### 7.2 Embedding Routing
 
-The embedding router routes expanded queries through the graph index. It uses query embeddings, entities, and hybrid relevance scoring to identify candidate graph roots.
+Each expanded query is embedded and routed toward candidate graph roots. The router uses extracted entities when available. If entity routing finds no candidates, the pipeline falls back to global active roots.
 
 ### 7.3 Parent Selection
 
-The parent selector chooses the best parent/root node per routed query. This stage narrows the search space to the most relevant graph regions.
+The parent selector scores candidate roots and selects the best root for each routed query. It uses a hybrid score rather than semantic similarity alone.
 
-### 7.4 Subtree Fetching
-
-For each selected parent, the subtree fetcher retrieves the full descendant structure. This supplies both high-level summaries and supporting child content.
-
-## 8. Hybrid Retrieval Scoring
-
-The graph query engine combines semantic and non-semantic signals. The hybrid scoring utility considers:
+The hybrid scoring function includes:
 
 - semantic similarity
 - lexical overlap
+- keyword density
 - entity overlap
-- keyword relevance
 - freshness
-- source authority
 
-This is important because AI news queries often depend on recency and source credibility, not just vector similarity.
+This matters because AI news relevance depends on both meaning and recency.
 
-## 9. Agentic Orchestration Layer
+### 7.4 Subtree Fetching
 
-The orchestrator is implemented in:
+After selecting parent nodes, the subtree fetcher retrieves each selected parent and its descendants. The result becomes the evidence set for downstream orchestration and answer synthesis.
+
+### 7.5 Relevance Gate
+
+A relevance gate was added before orchestration. It rejects low-signal subtrees when they do not meet minimum hybrid, lexical, keyword, or entity relevance thresholds.
+
+This was added because benchmark inspection showed that some retrieved evidence could be off-topic. For example, a query about agentic AI could previously retrieve unrelated source summaries. Filtering such evidence before orchestration reduces hallucination risk and improves final-answer correctness.
+
+The gate logs:
 
 ```text
-Query_Pipeline/orchestrator.py
+[PIPELINE] Relevance gate kept X subtrees and rejected Y low-signal subtrees
 ```
 
-It runs four services concurrently:
+If all subtrees fail the gate, the pipeline keeps the best available subtree rather than returning no evidence. This preserves robustness for sparse graph states.
+
+## 8. Agentic Orchestration
+
+The orchestrator runs multiple analysis services:
 
 1. Strategy service
 2. Risk service
 3. Ethics service
 4. Audit service
 
-Each service has timeout protection and fallback behavior.
+These services transform retrieved subtrees into structured features for downstream reasoning.
 
-### 9.1 Strategy Service
+### 8.1 Strategy Service
 
 The strategy service identifies:
 
 - dominant selected topic
-- recommended related topics
-- temporal trend
+- related topics
+- temporal trend signals
 
-It builds topic cubes, analyzes co-occurrence, and ranks entities by frequency and depth.
+This is used for topic routing, related search suggestions, and final answer context.
 
-### 9.2 Risk Service
+### 8.2 Risk Service
 
-The risk service compares parent node summaries to identify unusually similar retrieved nodes. This helps detect redundancy or abnormal overlap.
+The risk service compares retrieved parent nodes and detects abnormal redundancy or suspicious similarity. This helps identify whether the retrieval output is too repetitive or overly narrow.
 
-The current live-query path uses a fast lexical scorer by default. A heavier cross-encoder path can be enabled for deeper offline analysis.
+### 8.3 Ethics Service
 
-### 9.3 Ethics Service
+The ethics service checks semantic alignment inside retrieved subtrees. Low alignment can indicate a poorly clustered graph region or a source set that should not be trusted without qualification.
 
-The ethics service checks semantic alignment within retrieved subtrees. Low alignment can indicate inconsistent clustering or weak graph organization.
+### 8.4 Audit Service
 
-### 9.4 Audit Service
+The audit service validates summary-key point alignment. If key points are weakly supported by their summary, the answer synthesis layer can be more cautious.
 
-The audit service compares node summaries against their key points. This detects whether a summary is grounded in its extracted evidence.
+## 9. Feature Builder
 
-## 10. Feature Builder
-
-The feature builder converts orchestration output into structured downstream features:
+The feature builder converts orchestration outputs into structured feature groups:
 
 - graph features
 - risk features
@@ -340,39 +302,65 @@ The feature builder converts orchestration output into structured downstream fea
 - audit features
 - strategy features
 
-These features feed both audit generation and final synthesis.
+These features are used by the Gemini audit service and are also passed as compact diagnostic context to final synthesis.
 
-## 11. Answer Synthesis
+## 10. Answer Synthesis
 
-The final answer is generated through two major services.
+The pipeline uses three LLM-backed reasoning layers, each with a different role.
 
-### 11.1 Gemini Audit
+### 10.1 Gemini Audit
 
-The Gemini audit service receives risk, ethics, and audit features and produces:
+Gemini audit is diagnostic. It evaluates risk, ethics, and audit features and produces system-level observations such as:
 
 - overall assessment
 - detected issues
-- system improvements
 - retrieval improvements
 - clustering improvements
 - summarization improvements
-- final conclusion
+- final diagnostic conclusion
 
-This component focuses on diagnostic quality rather than direct user answer generation.
+This output is useful for debugging, but it is not supposed to be the final answer to the user.
 
-### 11.2 Groq Recursive Analysis
+### 10.2 Groq Recursive Analysis
 
-The Groq recursive analysis service performs:
+Groq recursive analysis generates follow-up questions, answers them from retrieved context, and critiques the generated reasoning. This provides deeper research angles and helps the frontend show follow-up directions.
 
-1. follow-up question generation
-2. recursive answer generation
-3. critic-mode self-evaluation
+### 10.3 Groq Final Answer Synthesis
 
-If no follow-up questions are generated, the service stops gracefully and returns a structured fallback instead of producing misleading empty analysis.
+A dedicated final-answer service now produces the main user-facing answer:
 
-## 12. User-Facing Response Model
+```text
+backend/routes/Research_Routes/Query_Pipeline/groq_final_answer_service.py
+```
 
-The frontend should not display raw pipeline internals. The backend therefore builds a `user_view` object containing only relevant analysis:
+This service receives:
+
+- original user query
+- selected topic
+- expanded queries
+- related topics
+- retrieved evidence contexts
+- compact audit summary
+
+The prompt instructs Groq to:
+
+- answer the original question directly
+- use only retrieved evidence
+- include evidence markers such as `[Evidence 1]`
+- mention limitations when evidence is incomplete
+- suggest related searches
+
+This change fixed the earlier failure mode where the user-facing answer could become an internal audit report instead of an answer to the query.
+
+## 11. User-Facing Response Model
+
+The frontend consumes only:
+
+```text
+response.user_view
+```
+
+The user view contains:
 
 ```json
 {
@@ -380,151 +368,202 @@ The frontend should not display raw pipeline internals. The backend therefore bu
   "topic_name": "...",
   "summary": "...",
   "similar_topics": [],
-  "suggested_searches": [],
+  "recommended_searches": [],
+  "key_findings": [],
+  "evidence_used": [],
+  "limitations": [],
   "follow_up_questions": [],
   "answers": [],
-  "audit_summary": {},
   "retrieved_evidence": [],
   "expanded_queries": []
 }
 ```
 
-The frontend displays:
+The frontend intentionally does not show benchmark evaluation analysis. It shows only relevant research output such as the final answer, related topics, follow-up angles, and retrieved evidence snippets.
 
-- research insight
-- dominant topic
-- related topics the user can also search for
-- generated answers, when available
-- follow-up angles, when available
-- retrieved evidence snippets
+## 12. Automatic Evaluation Framework
 
-The frontend intentionally does not display benchmark/evaluation metrics.
-
-## 13. Automatic Query Evaluation
-
-Every `/ai-news/query` call automatically triggers backend-only evaluation after the FusionAI answer is produced.
+Every `/ai-news/query` call triggers backend-only evaluation after FusionAI produces its answer.
 
 The evaluator compares:
 
 ```text
 Question
-Tavily baseline text
-FusionAI answer text
-FusionAI evidence text
+Tavily Answer
+FusionAI Answer
+Tavily Supporting Text
+FusionAI Evidence Text
 ```
 
-The judge is Groq:
+The judge is:
 
 ```text
 groq/llama-3.3-70b-versatile
 ```
 
-### 13.1 Evaluation Metrics
+The judge scores both systems independently first, then chooses an overall winner. This reduces direct winner-selection bias because the judge must assign metric-level scores before deciding.
 
-Both Tavily and FusionAI are scored independently on:
+### 12.1 Evaluation Metrics
 
-1. Correctness
-2. Completeness
-3. Context coverage
-4. Reasoning depth
-5. Actionability
-6. Hallucination risk
-7. Information gain
-8. Citation coverage
+The evaluation uses eight metrics:
 
-For all metrics except hallucination risk, higher is better. For hallucination risk, lower is better.
+| Metric | Direction | Meaning |
+| --- | --- | --- |
+| Correctness | Higher is better | Factual alignment with the question and evidence |
+| Completeness | Higher is better | Coverage of the important parts of the query |
+| Context coverage | Higher is better | Breadth of relevant supporting context |
+| Reasoning depth | Higher is better | Quality of synthesis beyond shallow retrieval |
+| Actionability | Higher is better | Practical usefulness of the answer |
+| Information gain | Higher is better | How much the answer teaches beyond a basic search result |
+| Citation coverage | Higher is better | How clearly and broadly evidence is integrated |
+| Hallucination risk | Lower is better | Risk that the answer contains unsupported claims |
 
-### 13.2 Text-Only Evaluation JSON
+### 12.2 Text-Only Evaluation Storage
 
-The evaluation JSON intentionally excludes embeddings, vectors, raw graph internals, and provenance blobs. It stores only:
+The benchmark JSON intentionally excludes full embeddings, vectors, and raw graph internals. It stores only text and scores:
 
-- question text
+- question
 - Tavily answer text
-- Tavily supporting text snippets
+- Tavily support snippets
 - FusionAI answer text
-- FusionAI evidence text snippets
+- FusionAI evidence snippets
 - topic text
 - similar topic text
 - judge scores
 - metric winners
-- dominance summary
+- cumulative dominance
 
-The files are written to:
+This keeps the benchmark readable and avoids dumping high-dimensional embedding data.
 
-```text
-data/benchmarks/query_evaluations.json
-data/benchmarks/latest_query_evaluation.json
-```
+## 13. Latest Evaluation Results
 
-## 14. Concurrency and Runtime Control
-
-The system uses background tasks for live ingestion and foreground tasks for query execution. To reduce latency during user queries, background work checks a Redis-backed query-active flag:
+The current `query_evaluations.json` contains two evaluations. The latest evaluation was for:
 
 ```text
-ai:query:active_count
+agentic ai updates
 ```
 
-When a query begins, background schedulers and ingestion processors pause at checkpoints. When the query finishes, background ingestion resumes.
+The latest winner was:
 
-This design prioritizes live query responsiveness while still allowing continuous background intelligence collection.
+```text
+FusionAI
+```
 
-## 15. Reliability Engineering
+The judge rationale states that FusionAI had higher correctness, completeness, actionability, and lower hallucination risk, while Tavily still had broader context coverage and citation coverage.
 
-The pipeline includes several reliability safeguards:
+### 13.1 Latest Score Table
 
-- timeout-protected Groq query expansion
-- timeout-protected orchestration services
-- fallback expansion when LLM query expansion fails
-- text-only evaluation output
-- Redis deduplication
+| Metric | FusionAI | Tavily | Winner |
+| --- | ---: | ---: | --- |
+| Correctness | 9 | 8 | FusionAI |
+| Completeness | 8 | 7 | FusionAI |
+| Context coverage | 7 | 8 | Tavily |
+| Reasoning depth | 7 | 6 | FusionAI |
+| Actionability | 8 | 5 | FusionAI |
+| Information gain | 8 | 6 | FusionAI |
+| Citation coverage | 8 | 9 | Tavily |
+| Hallucination risk | 3 | 4 | FusionAI |
+
+For hallucination risk, lower is better.
+
+### 13.2 Improvement Over Previous Evaluation
+
+The earlier evaluation showed FusionAI returning an internal audit-style answer, which caused low scores. After adding relevance filtering and direct final-answer synthesis, FusionAI improved substantially:
+
+| Metric | FusionAI Before | FusionAI Latest | Change |
+| --- | ---: | ---: | ---: |
+| Correctness | 2 | 9 | +7 |
+| Completeness | 2 | 8 | +6 |
+| Context coverage | 2 | 7 | +5 |
+| Reasoning depth | 4 | 7 | +3 |
+| Actionability | 3 | 8 | +5 |
+| Information gain | 2 | 8 | +6 |
+| Citation coverage | 2 | 8 | +6 |
+| Hallucination risk | 8 | 3 | -5 |
+
+The largest gains came from:
+
+- replacing diagnostic output with direct final-answer synthesis
+- grounding the final answer in retrieved evidence
+- adding `[Evidence N]` markers
+- filtering low-relevance retrieved subtrees before orchestration
+- keeping evaluation text-only and focused on the actual user-facing answer
+
+### 13.3 Cumulative Dominance
+
+Across the two stored evaluations:
+
+| Metric | Current Leader |
+| --- | --- |
+| Correctness | Tie |
+| Completeness | Tie |
+| Context coverage | Tavily |
+| Reasoning depth | Tie |
+| Actionability | Tie |
+| Information gain | Tie |
+| Citation coverage | Tavily |
+| Hallucination risk | Tie |
+| Overall winner | Tie |
+
+This shows that FusionAI has improved enough to win the latest run, but more benchmark queries are needed before claiming stable dominance over Tavily.
+
+## 14. Why the Pipeline Improved
+
+The earlier system already had advanced retrieval and orchestration, but its final answer selection was weak. The benchmark exposed two main issues:
+
+1. The answer being judged could be a pipeline audit summary rather than a direct answer.
+2. Retrieved context could include off-topic nodes, which increased hallucination risk.
+
+The improved pipeline addresses both:
+
+- The final Groq answer service answers the original query directly.
+- The service receives retrieved evidence and is instructed to use only that evidence.
+- The relevance gate removes noisy subtrees before synthesis.
+- The frontend and evaluator both consume `user_view.summary`, which now prioritizes the final answer.
+- The benchmark stores the final answer and evidence text, not internal embeddings or full raw graph objects.
+
+## 15. Reliability and Scalability Features
+
+The pipeline includes several engineering safeguards:
+
+- lazy initialization for heavy AI services
+- Redis-backed deduplication
 - rate-aware ingestion
-- background pause checkpoints
-- graceful recursive-analysis fallback
-- frontend isolation from evaluation internals
+- query-active pause control for background workers
+- semantic chunking for cleaner embeddings
+- hybrid ranking for retrieval quality
+- relevance gating for noisy evidence reduction
+- timeout protection around LLM calls
+- fallback behavior for recursive analysis and final synthesis
+- text-only evaluation persistence
 
-These safeguards allow the pipeline to degrade gracefully instead of failing the full user request.
+These features make the system more reliable under live query workloads and easier to debug.
 
-## 16. Experimental Evaluation Design
+## 16. Limitations
 
-The current evaluation protocol is comparative and reference-free. Instead of requiring ground-truth labels, it compares FusionAI against a Tavily search baseline using an LLM judge.
+The current system still has limitations:
 
-For each query:
+1. Tavily can still outperform FusionAI on broad live context coverage because it searches the web directly at query time.
+2. Citation coverage is based on evidence markers and snippets, not formal source-level citation rendering in the frontend.
+3. The evaluation judge is an LLM, so scores may vary across runs.
+4. The current benchmark set is still small; two evaluations are not enough for strong statistical claims.
+5. Graph quality depends on upstream extraction, summarization, and entity extraction quality.
+6. Some retrieved contexts may still be partially relevant but not comprehensive enough for fast-moving breaking news.
 
-```text
-Tavily -> answer text
-FusionAI -> synthesized graph answer
-Groq judge -> independent scores
-```
+## 17. Future Work
 
-The result is a cumulative JSON benchmark showing which system dominates each metric over time.
+Recommended next improvements:
 
-This setup is useful during product development because it allows continuous regression testing as the graph, summarizer, or retrieval logic changes.
+1. Add a larger fixed benchmark suite with diverse AI-news, paper, GitHub, and safety queries.
+2. Add source-level citations in the frontend using provenance URLs from retrieved graph nodes.
+3. Add temporal reranking so very recent AI updates are prioritized for news-like queries.
+4. Add multi-judge evaluation across Groq, Gemini, and a local model to reduce evaluator bias.
+5. Add ablation testing for semantic-only retrieval, hybrid retrieval, graph retrieval, and relevance-gated retrieval.
+6. Add graph visualization for selected subtrees so users can inspect why FusionAI chose an answer.
+7. Add a live freshness score to the final answer when Tavily or source ingestion suggests newer information exists.
 
-## 17. Limitations
+## 18. Conclusion
 
-The current implementation has several limitations:
+FusionAI's AI News research pipeline is an advanced Graph-RAG and agentic synthesis system for AI intelligence. It ingests live AI sources, creates a structured graph memory, retrieves relevant subtrees through hybrid ranking, filters noisy evidence, runs agentic analysis services, and generates a direct Groq-synthesized answer grounded in retrieved evidence. The automatic evaluation framework compares FusionAI with Tavily on correctness, completeness, context coverage, reasoning depth, actionability, information gain, citation coverage, and hallucination risk.
 
-1. The judge is itself an LLM and may introduce evaluation bias.
-2. The Tavily answer is a strong search baseline but not a full multi-hop research agent.
-3. The graph quality depends heavily on summarization and entity extraction quality.
-4. Some ingestion work may continue briefly if a network or LLM call is already in flight when a query begins.
-5. Citation coverage is currently estimated from text evidence, not formal citation markers.
-6. Evaluation is reference-free and should eventually be complemented with curated benchmark datasets.
-
-## 18. Future Work
-
-Recommended future improvements:
-
-1. Add a curated benchmark set with expected facts and source labels.
-2. Add multi-judge evaluation with score averaging across Groq, Gemini, and a local model.
-3. Add explicit citation rendering from graph provenance to user-facing answers.
-4. Add graph visualization for selected query subtrees.
-5. Add offline cross-encoder reranking for high-quality scheduled evaluations.
-6. Add temporal trend scoring that differentiates old but authoritative sources from genuinely new developments.
-7. Add ablation tests comparing semantic-only retrieval, hybrid retrieval, and graph-routed retrieval.
-
-## 19. Conclusion
-
-FusionAI's AI News research pipeline is an advanced Graph-RAG system for live AI intelligence. It transforms raw AI updates into a semantic graph, routes expanded queries through entity-aware retrieval, synthesizes user-facing research answers, recommends related topics, and automatically evaluates each answer against a search baseline. The system is not merely a search wrapper; it is a structured research engine focused on information gain, evidence coverage, and explainable retrieval quality.
-
-By combining live ingestion, graph clustering, hybrid ranking, recursive analysis, and automatic text-only evaluation, the pipeline provides a strong foundation for a distinctive AI research assistant that can evolve with the pace of modern AI development.
+The latest benchmark shows a meaningful improvement: FusionAI won the most recent evaluation for `agentic ai updates`, with correctness rising from 2 to 9 and hallucination risk dropping from 8 to 3. The system is not simply a search wrapper; it is a reusable research intelligence pipeline designed to preserve knowledge, synthesize evidence, and continuously measure whether its answers are becoming more useful than baseline search.
